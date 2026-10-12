@@ -1,0 +1,13 @@
+{
+  "name": "PUXE · Radar de Redestinação",
+  "short_name": "PUXE",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F2EEE6",
+  "theme_color": "#12324A",
+  "icons": [
+    { "src": "icon-v2.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
+    { "src": "apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}
