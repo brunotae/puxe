@@ -236,6 +236,11 @@ textarea.inp{min-height:130px;resize:vertical;font-family:ui-monospace,Menlo,mon
 .hint{font-size:12.5px;color:var(--muted);font-weight:500}
 .hint.w{color:var(--warn)}.hint.b{color:var(--bad)}
 .hist{margin-top:10px}
+.qc{background:var(--card2);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.qc .ln input.inp{min-height:40px}
+.hint .lnk{background:none;color:var(--acc);font-weight:700;text-decoration:underline;padding:0;margin-left:4px;font-size:inherit}
+.steps0 .ln{gap:10px;flex-wrap:wrap;padding:12px 4px}
+.steps0 .ln span{flex:1;min-width:180px;color:var(--ink)}
 /* alarm */
 .alarm{position:fixed;inset:0;z-index:60;background:rgba(9,15,24,.88);display:grid;place-items:center;padding:20px;backdrop-filter:blur(6px)}
 .alarm .box{width:min(520px,100%);background:var(--card);border-radius:28px;padding:26px;max-height:90vh;overflow:auto;border:2px solid var(--bad)}
@@ -512,6 +517,10 @@ const DB={
     if(S.mode==="demo"){if(obj.id){Object.assign(S.clientes.find(x=>x.id===obj.id),obj)}else{S.clientes.push(Object.assign({id:uid(),created_at:new Date().toISOString()},obj))}S.clientes.sort((a,b)=>a.nome.localeCompare(b.nome));return}
     const {id,...rest}=obj;const r=id?await sb.from("puxe_clientes").update(rest).eq("id",id):await sb.from("puxe_clientes").insert(rest);if(r.error)throw r.error;await DB.load();
   },
+  async addClientes(rows){
+    if(S.mode==="demo"){rows.forEach(r=>S.clientes.push(Object.assign({id:uid(),created_at:new Date().toISOString(),ativo:true,excecao:false},r)));S.clientes.sort((a,b)=>a.nome.localeCompare(b.nome));return}
+    const {error}=await sb.from("puxe_clientes").insert(rows);if(error)throw error;await DB.load();
+  },
   async updOrg(patch){if(S.mode==="demo"){Object.assign(S.org,patch);return}const {error}=await sb.from("puxe_orgs").update(patch).eq("id",S.org.id);if(error)throw error;await DB.load()},
   async updPerfil(user_id,patch){if(S.mode==="demo")return;const {error}=await sb.from("puxe_perfis").update(patch).eq("user_id",user_id);if(error)throw error;await DB.load()},
   async nota(c,txt){if(S.mode==="demo"){demoLog(c,"nota",txt);return}
@@ -613,7 +622,7 @@ function vPainel(){
     <label class="srch2">${ic("search",17)}<input data-in="busca" placeholder="Container, cliente, navio…" value="${esc(S.busca)}"></label>
     ${pode()?`<button class="btn" data-act="novaCarga">${ic("plus",18)} Nova carga</button>`:""}</div>
     <div class="chips">${chips.map(([f,l])=>`<button data-act="filtro" data-f="${f}" class="${S.filtro===f?"on":""}">${l} ${cnt(f)}</button>`).join("")}${S.dia?`<button class="fday" data-act="clearDia">Prazo em ${fD(S.dia)} ✕</button>`:""}</div>
-    <div class="tbl">${TH}${L.slice(0,12).map(row).join("")||`<div class="empty">Nenhuma carga neste filtro.</div>`}${L.length>12?`<button class="btn ghost" style="width:100%;margin-top:14px" data-act="nav" data-v="cargas">Ver todas as ${L.length} cargas</button>`:""}</div></section>
+    <div class="tbl">${TH}${L.slice(0,12).map(row).join("")||(S.cargas.length||!pode()?`<div class="empty">Nenhuma carga neste filtro.</div>`:`<div class="steps0"><div class="ln"><span><b>1.</b> Clientes cadastrados: <b>${S.clientes.length}</b></span><button class="btn ghost sm" data-act="loteCli">Importar lista de clientes</button></div><div class="ln"><span><b>2.</b> Lance as cargas que estão vindo</span><button class="btn sm" data-act="novaCarga">${ic("plus",16)} Nova carga</button><button class="btn ghost sm" data-act="nav" data-v="captacao">Colar lista</button></div><div class="ln"><span><b>3.</b> O alarme toca sozinho quando um prazo se aproxima.</span></div></div>`)}${L.length>12?`<button class="btn ghost" style="width:100%;margin-top:14px" data-act="nav" data-v="cargas">Ver todas as ${L.length} cargas</button>`:""}</div></section>
   </div>
   <div class="col rcol">${rAlarmes()}${rRadar()}${rCal()}${rAtividade()}</div></div>`;
 }
@@ -679,9 +688,9 @@ function vCaptacao(){
   </section>
   <section class="card p"><h3 style="margin:0 0 6px">Importar lista (colar)</h3>
     <p class="muted" style="margin:0 0 10px;font-size:13px;line-height:1.6">Cole linhas do Siscarga, de uma planilha ou de um e-mail. Uma carga por linha, colunas separadas por <b>;</b> ou tab:<br><code>CNPJ ; Container ; BL/CE ; Navio ; ETA (dd/mm/aaaa hh:mm) ; Terminal</code></p>
-    <textarea class="inp" id="imp" placeholder="12.345.678/0001-90;MSCU1234565;152605123456789;Sea Pioneer;15/10/2026 06:00;BTP" ${pode()?"":"disabled"}></textarea>
+    <textarea class="inp" id="imp" placeholder="12.345.678/0001-90;MSCU1234565;152605123456789;Sea Pioneer;15/10/2026 06:00;BTP" ${pode()?"":"disabled"}>${esc(S.importText||"")}</textarea>
     <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="btn ghost" data-act="impPrev" ${pode()?"":"disabled"}>Pré-visualizar</button>${R&&R.filter(x=>x.ok).length?`<button class="btn acc" data-act="impGo">Importar ${R.filter(x=>x.ok).length}</button>`:""}<button class="btn ghost sm" data-act="impEx" ${pode()?"":"disabled"}>Exemplo</button></div>
-    ${R?`<div class="prev"><table><tr><th></th><th>Container</th><th>Cliente</th><th>Navio</th><th>ETA</th><th>Prazo</th><th>Armazém</th></tr>${R.map(x=>`<tr><td class="${x.ok?"ok-t":"bad-t"}">${x.ok?"✓":"✕"} ${esc(x.msg)}</td><td>${esc(x.container)}</td><td>${esc(x.cliente)}</td><td>${esc(x.navio)}</td><td>${x.eta?fDT(x.eta):"—"}</td><td>${x.prazo?fDT(x.prazo):"—"}</td><td>${esc(x.armazem)}</td></tr>`).join("")}</table></div>`:""}
+    ${R?`<div class="prev"><table><tr><th></th><th>Container</th><th>Cliente</th><th>Navio</th><th>ETA</th><th>Prazo</th><th>Armazém</th></tr>${R.map(x=>`<tr><td class="${x.ok?"ok-t":"bad-t"}">${x.ok?"✓":"✕"} ${esc(x.msg)}</td><td>${esc(x.container)}</td><td>${esc(x.cliente)}</td><td>${esc(x.navio)}</td><td>${x.eta?fDT(x.eta):"—"}</td><td>${x.prazo?fDT(x.prazo):"—"}</td><td>${esc(x.armazem)}</td></tr>`).join("")}</table></div>${(()=>{const nv=[...new Set(R.filter(x=>x.novo).map(x=>x.novo))];return nv.length&&pode()?`<div class="qc" style="margin-top:12px"><b style="font-size:14px">${nv.length} CNPJ${nv.length>1?"s":""} ainda não cadastrado${nv.length>1?"s":""} — digite o nome para cadastrar agora:</b>${nv.map(c=>`<div class="ln"><div class="x" style="flex:0 0 auto"><b>${esc(fmtCNPJ(c))}</b>${cnpjOk(c)?"":`<small class="bad-t">dígito não confere</small>`}</div><input class="inp" style="flex:1;min-width:140px" placeholder="Nome do cliente" data-novocnpj="${esc(c)}"></div>`).join("")}<button class="btn sm" data-act="impCli" style="align-self:flex-start">Cadastrar e revalidar</button></div>`:""})()}`:""}
   </section>
   <section class="card p"><h3 style="margin:0 0 6px">E-mails de pré-alerta (IA)</h3><p class="muted" style="font-size:13px;line-height:1.6;margin:0">Fase 2: uma caixa de e-mail dedicada recebe pré-alertas e arrival notices; a IA extrai BL, container, navio, ETA e CNPJ e cria a carga aqui com fonte "E-mail". O cruzamento com o Siscarga gera o alerta <b>“carga não pré-alertada”</b>.</p></section>
   <section class="card p"><h3 style="margin:0 0 6px">Regra DLT (master)</h3><p class="muted" style="font-size:13px;line-height:1.6;margin:0">Quando o CNPJ da carga é o da própria comissária (${esc(fmtCNPJ(S.org.cnpj_proprio)||"configure em Configurações")}), ela entra como <b>“cliente final pendente”</b> e continua alarmando normalmente até os houses serem informados.</p></section>
@@ -694,7 +703,7 @@ function buildImport(txt){const out=[];const seen=new Set(S.cargas.map(c=>c.cont
     const cli=S.clientes.find(c=>normC(c.cnpj)===cnpj);const proprio=S.org.cnpj_proprio&&normC(S.org.cnpj_proprio)===cnpj;
     (conts.length?conts:[""]).forEach(ct=>{const ce=/^\d{15}$/.test(normC(blce))?normC(blce):"";const bl=ce?"":blce;
       const r={container:ct,cliente:cli?cli.nome:proprio?"Cliente final pendente":"?",navio,eta,armazem:cli?cli.armazem_padrao:"Ecoporto",ok:true,msg:"ok"};
-      if(!ct){r.ok=false;r.msg="sem container"}else if(!eta){r.ok=false;r.msg="ETA inválida"}else if(!cli&&!proprio){r.ok=false;r.msg="CNPJ não cadastrado"}else if(seen.has(ct+"|"+ce)){r.ok=false;r.msg="já existe"}
+      if(!ct){r.ok=false;r.msg="sem container"}else if(!eta){r.ok=false;r.msg="ETA inválida"}else if(!cli&&!proprio){r.ok=false;r.msg="CNPJ não cadastrado";r.novo=cnpj}else if(seen.has(ct+"|"+ce)){r.ok=false;r.msg="já existe"}
       else if(!contOk(ct))r.msg="confira o dígito";
       if(eta)r.prazo=new Date(eta-S.org.prazo_horas*36e5);
       r.row={cliente_id:cli?cli.id:null,cliente_nome:cli?cli.nome:"",cnpj,container:ct,bl,ce,tipo_bl:proprio?"Master":"Direto",navio,terminal:term,eta:eta&&eta.toISOString(),prazo_limite:r.prazo&&r.prazo.toISOString(),armazem:r.armazem,fonte:"siscarga",status:cli&&cli.excecao?"permanece":"detectado",cliente_pendente:!!proprio};
@@ -702,10 +711,10 @@ function buildImport(txt){const out=[];const seen=new Set(S.cargas.map(c=>c.cont
 
 /* ================= VIEW: CLIENTES ================= */
 function vClientes(){const q=S.busca.toLowerCase();const L=S.clientes.filter(c=>!q||(c.nome+c.cnpj).toLowerCase().includes(q));
-  return`<div class="ph"><div><span class="kick">CNPJS MONITORADOS</span><h1>Clientes</h1></div>${pode()?`<button class="btn" data-act="novoCli">${ic("plus",18)} Novo cliente</button>`:""}</div>
+  return`<div class="ph"><div><span class="kick">CNPJS MONITORADOS</span><h1>Clientes</h1></div>${pode()?`<button class="btn ghost" data-act="loteCli">Importar lista</button><button class="btn" data-act="novoCli">${ic("plus",18)} Novo cliente</button>`:""}</div>
   <section class="card" style="padding:8px 18px 14px">${L.map(c=>{const n=S.cargas.filter(x=>x.cliente_id===c.id&&ATIVAS.includes(x.status)).length;
     return`<button class="cli" data-act="editCli" data-id="${c.id}"><div class="who"><span class="av">${esc(c.nome.slice(0,1))}</span><div style="min-width:0"><b>${esc(c.nome)}</b><small>${esc(fmtCNPJ(c.cnpj))}${c.ativo===false?" · inativo":""}</small></div></div>
-    <div class="cell c2"><b>${esc(c.armazem_padrao||"—")}</b><small>armazém padrão</small></div><div class="cell c3">${c.excecao?`<span class="st permanece">Permanece no terminal</span>`:`<small>${esc(c.contato||"")}</small>`}</div><div class="cell" style="text-align:right"><b>${n}</b><small>ativos</small></div></button>`}).join("")||`<div class="empty">Nenhum cliente.</div>`}</section>`}
+    <div class="cell c2"><b>${esc(c.armazem_padrao||"—")}</b><small>armazém padrão</small></div><div class="cell c3">${c.excecao?`<span class="st permanece">Permanece no terminal</span>`:`<small>${esc(c.contato||"")}</small>`}</div><div class="cell" style="text-align:right"><b>${n}</b><small>ativos</small></div></button>`}).join("")||`<div class="empty">Nenhum cliente ainda. Cadastre um por um ou use <b>Importar lista</b> para colar todos de uma vez.</div>`}</section>`}
 
 /* ================= VIEW: HISTÓRICO ================= */
 function vHistorico(){const tab=S.histTab;
@@ -762,19 +771,40 @@ function detalhe(c){S.drawerId=c.id;const ed=pode(),st=c.status;const h=S.evento
   ${ed?`<div style="display:flex;gap:8px"><input class="inp" id="notaD" placeholder="Adicionar nota ao histórico…"><button class="btn sm" data-act="nota">Anotar</button></div>`:""}
   <h3 style="margin:22px 0 4px;font-size:17px">Histórico desta carga</h3><div class="hist">${h.map(evRow).join("")||`<div class="empty">Sem eventos.</div>`}</div>`}
 function seg(name,opts,cur,lab){return`<div class="seg" data-name="${name}">${opts.map(v=>`<button type="button" data-act="seg" data-v="${esc(v)}" class="${v===cur?"on":""}">${esc(lab?lab[v]||v:v)}</button>`).join("")}</div>`}
+const ARM_PFX={MSC:["MSCU","MEDU","MSDU","MSMU","MSNU","MSBU","FSCU"],Maersk:["MSKU","MAEU","MRKU","MRSU","MSWU","SUDU","MNBU"],"CMA CGM":["CMAU","CGMU","ECMU","APHU","APZU","CMCU"],"Hapag-Lloyd":["HLXU","HLBU","HAMU","UACU"],ONE:["ONEU","NYKU","MOLU","KKFU","KKTU"],COSCO:["CSNU","CBHU","CCLU","CSLU"],OOCL:["OOLU","OOCU"],Evergreen:["EGHU","EMCU","EISU","EITU"],ZIM:["ZIMU","ZCSU"],HMM:["HMMU","HDMU"],"Yang Ming":["YMLU","YMMU"]};
+function armadorDe(ct){const p=(ct||"").slice(0,4);for(const[k,v]of Object.entries(ARM_PFX))if(v.includes(p))return k;return""}
+function cliOpts(sel){return`<option value="">— escolher —</option>${pode()?`<option value="__novo">＋ Cadastrar novo cliente…</option>`:""}${S.clientes.filter(x=>x.ativo!==false).map(x=>`<option value="${x.id}" ${x.id===sel?"selected":""}>${esc(x.nome)} · ${esc(fmtCNPJ(x.cnpj))}</option>`).join("")}<option value="__master" ${sel==="__master"?"selected":""}>Master da comissária · cliente final pendente</option>`}
+function navioInfo(n){n=(n||"").trim().toLowerCase();if(!n)return null;return S.cargas.filter(c=>(c.navio||"").toLowerCase()===n&&c.eta).sort((a,b)=>new Date(b.updated_at||b.created_at)-new Date(a.updated_at||a.created_at))[0]||null}
+function navios(){const m=new Map();S.cargas.filter(c=>c.navio&&c.eta&&new Date(c.eta)>Date.now()-15*864e5).forEach(c=>m.set(c.navio,c));return[...m.keys()].sort()}
+function setSeg(f,name,v){f.querySelectorAll(`.seg[data-name="${name}"] button`).forEach(b=>b.classList.toggle("on",b.dataset.v===v))}
+function selCli(cli){const f=$("#fc");if(!f||!cli)return;f.querySelector('[name="cliente_id"]').innerHTML=cliOpts(cli.id);f.querySelector('[name="cnpj"]').value=fmtCNPJ(cli.cnpj);setSeg(f,"armazem",cli.armazem_padrao);f.querySelector('[name="cliente_pendente"]').checked=false;$("#qc").hidden=true;$("#cnpjHint").className="hint";$("#cnpjHint").textContent="→ "+cli.nome;fcRefresh()}
+function openQc(){const f=$("#fc");$("#qc").hidden=false;f.querySelector('[name="cliente_id"]').value="__novo";const c=f.querySelector('[name="cnpj"]').value;if(c&&!$("#qcCnpj").value)$("#qcCnpj").value=c;$("#qcMsg").textContent="";setTimeout(()=>$("#qcNome").focus(),30)}
+function parseLoteCli(txt){const ok=[],dup=[],bad=[];const seen=new Set(S.clientes.map(c=>normC(c.cnpj)));const arms=(S.org.armazens||[]).map(a=>a.toLowerCase());
+  txt.split(/\r?\n/).forEach((l,i)=>{if(!l.trim())return;const f=l.split(/\t|;/).map(x=>x.trim()).filter(Boolean);const ci=f.findIndex(x=>{const n=normC(x);return n.length===14&&/\d{2}$/.test(n)});
+    if(ci<0){if(/cnpj/i.test(l))return;bad.push(`linha ${i+1}: sem CNPJ de 14 dígitos`);return}
+    const cnpj=normC(f[ci]);const rest=f.filter((_,k)=>k!==ci);const ai=rest.findIndex(x=>arms.includes(x.toLowerCase()));const arm=ai>=0?S.org.armazens[arms.indexOf(rest[ai].toLowerCase())]:(S.org.armazens[0]||"Ecoporto");const nome=rest.filter((_,k)=>k!==ai)[0]||"";
+    if(!nome){bad.push(`linha ${i+1}: falta o nome`);return}if(!cnpjOk(cnpj)){bad.push(`linha ${i+1}: CNPJ ${fmtCNPJ(cnpj)} com dígito inválido`);return}
+    if(seen.has(cnpj)){dup.push(nome);return}seen.add(cnpj);ok.push({nome,cnpj,armazem_padrao:arm})});return{ok,dup,bad}}
+function formLoteCli(){return`<div class="dhead"><h3>Importar clientes</h3><button data-act="closeAll" class="icb">${ic("x")}</button></div>
+  <div class="form"><p class="muted" style="margin:0;font-size:13px;line-height:1.6">Cole da planilha ou do sistema: um cliente por linha, com <b>Nome</b> e <b>CNPJ</b> (em qualquer ordem). Armazém padrão é opcional. Separe por tab ou <b>;</b></p>
+  <label>Lista<textarea id="lote" rows="9" placeholder="Hyundai Steel;13.356.439/0001-01;Ecoporto&#10;Outra Importadora Ltda;11.444.777/0001-61"></textarea></label>
+  <div class="hint" id="loteMsg">Cole a lista acima.</div>
+  <div style="display:flex;gap:8px"><button class="btn" data-act="loteGo" style="flex:1" id="loteBtn" disabled>Cadastrar</button><button class="btn ghost" data-act="closeAll">Fechar</button></div></div>`}
 function formCarga(c){const o=S.org,isNew=!c;c=c||{tipo_container:"40HC",tipo_bl:"Direto",fonte:"manual",terminal:o.terminais[0],armazem:o.armazens[0]};
   const eta=c.eta?new Date(c.eta):new Date(Date.now()+4*864e5),ph=c.eta&&c.prazo_limite?Math.round((new Date(c.eta)-new Date(c.prazo_limite))/36e5):o.prazo_horas;
   const ymd=`${eta.getFullYear()}-${pad(eta.getMonth()+1)}-${pad(eta.getDate())}`;
   return`<div class="dhead"><h3>${isNew?"Nova carga":"Editar carga"}</h3><button data-act="closeAll" class="icb">${ic("x")}</button></div>
   <div class="form" id="fc" data-id="${c.id||""}">
-   <label>Cliente<select name="cliente_id"><option value="">— escolher —</option>${S.clientes.filter(x=>x.ativo!==false).map(x=>`<option value="${x.id}" ${x.id===c.cliente_id?"selected":""}>${esc(x.nome)}</option>`).join("")}<option value="__master" ${c.cliente_pendente?"selected":""}>Master da comissária · cliente final pendente</option></select></label>
-   <label>CNPJ<input name="cnpj" value="${esc(fmtCNPJ(c.cnpj||""))}" placeholder="00.000.000/0000-00"></label>
+   <label>Cliente<select name="cliente_id">${cliOpts(c.cliente_pendente&&!c.cliente_id?"__master":c.cliente_id)}</select></label>
+   <div class="qc" id="qc" hidden><b style="font-size:14px">Novo cliente</b><div class="row"><label>Nome / razão social<input id="qcNome" autocomplete="off"></label><label>CNPJ<input id="qcCnpj" placeholder="00.000.000/0000-00" inputmode="numeric"></label></div><span class="hint" id="qcMsg"></span><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn sm" data-act="qcSave">Salvar e usar nesta carga</button><button type="button" class="btn ghost sm" data-act="qcCancel">Cancelar</button></div></div>
+   <label><span>CNPJ <span style="font-weight:500">· escolhe o cliente sozinho</span></span><input name="cnpj" value="${esc(fmtCNPJ(c.cnpj||""))}" placeholder="00.000.000/0000-00" inputmode="numeric"></label><span class="hint" id="cnpjHint"></span>
    <label>${isNew?"Container(s) — vários? um por linha":"Container"}<textarea name="container" rows="${isNew?2:1}" placeholder="MSCU1234565">${esc(c.container||"")}</textarea><span class="hint" id="contMsg"></span></label>
    <div class="lbl">Tipo</div>${seg("tipo_container",["20DC","40DC","40HC","Reefer"],c.tipo_container)}
    <div class="row"><label>BL<input name="bl" value="${esc(c.bl||"")}"></label><label>CE-Mercante<input name="ce" inputmode="numeric" value="${esc(c.ce||"")}"></label></div>
    <div class="lbl">Tipo de BL</div>${seg("tipo_bl",["Direto","Master","House"],c.tipo_bl)}
-   <div class="row"><label>Navio<input name="navio" value="${esc(c.navio||"")}"></label><label>Viagem<input name="viagem" value="${esc(c.viagem||"")}"></label></div>
-   <label>Armador<input name="armador" value="${esc(c.armador||"")}" list="armL"><datalist id="armL">${["MSC","Maersk","CMA CGM","Hapag-Lloyd","ONE","COSCO","Evergreen","ZIM","HMM"].map(x=>`<option>${x}</option>`).join("")}</datalist></label>
+   <div class="row"><label>Navio<input name="navio" value="${esc(c.navio||"")}" list="navL" autocomplete="off"><datalist id="navL">${navios().map(n=>`<option>${esc(n)}</option>`).join("")}</datalist></label><label>Viagem<input name="viagem" value="${esc(c.viagem||"")}"></label></div>
+   <span class="hint" id="navHint"></span>
+   <label><span>Armador <span style="font-weight:500">· automático pelo container</span></span><input name="armador" value="${esc(c.armador||"")}" list="armL"><datalist id="armL">${Object.keys(ARM_PFX).map(x=>`<option>${x}</option>`).join("")}</datalist></label>
    <div class="lbl">Terminal de atracação</div>${seg("terminal",o.terminais,c.terminal)}
    <div class="row3"><label>ETA — data<input type="date" name="eta_d" value="${ymd}"></label><label>Hora<select name="eta_h">${Array.from({length:24},(_,i)=>`<option ${i===eta.getHours()?"selected":""}>${pad(i)}</option>`).join("")}</select></label><label>Min<select name="eta_m">${["00","15","30","45"].map(x=>`<option ${+x===Math.floor(eta.getMinutes()/15)*15?"selected":""}>${x}</option>`).join("")}</select></label></div>
    <label>Pedir o puxe até quantas horas antes da atracação?<input name="ph" type="number" min="0" value="${ph}"></label>
@@ -795,7 +825,7 @@ function fcVal(){const f=$("#fc"),g=n=>f.querySelector(`[name="${n}"]`),sv=n=>{c
 function fcRefresh(){const f=$("#fc");if(!f)return;const v=fcVal();
   $("#etaLine").innerHTML=v.eta?`→ Atracação <b>${fDT(v.eta)}</b> · prazo do puxe <b style="color:var(--acc)">${fDT(v.prazo)}</b> (${leftTxt((v.prazo-Date.now())/36e5)})`:"Informe a data de atracação";
   const bad=v.conts.filter(c=>!contOk(c));$("#contMsg").className="hint"+(bad.length?" w":"");$("#contMsg").textContent=v.conts.length?(bad.length?`Confira: ${bad.join(", ")} (dígito/formato não confere)`:`${v.conts.length} container${v.conts.length>1?"s":""} ✓`):"";
-  const cli=S.clientes.find(c=>c.id===v.cliente_id);$("#excMsg").textContent=cli&&cli.excecao?"Este cliente costuma permanecer no terminal: a carga entra como “Permanece”, sem alarme.":(v.cnpj&&!cnpjOk(v.cnpj)?"CNPJ com dígito inválido — confira.":"")}
+  const cli=S.clientes.find(c=>c.id===v.cliente_id);$("#excMsg").textContent=cli&&cli.excecao?"Este cliente costuma permanecer no terminal: a carga entra como “Permanece”, sem alarme.":""}
 
 /* ================= ALARM ================= */
 let AC=null,ringT=null;
@@ -853,7 +883,8 @@ const ACT={
   async saveCarga(){const v=fcVal(),id=$("#fc").dataset.id;const err=m=>{$("#fcErr").textContent=m};
     if(!v.conts.length)return err("Informe o container.");if(!v.eta)return err("Informe a data de atracação (ETA).");
     const master=v.cliente_id==="__master";const cli=S.clientes.find(c=>c.id===v.cliente_id);
-    if(!cli&&!master&&!v.cnpj)return err("Escolha o cliente ou informe o CNPJ.");
+    if(v.cliente_id==="__novo"&&!$("#qc").hidden)return err("Salve o novo cliente primeiro (botão “Salvar e usar nesta carga”).");
+    if(!cli&&!master){const m=S.clientes.find(c=>normC(c.cnpj)===v.cnpj);if(m)return selCli(m),err("Cliente selecionado pelo CNPJ — confira e salve de novo.");return err(v.cnpj?"Esse CNPJ não está cadastrado — use “Cadastrar como cliente”.":"Escolha o cliente ou digite o CNPJ.")}
     const base={cliente_id:cli?cli.id:null,cliente_nome:cli?cli.nome:"",cnpj:v.cnpj||(cli?normC(cli.cnpj):master?normC(S.org.cnpj_proprio):""),tipo_container:v.tipo_container,bl:v.bl,ce:v.ce,tipo_bl:master&&v.tipo_bl==="Direto"?"Master":v.tipo_bl,navio:v.navio,viagem:v.viagem,armador:v.armador,
       terminal:v.terminal,eta:v.eta.toISOString(),prazo_limite:v.prazo.toISOString(),armazem:v.armazem,fonte:v.fonte,cliente_pendente:master||v.cliente_pendente,obs:v.obs};
     let ok;if(id){ok=await run(()=>DB.updCarga(id,Object.assign(base,{container:v.conts[0]})),"Carga atualizada ✓");if(ok){openDrawer(detalhe(S.cargas.find(c=>c.id===id)));renderAll()}}
@@ -878,9 +909,24 @@ const ACT={
   snooze(){stopAlarm();LS.set("puxe-snooze",Date.now()+30*6e4);toast("Soneca: volta em 30 min")},
   async notif(){if(!("Notification"in window))return toast("Este navegador não suporta notificações");const p=await Notification.requestPermission();toast(p==="granted"?"Notificações ativadas ✓":"Notificações bloqueadas")},
   impEx(){$("#imp").value=[S.clientes[0],S.clientes[1],S.clientes[2]].filter(Boolean).map((c,i)=>{const p=["MSCU","HLXU","CMAU"][i]+String(400000+i*1371).padStart(6,"0");const d=new Date(Date.now()+(3+i)*864e5);return`${fmtCNPJ(c.cnpj)};${p+contDV(p)};15260${String(5100000000+i)};Sea Pioneer;${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} 06:00;BTP`}).join("\n")},
-  impPrev(){S.importRows=buildImport($("#imp").value);const v=$("#imp").value;renderAll();$("#imp").value=v},
-  async impGo(){const rows=S.importRows.filter(x=>x.ok).map(x=>x.row);if(await run(()=>DB.addCargas(rows),`${rows.length} carga${rows.length>1?"s":""} importada${rows.length>1?"s":""} ✓`)){S.importRows=null;renderAll();checkAlarm()}},
+  impPrev(){S.importText=$("#imp").value;S.importRows=buildImport(S.importText);renderAll()},
+  async impGo(){const rows=S.importRows.filter(x=>x.ok).map(x=>x.row);if(await run(()=>DB.addCargas(rows),`${rows.length} carga${rows.length>1?"s":""} importada${rows.length>1?"s":""} ✓`)){S.importRows=null;S.importText="";renderAll();checkAlarm()}},
   novoCli(){openDrawer(formCli())},
+  loteCli(){openDrawer(formLoteCli());setTimeout(()=>$("#lote").focus(),30)},
+  async loteGo(){const r=parseLoteCli($("#lote").value);if(!r.ok.length)return;if(await run(()=>DB.addClientes(r.ok),`${r.ok.length} cliente${r.ok.length>1?"s":""} cadastrado${r.ok.length>1?"s":""} ✓`)){closeAll();S.view="clientes";renderAll()}},
+  qcOpen(){openQc()},
+  qcCancel(){$("#qc").hidden=true;$("#fc [name=cliente_id]").value=""},
+  async qcSave(){const nome=$("#qcNome").value.trim(),cnpj=normC($("#qcCnpj").value),m=$("#qcMsg");m.className="hint b";
+    if(!nome){m.textContent="Falta o nome do cliente.";$("#qcNome").focus();return}
+    if(cnpj.length!==14){m.textContent=`O CNPJ precisa ter 14 dígitos (tem ${cnpj.length}).`;$("#qcCnpj").focus();return}
+    if(!cnpjOk(cnpj)){m.textContent="Dígito do CNPJ não confere — confira.";$("#qcCnpj").focus();return}
+    let cli=S.clientes.find(c=>normC(c.cnpj)===cnpj);
+    if(cli)toast("Esse CNPJ já estava cadastrado — selecionado");
+    else{const sv=$("#fc .seg[data-name=armazem] .on");if(!await run(()=>DB.saveCliente({nome,cnpj,armazem_padrao:sv?sv.dataset.v:(S.org.armazens[0]||"Ecoporto"),ativo:true,excecao:false}),"Cliente cadastrado ✓"))return;cli=S.clientes.find(c=>normC(c.cnpj)===cnpj)}
+    $("#qcNome").value="";$("#qcCnpj").value="";selCli(cli)},
+  async impCli(){const ins=[...document.querySelectorAll("[data-novocnpj]")].filter(i=>i.value.trim());if(!ins.length)return toast("Digite o nome de pelo menos um CNPJ");
+    const rows=ins.map(i=>({nome:i.value.trim(),cnpj:i.dataset.novocnpj,armazem_padrao:S.org.armazens[0]||"Ecoporto"}));
+    if(await run(()=>DB.addClientes(rows),`${rows.length} cliente${rows.length>1?"s":""} cadastrado${rows.length>1?"s":""} ✓`)){S.importRows=buildImport(S.importText||"");renderAll()}},
   editCli(t){const c=S.clientes.find(x=>x.id===t.dataset.id);if(c)openDrawer(formCli(c))},
   async saveCli(){const f=$("#fcl"),g=n=>f.querySelector(`[name="${n}"]`);const sv=f.querySelector('.seg[data-name="armazem_padrao"] .on');
     const o={id:f.dataset.id||undefined,nome:g("nome").value.trim(),cnpj:normC(g("cnpj").value),contato:g("contato").value.trim(),whatsapp:g("whatsapp").value.trim(),email:g("email").value.trim(),armazem_padrao:sv?sv.dataset.v:"Ecoporto",excecao:g("excecao").checked,ativo:g("ativo").checked,obs:g("obs").value.trim()};
@@ -911,10 +957,26 @@ function formCli(c){const isNew=!c;c=c||{armazem_padrao:"Ecoporto",ativo:true};
 document.addEventListener("click",e=>{const t=e.target.closest("[data-act]");if(!t)return;if(t.id==="ovl"&&e.target!==t)return;const f=ACT[t.dataset.act];if(f){e.preventDefault();f(t,e)}});
 document.addEventListener("input",e=>{const t=e.target;
   if(t.id==="q"||t.dataset.in==="busca"){S.busca=t.value;const pos=t.selectionStart,isQ=t.id==="q";if(isQ&&!["painel","cargas","clientes"].includes(S.view))S.view="cargas";renderAll();const n=isQ?$("#q"):document.querySelector('[data-in="busca"]');if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(_){}}return}
-  if(t.closest&&t.closest("#fc"))fcRefresh();
+  if(t.id==="lote"){const r=parseLoteCli(t.value);$("#loteMsg").className="hint"+(r.bad.length?" w":"");$("#loteMsg").innerHTML=`<b>${r.ok.length}</b> pronto${r.ok.length!==1?"s":""} para cadastrar`+(r.dup.length?` · ${r.dup.length} já cadastrado${r.dup.length>1?"s":""}`:"")+(r.bad.length?`<br>${r.bad.slice(0,5).map(esc).join("<br>")}`:"");$("#loteBtn").disabled=!r.ok.length;$("#loteBtn").textContent=r.ok.length?`Cadastrar ${r.ok.length}`:"Cadastrar";return}
+  if(t.closest&&t.closest("#fc")){const f=$("#fc");
+    if(t.name==="cnpj"){const v=normC(t.value),hn=$("#cnpjHint");hn.className="hint";hn.innerHTML="";
+      if(v.length===14){const m=S.clientes.find(c=>normC(c.cnpj)===v);
+        if(m){if(f.querySelector("[name=cliente_id]").value!==m.id)selCli(m)}
+        else if(S.org.cnpj_proprio&&normC(S.org.cnpj_proprio)===v){f.querySelector("[name=cliente_id]").value="__master";f.querySelector("[name=cliente_pendente]").checked=true;setSeg(f,"tipo_bl","Master");hn.textContent="→ CNPJ da própria comissária (master)"}
+        else if(cnpjOk(v)){hn.className="hint w";hn.innerHTML=`CNPJ não cadastrado.<button type="button" class="lnk" data-act="qcOpen">Cadastrar como cliente</button>`}
+        else{hn.className="hint b";hn.textContent="Dígito do CNPJ não confere — confira."}}}
+    if(t.name==="container"){const a=f.querySelector("[name=armador]"),first=(t.value.split(/[\s,;]+/).map(normC).filter(Boolean)[0])||"",ar=armadorDe(first);if(ar&&(!a.value||a.dataset.auto==="1")){a.value=ar;a.dataset.auto="1"}}
+    if(t.name==="armador")t.dataset.auto="";
+    if(t.name==="navio"&&!f.dataset.id){const i=navioInfo(t.value),nh=$("#navHint");nh.textContent="";
+      if(i){const g=n=>f.querySelector(`[name="${n}"]`),e=new Date(i.eta);if(!g("viagem").value)g("viagem").value=i.viagem||"";if(i.armador&&(!g("armador").value||g("armador").dataset.auto==="1"))g("armador").value=i.armador;if(i.terminal)setSeg(f,"terminal",i.terminal);
+        g("eta_d").value=`${e.getFullYear()}-${pad(e.getMonth()+1)}-${pad(e.getDate())}`;g("eta_h").value=pad(e.getHours());g("eta_m").value=pad(Math.floor(e.getMinutes()/15)*15);
+        if(i.eta&&i.prazo_limite)g("ph").value=Math.round((new Date(i.eta)-new Date(i.prazo_limite))/36e5);
+        nh.className="hint";nh.textContent=`✓ Navio já cadastrado: ETA, terminal e viagem preenchidos (${fDT(i.eta)} · ${i.terminal||""}).`}}
+    fcRefresh()}
   if(t.name==="cnpj"&&t.closest("#fcl")){const v=normC(t.value);$("#cnpjMsg").className="hint"+(v.length===14&&!cnpjOk(v)?" b":"");$("#cnpjMsg").textContent=v.length===14?(cnpjOk(v)?"CNPJ válido ✓":"Dígito do CNPJ não confere"):""}});
 document.addEventListener("change",async e=>{const t=e.target;
-  if(t.name==="cliente_id"&&t.closest("#fc")){const f=$("#fc");const cli=S.clientes.find(c=>c.id===t.value);
+  if(t.name==="cliente_id"&&t.closest("#fc")&&t.value==="__novo"){openQc();return}
+  if(t.name==="cliente_id"&&t.closest("#fc")){const f=$("#fc");const cli=S.clientes.find(c=>c.id===t.value);$("#qc").hidden=true;$("#cnpjHint").textContent="";
     if(cli){f.querySelector('[name="cnpj"]').value=fmtCNPJ(cli.cnpj);f.querySelectorAll('.seg[data-name="armazem"] button').forEach(b=>b.classList.toggle("on",b.dataset.v===cli.armazem_padrao));f.querySelector('[name="cliente_pendente"]').checked=false}
     if(t.value==="__master"){f.querySelector('[name="cnpj"]').value=fmtCNPJ(S.org.cnpj_proprio||"");f.querySelector('[name="cliente_pendente"]').checked=true;f.querySelectorAll('.seg[data-name="tipo_bl"] button').forEach(b=>b.classList.toggle("on",b.dataset.v==="Master"))}
     fcRefresh()}
