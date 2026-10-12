@@ -220,7 +220,7 @@ textarea.inp{min-height:130px;resize:vertical;font-family:ui-monospace,Menlo,mon
 .acts{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
 .form{display:flex;flex-direction:column;gap:12px}
 .form label{display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:600;color:var(--muted);min-width:0}
-.form label > input,.form label > select,.form label > textarea{padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card2);color:var(--ink);font-weight:400;font-size:14.5px;min-height:44px;outline:none;width:100%}
+.form label > input:not([type=checkbox]),.form label > select,.form label > textarea{padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card2);color:var(--ink);font-weight:400;font-size:14.5px;min-height:44px;outline:none;width:100%}
 .form textarea{resize:vertical;min-height:44px}
 .form .row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .form .row3{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:10px}
@@ -229,7 +229,7 @@ textarea.inp{min-height:130px;resize:vertical;font-family:ui-monospace,Menlo,mon
 .seg button{min-height:40px;padding:0 14px;border-radius:999px;background:var(--chip);font-size:13px;font-weight:500}
 .seg button.on{background:var(--pri);color:#fff}
 .chk{flex-direction:row!important;align-items:center;gap:10px!important;color:var(--ink)!important;font-weight:500!important;font-size:14px!important}
-.chk input{width:22px;height:22px;accent-color:var(--pri)}
+.chk input{width:22px;height:22px;min-height:0;flex:none;margin:0;accent-color:var(--pri)}
 .hint{font-size:12.5px;color:var(--muted);font-weight:500}
 .hint.w{color:var(--warn)}.hint.b{color:var(--bad)}
 .hist{margin-top:10px}
@@ -881,7 +881,9 @@ const ACT={
   editCli(t){const c=S.clientes.find(x=>x.id===t.dataset.id);if(c)openDrawer(formCli(c))},
   async saveCli(){const f=$("#fcl"),g=n=>f.querySelector(`[name="${n}"]`);const sv=f.querySelector('.seg[data-name="armazem_padrao"] .on');
     const o={id:f.dataset.id||undefined,nome:g("nome").value.trim(),cnpj:normC(g("cnpj").value),contato:g("contato").value.trim(),whatsapp:g("whatsapp").value.trim(),email:g("email").value.trim(),armazem_padrao:sv?sv.dataset.v:"Ecoporto",excecao:g("excecao").checked,ativo:g("ativo").checked,obs:g("obs").value.trim()};
-    if(!o.nome||o.cnpj.length!==14){$("#fclErr").textContent="Informe nome e CNPJ (14 caracteres).";return}
+    if(!o.nome){$("#fclErr").textContent="Falta o nome do cliente.";g("nome").focus();return}
+    if(o.cnpj.length!==14){$("#fclErr").textContent=`O CNPJ precisa ter 14 dígitos (tem ${o.cnpj.length}).`;g("cnpj").focus();return}
+    if(S.clientes.some(c=>normC(c.cnpj)===o.cnpj&&c.id!==o.id)){$("#fclErr").textContent="Esse CNPJ já está cadastrado.";return}
     if(!o.id)delete o.id;if(await run(()=>DB.saveCliente(o),"Cliente salvo ✓")){closeAll();renderAll()}},
   async saveOrg(){const f=$("#fo"),g=n=>f.querySelector(`[name="${n}"]`).value;const arr=s=>s.split(",").map(x=>x.trim()).filter(Boolean);
     const a=arr(g("alerta_horas")).map(Number).filter(n=>n>0);
