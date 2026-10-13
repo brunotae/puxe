@@ -388,6 +388,39 @@ textarea.inp{font-size:12px}
  .seg button{min-height:26px;font-size:11px}.form label,.form .lbl{font-size:10.5px}
  .ln b{font-size:11.5px}.ln small{font-size:10px}.grp-h h3{font-size:13px}.stat{font-size:11.5px}.note{font-size:11px}
 }
+/* módulos */
+.side{overflow-y:auto}.navh{font-size:9px;letter-spacing:.16em;color:var(--muted);font-weight:700;padding:10px 12px 3px}
+@media (max-height:860px){.side-art{display:none}}
+.kp4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 14px;min-width:0}
+.tile small{display:block;font-size:10.5px;color:var(--muted);font-weight:600}.tile b{display:block;font-family:"Cormorant Garamond",serif;font-size:28px;line-height:1.1;font-weight:600;font-variant-numeric:tabular-nums}.tile i{display:block;font-style:normal;font-size:10.5px;color:var(--muted)}
+.tile.bad b{color:var(--bad)}.tile.ok b{color:var(--ok)}
+.sect{margin-bottom:14px}.sect .card{overflow:hidden}
+.sect-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 16px 8px}.sect-h h3{margin:0;font-size:14px;margin-right:auto}
+.tbw{overflow-x:auto}
+.tb{width:100%;border-collapse:collapse;font-size:11.5px;font-variant-numeric:tabular-nums}
+.tb th{text-align:left;font-size:9.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600;padding:7px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tb td{padding:7px 10px;border-bottom:1px solid var(--line);white-space:nowrap;vertical-align:middle}
+.tb tr:last-child td{border-bottom:0}.tb tr.clk{cursor:pointer}.tb tr.clk:hover td{background:var(--card2)}
+.tb td small{display:block;color:var(--muted);font-size:10px}.tb .num{text-align:right}
+.sp{display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;white-space:nowrap}
+.sp.ok{background:var(--s-con);color:var(--s-con-i)}.sp.warn{background:var(--s-apr);color:var(--s-apr-i)}.sp.plan{background:var(--chip);color:var(--muted)}.sp.bad{background:var(--s-can);color:var(--s-can-i)}.sp.info{background:var(--s-det);color:var(--s-det-i)}
+.bars{display:flex;flex-direction:column;gap:7px;padding:4px 16px 14px}
+.br{display:grid;grid-template-columns:minmax(0,130px) minmax(0,1fr) 34px;gap:8px;align-items:center;font-size:11px}
+.br span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.br em{font-style:normal;text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.bar{height:8px;border-radius:4px;background:var(--chip);overflow:hidden}.bar i{display:block;height:100%;border-radius:0 4px 4px 0;background:var(--pri2)}
+.cols{display:flex;align-items:flex-end;gap:6px;height:130px;padding:6px 16px 0}
+.cols div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0}
+.cols em{font-style:normal;font-size:10px;font-weight:600;font-variant-numeric:tabular-nums}.cols i{display:block;width:100%;max-width:34px;background:var(--pri2);border-radius:4px 4px 0 0;min-height:2px}
+.cols-l{display:flex;gap:6px;padding:4px 16px 12px}.cols-l span{flex:1;text-align:center;font-size:9.5px;color:var(--muted);white-space:nowrap;overflow:hidden}
+.cgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.icard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.icard h3{margin:0;font-size:13.5px;display:flex;align-items:center;gap:8px}.icard p{margin:0;font-size:11.5px;color:var(--muted);line-height:1.55}
+.icard .kv{margin:4px 0 0}.icard .kv div{background:var(--card2)}
+.prog{height:6px;border-radius:3px;background:var(--chip);overflow:hidden;width:90px;display:inline-block;vertical-align:middle;margin-right:6px}.prog i{display:block;height:100%;background:var(--ok)}
+.rules td{white-space:normal;min-width:120px}
+@media (max-width:1100px){.cgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:860px){.kp4{grid-template-columns:repeat(2,minmax(0,1fr))}.cgrid{grid-template-columns:minmax(0,1fr)}.sheet{max-height:80vh;overflow-y:auto;display:grid!important;grid-template-columns:1fr 1fr}.sheet[hidden]{display:none!important}}
 /* rastreio de cargas */
 .cth,.ctr{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1.15fr) minmax(0,1fr) minmax(0,1.55fr) minmax(0,1fr) minmax(0,1.35fr) 112px minmax(0,.8fr);gap:10px;align-items:center}
 .cth{font-size:9.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600;padding:8px 6px;border-bottom:1px solid var(--line)}
@@ -562,6 +595,7 @@ dots:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle c
 sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
 moon:'<path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/>',
 check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',flag:'<path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/>',
+wh:'<path d="M3 10l9-6 9 6v10H3z"/><path d="M7 20v-6h10v6M7 17h10"/>',chart:'<path d="M4 20V11M10 20V5M16 20v-8M21 20H3"/>',plug:'<path d="M9 2v5M15 2v5M6 7h12v4a6 6 0 01-12 0zM12 17v5"/>',team:'<circle cx="8" cy="8" r="3"/><circle cx="16.5" cy="8.5" r="2.5"/><path d="M2.5 20c.6-3 2.9-5 5.5-5s4.9 2 5.5 5M14.5 15.3c.6-.2 1.3-.3 2-.3 2.6 0 4.4 1.8 5 4.5"/>',
 left:'<path d="M15 6l-6 6 6 6"/>',right:'<path d="M9 6l6 6-6 6"/>'};
 const ic=(n,s=20)=>`<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${IC[n]}</svg>`;
 
@@ -715,15 +749,19 @@ async function tick(){
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&S.mode)tick()});
 
 /* ================= RENDER: CHROME ================= */
-const NAV=[["painel","home","Painel","Dashboard"],["cargas","box","Cargas","Shipments"],["fila","puxe","Fila de Puxe","Redestination"],["captacao","radar","Captação","Data intake"],["clientes","users","Clientes","CNPJs"],["historico","clock","Histórico","Audit log"],["config","gear","Configurações","Settings"]];
+const NAV=[["#","OPERAÇÃO"],["painel","home","Painel","Dashboard"],["cargas","box","Cargas","Shipments"],["navios","ship","Navios","Vessel line-up"],["fila","puxe","Fila de Puxe","Redestination"],["alarmes","bell","Alarmes","Alerts & notices"],
+  ["#","CADASTROS"],["captacao","radar","Captação","Data intake"],["clientes","users","Clientes","CNPJs"],["armazens","wh","Armazéns","Warehouses"],
+  ["#","GESTÃO"],["relatorios","chart","Relatórios","Reports"],["equipe","team","Equipe","Team"],["historico","clock","Histórico","Audit log"],
+  ["#","SISTEMA"],["integracoes","plug","Integrações","Integrations"],["config","gear","Configurações","Settings"]];
+const MAIS=["navios","captacao","armazens","clientes","relatorios","equipe","historico","integracoes","config"];
 function counts(){const pend=S.cargas.filter(c=>PEND.includes(c.status));return{det:S.cargas.filter(c=>c.status==="detectado").length,fila:S.cargas.filter(c=>c.status==="aprovado").length,
   crit:pend.filter(c=>["vencido","critico"].includes(nivel(c))).length,alarm:pend.filter(c=>["vencido","critico","alerta"].includes(nivel(c))).length}}
 function renderChrome(){
   const k=counts();
   $("#orgTag").innerHTML=`${esc(S.org.nome)}<br><span style="font-size:11.5px">Porto de Santos</span>`;
-  $("#nav").innerHTML=NAV.map(([v,i,t,s])=>`<button data-act="nav" data-v="${v}" class="${S.view===v?"on":""}">${ic(i,22)}<span><b>${t}</b><small>${s}</small></span>${v==="fila"&&k.fila?`<span class="cnt">${k.fila}</span>`:v==="painel"&&k.crit?`<span class="cnt">${k.crit}</span>`:""}</button>`).join("");
-  const bn=[["painel","home","Painel"],["cargas","box","Cargas"],["fila","puxe","Puxe"],["captacao","radar","Captação"],["mais","dots","Mais"]];
-  $("#bnav").innerHTML=bn.map(([v,i,t])=>`<button data-act="${v==="mais"?"mais":"nav"}" data-v="${v}" class="${S.view===v||(v==="mais"&&["clientes","historico","config"].includes(S.view))?"on":""}">${ic(i,22)}${t}${v==="fila"&&k.fila?`<span class="cnt">${k.fila}</span>`:v==="painel"&&k.crit?`<span class="cnt">${k.crit}</span>`:""}</button>`).join("");
+  $("#nav").innerHTML=NAV.map(([v,i,t,s])=>v==="#"?`<div class="navh">${i}</div>`:`<button data-act="nav" data-v="${v}" class="${S.view===v?"on":""}">${ic(i,22)}<span><b>${t}</b><small>${s}</small></span>${v==="fila"&&k.fila?`<span class="cnt">${k.fila}</span>`:v==="painel"&&k.crit?`<span class="cnt">${k.crit}</span>`:v==="alarmes"&&k.alarm?`<span class="cnt">${k.alarm}</span>`:""}</button>`).join("");
+  const bn=[["painel","home","Painel"],["cargas","box","Cargas"],["fila","puxe","Puxe"],["alarmes","bell","Alarmes"],["mais","dots","Mais"]];
+  $("#bnav").innerHTML=bn.map(([v,i,t])=>`<button data-act="${v==="mais"?"mais":"nav"}" data-v="${v}" class="${S.view===v||(v==="mais"&&MAIS.includes(S.view))?"on":""}">${ic(i,22)}${t}${v==="fila"&&k.fila?`<span class="cnt">${k.fila}</span>`:v==="painel"&&k.crit?`<span class="cnt">${k.crit}</span>`:""}</button>`).join("");
   document.querySelector(".srch").innerHTML=`${ic("search",18)}<input id="q" placeholder="Container, cliente, BL, CE, navio…" autocomplete="off" value="${esc(S.busca)}">`;
   $("#bell").innerHTML=ic("bell")+(k.alarm?`<span class="dot">${k.alarm}</span>`:"");
   $("#themeBtn").innerHTML=ic(isDark()?"sun":"moon");
@@ -732,7 +770,7 @@ function renderChrome(){
   const nm=nomeUser();
   $("#me").innerHTML=`<span class="av">${esc((nm||"?").slice(0,1).toUpperCase())}</span><div><b>${esc(nm)}</b><small>${{admin:"Admin",operador:"Operador",consulta:"Consulta"}[p]||p}</small></div>`;
 }
-function renderAll(){renderChrome();const f={painel:vPainel,cargas:vCargas,fila:vFila,captacao:vCaptacao,clientes:vClientes,historico:vHistorico,config:vConfig}[S.view]||vPainel;$("#main").innerHTML=f()}
+function renderAll(){renderChrome();const f={painel:vPainel,cargas:vCargas,fila:vFila,captacao:vCaptacao,clientes:vClientes,historico:vHistorico,config:vConfig,navios:vNavios,alarmes:vAlarmes,armazens:vArmazens,relatorios:vRelatorios,equipe:vEquipe,integracoes:vIntegracoes}[S.view]||vPainel;$("#main").innerHTML=f()}
 
 /* ================= COMPONENTS ================= */
 const SEQ=["detectado","aprovado","solicitado","confirmado","armazenado"],SEQL=["Detectado","Aprovado","Solicitado","Confirmado","Armazenado"];
@@ -845,7 +883,125 @@ function respList(c,r){const p=x=>x?`${esc(x.by||"—")} <small>· ${fS(x.at)}</
   const ak=r.acks.length?r.acks.map(a=>`${esc(a.user_nome||"—")} <small>· ${esc(a.detalhe||"")} · ${fS(a.created_at)}</small>`).join("<br>"):`<small>—</small>`;
   return`<dl class="rs"><dt>Captou</dt><dd>${esc(r.captado.by)} <small>· ${fS(r.captado.at)} · ${esc(r.captado.como)}${r.captado.det?" · "+esc(r.captado.det):""}</small></dd>
   <dt>Alarmes</dt><dd>${al}</dd><dt>Viu/agiu</dt><dd>${ak}</dd><dt>Avisos</dt><dd>${av||`<small>nenhum</small>`}</dd>
-  <dt>Aprovou</dt><dd>${p(r.aprovado)}</dd><dt>Solicitou</dt><dd>${p(r.solicitado)}${c.protocolo?` <small>· prot. ${esc(c.protocolo)}</small>`:""}</dd><dt>Confirmou</dt><dd>${p(r.confirmado)}</dd><dt>Armazenado</dt><dd>${p(r.armazenado)}</dd>${r.permanece?`<dt>Permanece</dt><dd>${p(r.permanece)}</dd>`:""}${r.cancelado?`<dt>Cancelou</dt><dd>${p(r.cancelado)}</dd>`:""}</dl>`}
+  <dt>Aprovou</dt><dd>${p(r.aprovado)}</dd><dt>Solicitou</dt><dd>${p(r.solicitado)}${c.protocolo?` <small>· prot. ${esc(c.protocolo)}</small>`:""}</dd><dt>Confirmou</dt><dd>${p(r.confirmado)}</dd><dt>Armazenado</dt><dd>${p(r.armazenado)}</dd>${r.permanece?`<dt>Permanece</dt><dd>${p(r.permanece)}</dd>`:""}${r.cancelado?`<dt>Cancelou</dt><dd>${p(r.cancelado)}</dd>`:""}${(()=>{const x=indic(c,r);return`<dt>Indicadores</dt><dd>captado <b>${fH(x.ant)}</b> antes do prazo<br>reação ao 1º alarme: <b>${x.reac==null?"—":fMin(x.reac)}</b><br>${x.marg==null?(["permanece","cancelado"].includes(c.status)?"sem puxe (não se aplica)":`<span class="${hLeft(c)<0?"bad-t":""}">puxe ainda não pedido</span>`):x.marg>=0?`puxe pedido <b>${fH(x.marg)}</b> antes do prazo`:`<span class="bad-t">puxe pedido ${fH(-x.marg)} DEPOIS do prazo</span>`}</dd>`})()}</dl>`}
+function fH(h){if(h==null||isNaN(h))return"—";const a=Math.abs(h);return a>=48?`${Math.floor(a/24)}d ${Math.round(a%24)}h`:`${Math.round(a)}h`}
+function fMin(m){if(m==null)return"—";return m<60?`${Math.round(m)} min`:m<1440?`${Math.floor(m/60)}h${pad(Math.round(m%60))}`:`${(m/1440).toFixed(1)} dias`}
+function indic(c,r){const pz=new Date(c.prazo_limite);const ant=(pz-new Date(r.captado.at))/36e5;let reac=null;const a1=r.alarmes[0];
+  if(a1){const nx=evDe(c).find(x=>new Date(x.created_at)>new Date(a1.created_at)&&["alarme_ack","aviso","status"].includes(x.tipo));if(nx)reac=(new Date(nx.created_at)-new Date(a1.created_at))/6e4}
+  return{ant,reac,marg:r.solicitado?(pz-new Date(r.solicitado.at))/36e5:null}}
+function reacoes(){const byC={},out=[];S.eventos.forEach(e=>{(byC[e.carga_id]=byC[e.carga_id]||[]).push(e)});
+  Object.values(byC).forEach(L=>{L.sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));L.forEach((e,i)=>{if(e.tipo!=="alarme")return;const nx=L.slice(i+1).find(x=>["alarme_ack","aviso","status"].includes(x.tipo));out.push({e,nx,min:nx?(new Date(nx.created_at)-new Date(e.created_at))/6e4:null})})});return out}
+const avg=a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:null;
+const BOTS=["Siscarga (robô)","Leitor de e-mail","sistema",""];
+function tiles(T){return`<div class="kp4">${T.map(t=>`<div class="tile ${t[3]||""}"><small>${t[0]}</small><b>${t[1]}</b><i>${t[2]||""}</i></div>`).join("")}</div>`}
+function barsH(L,max){max=max||Math.max(1,...L.map(x=>x[1]));return`<div class="bars">${L.map(([l,v,t])=>`<div class="br" title="${esc(l)}: ${v}"><span>${esc(l)}</span><div class="bar"><i style="width:${Math.max(2,v/max*100)}%"></i></div><em>${t==null?v:t}</em></div>`).join("")||`<div class="empty">Sem dados.</div>`}</div>`}
+function situacao(c){if(["cancelado","permanece"].includes(c.status))return"na";const r=resp(c),pz=new Date(c.prazo_limite);if(r.solicitado)return new Date(r.solicitado.at)<=pz?"ok":"tarde";if(["solicitado","confirmado","armazenado"].includes(c.status))return"ok";return pz<Date.now()?"perdido":"aberto"}
+
+/* ================= VIEW: NAVIOS ================= */
+function vNavios(){const now=Date.now();const G={};S.cargas.filter(c=>c.status!=="cancelado"&&c.eta&&new Date(c.eta)>now-4*864e5).forEach(c=>{const k=(c.navio||"—")+"|"+(c.viagem||"");(G[k]=G[k]||[]).push(c)});
+  const L=Object.entries(G).map(([k,cs])=>({k,cs,eta:new Date(cs[0].eta),pz:Math.min(...cs.filter(c=>PEND.includes(c.status)).map(c=>new Date(c.prazo_limite).getTime()))})).sort((a,b)=>a.eta-b.eta);
+  const tot=L.reduce((s,g)=>s+g.cs.length,0),pend=L.reduce((s,g)=>s+g.cs.filter(c=>PEND.includes(c.status)).length,0);
+  return`<div class="ph"><div><span class="kick">VESSEL LINE-UP</span><h1>Navios</h1></div></div>
+  ${tiles([["Navios na janela",L.length,"atracados há até 4 dias + próximos"],["Containers",tot,"nestes navios"],["Sem puxe",pend,"detectados ou na fila",pend?"bad":""],["Próxima atracação",L.find(g=>g.eta>now)?fS(L.find(g=>g.eta>now).eta):"—",L.find(g=>g.eta>now)?esc(L.find(g=>g.eta>now).cs[0].navio):""]])}
+  <section class="card sect"><div class="tbw"><table class="tb"><thead><tr><th>Navio · viagem</th><th>Armador</th><th>Porto · terminal</th><th>ETA</th><th>Próximo prazo</th><th class="num">Ctrs</th><th>Clientes</th><th>Puxes</th><th>Situação</th></tr></thead><tbody>
+  ${L.map(g=>{const c0=g.cs[0],ok=g.cs.filter(c=>["solicitado","confirmado","armazenado","permanece"].includes(c.status)).length,n=g.cs.length,p=g.cs.filter(c=>PEND.includes(c.status)),crit=p.some(c=>["vencido","critico"].includes(nivel(c)));
+   const cl=[...new Set(g.cs.map(cliName))];const at=g.eta<now;
+   return`<tr class="clk" data-act="navioGo" data-n="${esc(c0.navio||"")}"><td><b>${esc(c0.navio||"—")}</b> ${esc(c0.viagem||"")}</td><td>${esc(c0.armador||"—")}</td><td>${esc(c0.porto||"Santos")} · ${esc(c0.terminal||"—")}</td>
+   <td>${fS(g.eta)}<small>${at?"atracado":leftTxt((g.eta-now)/36e5).replace("vence em","em")}</small></td><td>${isFinite(g.pz)?fS(g.pz):"—"}${isFinite(g.pz)?`<small class="${g.pz<now?"bad-t":""}">${leftTxt((g.pz-now)/36e5)}</small>`:"<small>nada pendente</small>"}</td>
+   <td class="num"><b>${n}</b></td><td>${esc(cl.slice(0,2).join(", "))}${cl.length>2?` <small>+${cl.length-2}</small>`:""}</td>
+   <td><span class="prog"><i style="width:${ok/n*100}%"></i></span>${ok}/${n}</td><td>${p.length?`<span class="sp ${crit?"bad":"warn"}">${p.length} sem puxe</span>`:`<span class="sp ok">ok</span>`}</td></tr>`}).join("")||`<tr><td colspan="9" class="empty">Nenhum navio na janela.</td></tr>`}
+  </tbody></table></div></section>
+  <p class="muted" style="font-size:10.5px;margin:0">Toque num navio para ver os containers dele. Fase 2: ETA e atracação atualizados sozinhos pelo rastreio do armador e line-up do terminal.</p>`}
+
+/* ================= VIEW: ALARMES ================= */
+function vAlarmes(){const now=Date.now(),day=new Date();day.setHours(0,0,0,0);
+  const R=reacoes(),R30=R.filter(x=>new Date(x.e.created_at)>now-30*864e5&&x.min!=null);
+  const pend=S.cargas.filter(c=>PEND.includes(c.status)&&["vencido","critico","alerta"].includes(nivel(c))).sort(byPrazo);
+  const semAviso=pend.filter(c=>["vencido","critico"].includes(nivel(c))&&!S.eventos.some(e=>e.carga_id===c.id&&e.tipo==="aviso"));
+  const hoje=S.eventos.filter(e=>e.tipo==="alarme"&&new Date(e.created_at)>=day).length;
+  const T=S.alTipo||"todos",U=S.alUser||"";
+  const log=S.eventos.filter(e=>["alarme","aviso","alarme_ack"].includes(e.tipo)).filter(e=>T==="todos"||e.tipo===T).filter(e=>!U||e.user_nome===U||e.destinatario===U).slice(0,250);
+  const pessoas=[...new Set(S.eventos.filter(e=>["alarme","aviso","alarme_ack"].includes(e.tipo)).map(e=>e.user_nome))].filter(x=>!BOTS.includes(x)).sort();
+  const rx=new Map(R.map(x=>[x.e,x]));
+  return`<div class="ph"><div><span class="kick">ALERTS & NOTICES</span><h1>Alarmes</h1></div><button class="btn ghost sm" data-act="testAlarm">Testar alarme</button></div>
+  ${tiles([["Alarmes hoje",hoje,"disparados no app"],["Precisam de ação",pend.length,"≤48h, ≤24h ou vencidos sem puxe",pend.length?"bad":""],["Críticos sem aviso",semAviso.length,"ninguém avisou o cliente",semAviso.length?"bad":"ok"],["Tempo médio de reação",fMin(avg(R30.map(x=>x.min))),"alarme → 1ª ação (30 dias)"]])}
+  <section class="card sect"><div class="sect-h"><h3>Precisam de ação agora</h3><span class="muted" style="font-size:11px">ordenado pelo prazo</span></div><div class="tbw"><table class="tb"><thead><tr><th>Container</th><th>Cliente</th><th>Armazém</th><th>Prazo</th><th class="num">Alarmes</th><th>Último alarme</th><th>Avisos</th><th></th></tr></thead><tbody>
+  ${pend.map(c=>{const r=resp(c),la=r.alarmes[r.alarmes.length-1];return`<tr><td><b>${esc(c.container)}</b><small>${esc(c.navio||"")}</small></td><td>${esc(cliName(c))}</td><td>${esc(c.armazem||"—")}</td><td>${fS(c.prazo_limite)} ${cdChip(c)}</td><td class="num">${r.alarmes.length}</td><td>${la?`${fS(la.created_at)}<small>→ ${esc(la.destinatario||la.user_nome||"")}</small>`:"—"}</td>
+  <td>${r.avisos.length?`<span class="sp ok">${r.avisos.length} aviso${r.avisos.length>1?"s":""}</span><small>${esc(CANAL[r.avisos[r.avisos.length-1].canal]||"")} → ${esc((r.avisos[r.avisos.length-1].destinatario||"").split(" <")[0])}</small>`:`<span class="sp bad">ninguém avisado</span>`}</td>
+  <td><button class="btn ghost sm" data-act="openAviso" data-id="${c.id}">Registrar aviso</button> <button class="btn sm" data-act="openCarga" data-id="${c.id}">Abrir</button></td></tr>`}).join("")||`<tr><td colspan="8" class="empty">Nada crítico agora ✓</td></tr>`}</tbody></table></div></section>
+  <section class="card sect"><div class="sect-h"><h3>Regras de escalonamento</h3><span class="sp warn">proposta · ajustar com o Luis</span></div><div class="tbw"><table class="tb rules"><thead><tr><th>Nível</th><th>Quando</th><th>Quem recebe</th><th>Como</th><th>Repetição</th></tr></thead><tbody>
+   <tr><td><span class="cd atencao"><i></i>Atenção</span></td><td>≤ 72h do prazo</td><td>Operador do cliente</td><td>App <span class="sp ok">ativo</span></td><td>1× ao dia</td></tr>
+   <tr><td><span class="cd alerta"><i></i>Alerta</span></td><td>≤ 48h</td><td>Todos os operadores</td><td>App <span class="sp ok">ativo</span> · e-mail <span class="sp plan">fase 2</span></td><td>a cada 4h</td></tr>
+   <tr><td><span class="cd critico"><i></i>Crítico</span></td><td>≤ 24h</td><td>Operadores + supervisor</td><td>App tocando até agir <span class="sp ok">ativo</span> · WhatsApp <span class="sp plan">fase 2</span></td><td>a cada minuto no app</td></tr>
+   <tr><td><span class="cd vencido"><i></i>Vencido</span></td><td>prazo passou sem puxe</td><td>Todos + dono (Luis)</td><td>App · WhatsApp · e-mail ao cliente <span class="sp plan">fase 2</span></td><td>contínuo até resolver</td></tr>
+  </tbody></table></div><p class="muted" style="font-size:10.5px;margin:0;padding:8px 16px 12px">Hoje o alarme toca no app aberto, para todos os usuários, e cada exibição e reação fica registrada. Envio automático por e-mail/WhatsApp com confirmação de entrega entra na fase 2.</p></section>
+  <section class="card sect"><div class="sect-h"><h3>Registro de alarmes e avisos</h3>
+   ${[["todos","Tudo"],["alarme","Alarmes"],["alarme_ack","Reações"],["aviso","Avisos"]].map(([v,l])=>`<button class="btn ${T===v?"":"ghost"} sm" data-act="alTipo" data-v="${v}">${l}</button>`).join("")}
+   <select class="inp" style="width:auto;min-height:28px;padding:2px 8px" data-sel="alUser"><option value="">Todas as pessoas</option>${pessoas.map(x=>`<option ${x===U?"selected":""}>${esc(x)}</option>`).join("")}</select></div>
+   <div class="tbw"><table class="tb"><thead><tr><th>Data/hora</th><th>Tipo</th><th>Container</th><th>Cliente</th><th>Nível</th><th>Canal</th><th>Para quem</th><th>Por</th><th>Reação</th></tr></thead><tbody>
+   ${log.map(e=>{const c=S.cargas.find(x=>x.id===e.carga_id)||{},x=rx.get(e);return`<tr class="clk" data-act="openCarga" data-id="${e.carga_id}"><td>${fS(e.created_at)}</td><td>${e.tipo==="alarme"?`<span class="sp bad">alarme</span>`:e.tipo==="aviso"?`<span class="sp info">aviso</span>`:`<span class="sp warn">reação</span>`}</td><td><b>${esc(e.container||"")}</b></td><td>${esc(c.id?cliName(c):"")}</td><td>${esc(e.nivel||"")}</td><td>${esc(CANAL[e.canal]||e.canal||"")}</td><td>${esc(e.destinatario||(e.tipo==="alarme_ack"?"":"—"))}</td><td>${esc(e.user_nome||"")}${e.detalhe&&e.tipo!=="alarme"?`<small>${esc(e.detalhe)}</small>`:""}</td>
+   <td>${e.tipo!=="alarme"?"":x&&x.nx?`${fMin(x.min)}<small>${esc(x.nx.user_nome||"")} · ${esc(x.nx.tipo==="status"?evTxt(x.nx):x.nx.tipo==="aviso"?"avisou":x.nx.detalhe||"")}</small>`:`<span class="sp bad">sem reação</span>`}</td></tr>`}).join("")||`<tr><td colspan="9" class="empty">Nenhum registro.</td></tr>`}</tbody></table></div></section>`}
+
+/* ================= VIEW: ARMAZÉNS ================= */
+function vArmazens(){const m0=new Date();m0.setDate(1);m0.setHours(0,0,0,0);
+  return`<div class="ph"><div><span class="kick">WAREHOUSES</span><h1>Armazéns</h1></div></div>
+  <div class="cgrid">${(S.org.armazens||[]).map(a=>{const L=S.cargas.filter(c=>c.armazem===a&&c.status!=="cancelado");const at=L.filter(c=>ATIVAS.includes(c.status)),fila=L.filter(c=>c.status==="aprovado").length,sol=L.filter(c=>c.status==="solicitado").length;
+   const mes=L.filter(c=>{const r=resp(c);return r.solicitado&&new Date(r.solicitado.at)>=m0}).length;
+   const t=avg(L.map(c=>{const r=resp(c);return r.solicitado&&r.confirmado?(new Date(r.confirmado.at)-new Date(r.solicitado.at))/6e4:null}).filter(x=>x!=null));
+   const cl=S.clientes.filter(c=>c.armazem_padrao===a).length;
+   return`<div class="icard"><h3>${ic("wh",16)} ${esc(a)}</h3><div class="kv"><div><small>Em andamento</small><b>${at.length}</b></div><div><small>Na fila p/ solicitar</small><b>${fila}</b></div><div><small>Aguardando confirmação</small><b>${sol}</b></div><div><small>Puxes no mês</small><b>${mes}</b></div><div><small>Solicitado → confirmado</small><b>${fMin(t)}</b></div><div><small>Clientes com este padrão</small><b>${cl}</b></div></div>
+   <p>Solicitação: <b>manual no portal</b> · robô automático <span class="sp plan">fase 3</span></p>${fila?`<button class="btn sm" data-act="nav" data-v="fila" style="align-self:flex-start">Ver ${fila} na fila</button>`:""}</div>`}).join("")}</div>`}
+
+/* ================= VIEW: RELATÓRIOS ================= */
+function vRelatorios(){const P=S.rper||30,now=Date.now(),since=P==="tudo"?0:now-P*864e5;
+  const L=S.cargas.filter(c=>new Date(c.created_at||0)>=since&&c.status!=="cancelado");const sit=L.map(situacao);
+  const ok=sit.filter(s=>s==="ok").length,tarde=sit.filter(s=>s==="tarde").length,perd=sit.filter(s=>s==="perdido").length,dec=ok+tarde+perd;
+  const custo=+LS.get("puxe-custo",1500)||0;
+  const ant=avg(L.map(c=>(new Date(c.prazo_limite)-new Date(resp(c).captado.at))/36e5).filter(x=>!isNaN(x)));
+  const R=reacoes().filter(x=>new Date(x.e.created_at)>=since&&x.min!=null);
+  const wk=[];for(let i=7;i>=0;i--){const a=new Date(now-i*7*864e5);a.setHours(0,0,0,0);a.setDate(a.getDate()-a.getDay());const b=new Date(a.getTime()+7*864e5);wk.push([`${pad(a.getDate())}/${pad(a.getMonth()+1)}`,S.cargas.filter(c=>{const t=new Date(c.created_at);return t>=a&&t<b}).length])}
+  const wmax=Math.max(1,...wk.map(x=>x[1]));
+  const cnt=(arr,f)=>{const m={};arr.forEach(c=>{const k=f(c);m[k]=(m[k]||0)+1});return Object.entries(m).sort((a,b)=>b[1]-a[1])};
+  const porCli=cnt(L,cliName).slice(0,8),porArm=cnt(L,c=>c.armazem||"—"),porFonte=cnt(L,c=>FONTE[c.fonte]||c.fonte);
+  const cliRows=[...new Set(L.map(cliName))].map(n=>{const X=L.filter(c=>cliName(c)===n),s=X.map(situacao);return[n,X.length,s.filter(x=>x==="ok").length,s.filter(x=>x==="tarde"||x==="perdido").length,X.reduce((t,c)=>t+S.eventos.filter(e=>e.carga_id===c.id&&e.tipo==="aviso").length,0)]}).sort((a,b)=>b[1]-a[1]);
+  return`<div class="ph"><div><span class="kick">REPORTS</span><h1>Relatórios</h1></div>${[[30,"30 dias"],[90,"90 dias"],["tudo","Tudo"]].map(([v,l])=>`<button class="btn ${P===v?"":"ghost"} sm" data-act="rper" data-v="${v}">${l}</button>`).join("")}<button class="btn ghost sm" data-act="csv">Exportar CSV</button></div>
+  ${tiles([["Containers captados",L.length,P==="tudo"?"desde o início":`últimos ${P} dias`],["Puxe no prazo",dec?Math.round(ok/dec*100)+"%":"—",`${ok} de ${dec} com prazo vencido`,"ok"],["Perdidos / atrasados",perd+tarde,`${perd} sem puxe · ${tarde} pedidos depois`,perd+tarde?"bad":""],["Economia estimada",(ok*custo).toLocaleString("pt-BR",{style:"currency",currency:"BRL",maximumFractionDigits:0}),`${ok} puxes × R$ ${custo.toLocaleString("pt-BR")} (ajustável)`]])}
+  ${tiles([["Antecedência média",fH(ant),"captação → prazo do puxe"],["Reação média ao alarme",fMin(avg(R.map(x=>x.min))),`${R.length} alarmes com reação`],["Avisos enviados",S.eventos.filter(e=>e.tipo==="aviso"&&new Date(e.created_at)>=since).length,"e-mail, WhatsApp, telefone"],["Em andamento agora",S.cargas.filter(c=>ATIVAS.includes(c.status)).length,`${S.cargas.filter(c=>PEND.includes(c.status)).length} ainda sem puxe`]])}
+  <div class="two">
+   <section class="card sect"><div class="sect-h"><h3>Containers captados por semana</h3><span class="muted" style="font-size:10.5px">últimas 8 semanas</span></div><div class="cols">${wk.map(([l,v])=>`<div title="Semana de ${l}: ${v}"><em>${v}</em><i style="height:${v/wmax*100}%"></i></div>`).join("")}</div><div class="cols-l">${wk.map(([l])=>`<span>${l}</span>`).join("")}</div></section>
+   <section class="card sect"><div class="sect-h"><h3>Por armazém de destino</h3></div>${barsH(porArm)}</section>
+   <section class="card sect"><div class="sect-h"><h3>Top clientes</h3></div>${barsH(porCli)}</section>
+   <section class="card sect"><div class="sect-h"><h3>Como as cargas foram captadas</h3></div>${barsH(porFonte)}<p class="muted" style="font-size:10.5px;margin:0;padding:0 16px 12px">Quanto mais Siscarga/e-mail automático, menos depende de alguém lembrar.</p></section>
+  </div>
+  <section class="card sect"><div class="sect-h"><h3>Desempenho por cliente</h3></div><div class="tbw"><table class="tb"><thead><tr><th>Cliente</th><th class="num">Containers</th><th class="num">Puxe no prazo</th><th class="num">Perdidos/atrasados</th><th class="num">Avisos enviados</th></tr></thead><tbody>${cliRows.map(r=>`<tr><td>${esc(r[0])}</td><td class="num">${r[1]}</td><td class="num">${r[2]}</td><td class="num">${r[3]?`<span class="bad-t">${r[3]}</span>`:0}</td><td class="num">${r[4]}</td></tr>`).join("")||`<tr><td colspan="5" class="empty">Sem dados.</td></tr>`}</tbody></table></div></section>
+  <p class="muted" style="font-size:10.5px;margin:0">Custo médio evitado por container: <input class="inp" style="width:110px;min-height:26px;padding:2px 8px;display:inline-block" type="number" min="0" step="100" value="${custo}" data-sel="custo"> R$ — valor de referência para a estimativa; ajuste com o número real da DLT.</p>`}
+
+/* ================= VIEW: EQUIPE ================= */
+function vEquipe(){const R=reacoes();const nomes=[...new Set([...S.eventos.map(e=>e.user_nome),...S.eventos.map(e=>e.tipo==="alarme"?e.destinatario:null),...(S.perfis||[]).map(p=>p.nome)])].filter(x=>x&&!BOTS.includes(x)).sort();
+  const papelDe=n=>{const p=(S.perfis||[]).find(x=>x.nome===n);if(p)return p.papel;return S.mode==="demo"?({Luis:"admin",Carla:"operador",Pedro:"operador"}[n]||"operador"):"—"};
+  const st=(n,s)=>S.eventos.filter(e=>e.tipo==="status"&&e.user_nome===n&&new RegExp("→ "+s+"\\b").test(e.detalhe||"")).length;
+  const rows=nomes.map(n=>{const rec=S.eventos.filter(e=>e.tipo==="alarme"&&e.destinatario===n).length,ack=S.eventos.filter(e=>e.tipo==="alarme_ack"&&e.user_nome===n).length,av=S.eventos.filter(e=>e.tipo==="aviso"&&e.user_nome===n).length;
+    const rm=avg(R.filter(x=>x.e.destinatario===n&&x.nx&&x.nx.user_nome===n).map(x=>x.min));const last=S.eventos.filter(e=>e.user_nome===n).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];
+    return{n,p:papelDe(n),cap:S.eventos.filter(e=>e.tipo==="criado"&&e.user_nome===n).length,rec,ack,rm,av,apr:st(n,"aprovado"),sol:st(n,"solicitado"),last}});
+  return`<div class="ph"><div><span class="kick">TEAM</span><h1>Equipe</h1></div>${papel()==="admin"?`<button class="btn ghost sm" data-act="nav" data-v="config">Gerenciar acessos</button>`:""}</div>
+  <section class="card sect"><div class="tbw"><table class="tb"><thead><tr><th>Pessoa</th><th>Acesso</th><th class="num">Captou</th><th class="num">Alarmes recebidos</th><th class="num">Reagiu</th><th>Tempo médio de reação</th><th class="num">Avisos enviados</th><th class="num">Aprovou</th><th class="num">Solicitou puxe</th><th>Última atividade</th></tr></thead><tbody>
+  ${rows.map(r=>`<tr><td><b>${esc(r.n)}</b></td><td><span class="sp ${r.p==="admin"?"info":r.p==="consulta"?"plan":"ok"}">${esc(r.p)}</span></td><td class="num">${r.cap}</td><td class="num">${r.rec}</td><td class="num">${r.ack}</td><td>${fMin(r.rm)}</td><td class="num">${r.av}</td><td class="num">${r.apr}</td><td class="num">${r.sol}</td><td>${r.last?fS(r.last.created_at):"—"}<small>${r.last?esc(evTxt(r.last)).slice(0,40):""}</small></td></tr>`).join("")||`<tr><td colspan="10" class="empty">Ninguém ainda.</td></tr>`}</tbody></table></div></section>
+  <div class="cgrid"><div class="icard"><h3>${ic("clock",16)} Plantão</h3><p>Definir quem responde aos alarmes fora do horário (noite, fim de semana) e para quem escala se ninguém reagir em X minutos.</p><span class="sp plan" style="align-self:flex-start">a definir com o Luis</span></div>
+  <div class="icard"><h3>${ic("users",16)} Carteira por operador</h3><p>Cada cliente com um operador responsável: o alarme de 72h vai primeiro para ele, e o relatório mostra o desempenho por carteira.</p><span class="sp plan" style="align-self:flex-start">a definir com o Luis</span></div>
+  <div class="icard"><h3>${ic("check",16)} Meta de reação</h3><p>Ex.: todo alarme crítico com ação em até 30 min. O sistema mostra quem cumpre e quem não.</p><span class="sp plan" style="align-self:flex-start">a definir com o Luis</span></div></div>`}
+
+/* ================= VIEW: INTEGRAÇÕES ================= */
+function vIntegracoes(){const n=S.clientes.filter(c=>c.ativo!==false).length;
+  const I=[["radar","Siscomex Carga (Siscarga)","Consulta automática diária de todos os CNPJs monitorados. Acaba com digitar CNPJ por CNPJ.",["warn","em configuração"],`${n} CNPJs · precisa e-CNPJ A1 + contrato Integra Comex (Serpro)`],
+   ["bell","E-mail automático de alarmes","Envia o alarme por e-mail para o responsável e para o cliente, registrando entregue e aberto.",["plan","fase 2"],"precisa servidor de envio (ex.: Resend/SendGrid)"],
+   ["dots","WhatsApp Business","Alarme crítico no WhatsApp do operador; cliente confirma o armazém respondendo a mensagem.",["plan","fase 2"],"precisa conta WhatsApp Business API"],
+   ["box","Caixa de pré-alertas (IA)","Uma caixa de e-mail recebe pré-alertas e arrival notices; a IA lê e cria a carga sozinha.",["plan","fase 2"],"precisa e-mail dedicado + leitura por IA"],
+   ["ship","Rastreio dos armadores","ETA e atracação atualizados sozinhos (MSC, Maersk, CMA CGM, Hapag-Lloyd…).",["plan","fase 2"],"API dos armadores ou agregador"],
+   ["wh","Portais dos armazéns (robô)","Depois do seu OK, o robô entra no Ecoporto, Marimex, Santos Brasil… e lança o puxe.",["plan","fase 3"],"um robô por armazém · começar pelo de maior volume"],
+   ["home","Line-up dos terminais","Confirma janela e atracação no BTP, Santos Brasil e DP World.",["plan","fase 2"],"consulta aos sites dos terminais"],
+   ["chart","Planilha / sistema da comissária","Exporta o rastreio completo com responsáveis, alarmes e avisos.",["ok","disponível"],"botão Exportar CSV em Cargas e Relatórios"]];
+  return`<div class="ph"><div><span class="kick">INTEGRATIONS</span><h1>Integrações</h1></div></div>
+  <div class="cgrid">${I.map(([i,t,d,[s,sl],need])=>`<div class="icard"><h3>${ic(i,16)} ${t}</h3><p>${d}</p><p style="font-size:10.5px"><b>Precisa:</b> ${need}</p><span class="sp ${s}" style="align-self:flex-start">${sl}</span></div>`).join("")}</div>`}
 function xpPanel(c,r,cli){return`<div class="xp"><div><h4>Container</h4><div class="kv">
    <div><small>BL</small><b>${esc(c.bl||"—")}</b></div><div><small>CE-Mercante</small><b>${esc(c.ce||"—")}</b></div>
    <div><small>Tipo BL</small><b>${esc(c.tipo_bl||"—")}</b></div><div><small>Armazém destino</small><b>${esc(c.armazem||"—")}</b></div>
@@ -1097,7 +1253,7 @@ const ACT={
   async logout(){stopAlarm();clearInterval(window._tick);if(S.mode==="supa"&&sb)await sb.auth.signOut();S.mode=null;S.view="painel";closeAll();show("login")},
   reload(){location.reload()},
   nav(t){S.view=t.dataset.v;S.dia=null;closeAll();renderAll();window.scrollTo(0,0)},
-  mais(){$("#sheet").innerHTML=[["clientes","users","Clientes"],["historico","clock","Histórico"],["config","gear","Configurações"]].map(([v,i,l])=>`<button data-act="nav" data-v="${v}">${ic(i,22)} ${l}</button>`).join("");$("#sheet").hidden=false;$("#ovl").hidden=false},
+  mais(){$("#sheet").innerHTML=NAV.filter(n=>MAIS.includes(n[0])).map(([v,i,l])=>`<button data-act="nav" data-v="${v}">${ic(i,22)} ${l}</button>`).join("");$("#sheet").hidden=false;$("#ovl").hidden=false},
   filtro(t){S.filtro=t.dataset.f;S.view="painel";renderAll()},
   filtroC(t){S.filtroC=t.dataset.f;renderAll()},
   dia(t){const d=new Date(t.dataset.d);S.dia=S.dia&&sameDay(S.dia,d)?null:d;S.filtro="todas";renderAll()},
@@ -1108,6 +1264,9 @@ const ACT={
   demoRole(){S.demoPapel=S.demoPapel==="operador"?"consulta":"operador";renderAll();toast(S.demoPapel==="operador"?"Agora: Operador (vê e altera)":"Agora: Consulta (só vê)")},
   openCarga(t){const c=S.cargas.find(x=>x.id===t.dataset.id);if(c){stopAlarm();openDrawer(detalhe(c))}},
   closeAll(){closeAll()},
+  alTipo(t){S.alTipo=t.dataset.v;renderAll()},
+  rper(t){S.rper=t.dataset.v==="tudo"?"tudo":+t.dataset.v;renderAll()},
+  navioGo(t){S.busca=t.dataset.n;S.filtroC="todas";S.view="cargas";renderAll();window.scrollTo(0,0)},
   xp(t){S.xp=S.xp===t.dataset.id?null:t.dataset.id;renderAll()},
   openAviso(t){const c=S.cargas.find(x=>x.id===t.dataset.id);if(!c)return;openDrawer(detalhe(c));setTimeout(()=>{const b=$("#avisoBox");if(b){b.scrollIntoView({block:"center"});$("#avPara").focus()}},60)},
   async avisoSave(){const c=cur();if(!c)return;const sv=$("#avisoBox .seg .on"),canal=sv?sv.dataset.v:"email",para=$("#avPara").value.trim(),cont=$("#avCont").value.trim(),obs=$("#avObs").value.trim();
@@ -1222,6 +1381,8 @@ document.addEventListener("change",async e=>{const t=e.target;
     if(cli){f.querySelector('[name="cnpj"]').value=fmtCNPJ(cli.cnpj);f.querySelectorAll('.seg[data-name="armazem"] button').forEach(b=>b.classList.toggle("on",b.dataset.v===cli.armazem_padrao));f.querySelector('[name="cliente_pendente"]').checked=false}
     if(t.value==="__master"){f.querySelector('[name="cnpj"]').value=fmtCNPJ(S.org.cnpj_proprio||"");f.querySelector('[name="cliente_pendente"]').checked=true;f.querySelectorAll('.seg[data-name="tipo_bl"] button').forEach(b=>b.classList.toggle("on",b.dataset.v==="Master"))}
     fcRefresh()}
+  if(t.dataset.sel==="alUser"){S.alUser=t.value;renderAll();return}
+  if(t.dataset.sel==="custo"){LS.set("puxe-custo",Math.max(0,+t.value||0));renderAll();return}
   if(t.dataset.perfil){await run(()=>DB.updPerfil(t.dataset.perfil,{papel:t.value,org_id:S.org.id}),"Acesso atualizado ✓");renderAll()}});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeAll()}if(e.key==="Enter"&&(e.target.id==="lgPass"||e.target.id==="lgEmail"))ACT.login()});
 boot();
