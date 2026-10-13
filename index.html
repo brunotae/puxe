@@ -368,6 +368,59 @@ textarea.inp{font-size:12px}
 .hint{font-size:11px}.err{font-size:12px}
 .prev{border-radius:9px}.prev table{font-size:11.5px}.prev td,.prev th{padding:6px 8px}
 #toast{font-size:12.5px;padding:10px 16px}
+/* desktop: ainda mais compacto */
+@media (min-width:861px){
+ html,body{font-size:12px}
+ .brand{font-size:22px}.side .tag{font-size:10.5px}.nav button{padding:6px 10px}.nav button b{font-size:12px}.nav button small{font-size:9.5px}.nav button svg{width:16px;height:16px}
+ .top .srch{min-height:32px;font-size:12px}.icb{width:32px;height:32px}.icb svg{width:16px;height:16px}.pill{min-height:30px;font-size:11px}
+ .av{width:30px;height:30px;font-size:11px}.me b{font-size:12px}.me small{font-size:10px}
+ .ph h1{font-size:22px}.sec-h h2{font-size:14px!important}.kick{font-size:9px}
+ .btn{min-height:30px;padding:0 12px;font-size:11.5px}.btn.sm{min-height:26px;font-size:11px;padding:0 9px}
+ .chips button{min-height:26px;font-size:11px;padding:0 10px}.sec-h .srch2{min-height:30px;font-size:11.5px}
+ .th{font-size:9.5px}.tr{padding:6px}.ctype{width:30px;height:30px;font-size:8.5px;border-radius:6px}
+ .who b{font-size:11.5px}.who small{font-size:10px}.cell b{font-size:11px}.cell small{font-size:10px}
+ .st{font-size:10px;padding:2px 7px}.cd{font-size:9.5px}.stp small{font-size:8.5px}
+ .hero h1{font-size:clamp(22px,2.4vw,30px)}.hero p{font-size:12px}
+ .kpi .n{font-size:26px}.kpi .h{font-size:11.5px}.kpi .sub{font-size:10.5px}
+ .rc h3{font-size:13.5px}.al b,.ev b{font-size:11.5px}.al small,.ev small{font-size:10px}.al .tm{font-size:14px}
+ .kv b{font-size:11.5px}.kv small{font-size:9.5px}.big-c{font-size:22px}.dhead h3{font-size:15px}
+ .form label > input:not([type=checkbox]),.form label > select,.form label > textarea,.inp{font-size:12px;min-height:30px}
+ .seg button{min-height:26px;font-size:11px}.form label,.form .lbl{font-size:10.5px}
+ .ln b{font-size:11.5px}.ln small{font-size:10px}.grp-h h3{font-size:13px}.stat{font-size:11.5px}.note{font-size:11px}
+}
+/* rastreio de cargas */
+.cth,.ctr{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1.15fr) minmax(0,1fr) minmax(0,1.55fr) minmax(0,1fr) minmax(0,1.35fr) 112px minmax(0,.8fr);gap:10px;align-items:center}
+.cth{font-size:9.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600;padding:8px 6px;border-bottom:1px solid var(--line)}
+.ctr{padding:6px;border-bottom:1px solid var(--line);width:100%;text-align:left;min-width:0}
+.ctr:hover,.ctr.open{background:var(--card2)}
+.ctr .who{gap:8px}
+.ctr .k8{min-width:0}.ctr .st{max-width:100%;overflow:hidden;text-overflow:ellipsis;display:inline-block;vertical-align:middle}
+.tl li{padding-bottom:7px}.tl b{display:inline;margin-left:6px}.tl small{margin-top:1px}
+.ms{display:flex;align-items:center;gap:0;margin-bottom:3px}
+.ms i{width:9px;height:9px;border-radius:50%;border:2px solid var(--line);background:var(--card);flex:none}
+.ms i.d{background:var(--pri);border-color:var(--pri)}.ms i.a{background:var(--acc);border-color:var(--acc)}
+.ms b{flex:1;height:2px;background:var(--line);min-width:4px}.ms b.d{background:var(--pri)}
+.alc b{display:flex;align-items:center;gap:5px}.alc b svg{width:12px;height:12px;flex:none}
+.alc .no{color:var(--bad);font-weight:600}
+.xp{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr) minmax(0,1fr);gap:18px;padding:14px 10px 18px;border-bottom:1px solid var(--line);background:var(--card2)}
+.xp h4{margin:0 0 8px;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.xp .kv{grid-template-columns:repeat(2,minmax(0,1fr));margin:0 0 10px}.xp .kv div{background:var(--card)}
+.tl{list-style:none;margin:0;padding:0}
+.tl li{position:relative;padding:0 0 10px 18px;min-width:0}
+.tl li::before{content:"";position:absolute;left:0;top:3px;width:9px;height:9px;border-radius:50%;background:var(--c,var(--pri2))}
+.tl li::after{content:"";position:absolute;left:4px;top:14px;bottom:0;width:1px;background:var(--line)}
+.tl li:last-child::after{display:none}
+.tl li.fut{opacity:.6}.tl li.fut::before{background:transparent;border:1.5px dashed var(--muted);width:6px;height:6px}
+.tl b{display:block;font-size:11.5px}.tl small{display:block;color:var(--muted);font-size:10.5px;overflow-wrap:anywhere}.tl time{font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums}
+.rs{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;font-size:11px;align-items:baseline}
+.rs dt{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.05em}.rs dd{margin:0;overflow-wrap:anywhere}
+.rs dd small{color:var(--muted)}
+@container (max-width:900px){
+ .cth{display:none}
+ .ctr{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"a h" "b b" "d e" "f g" "c c";row-gap:6px;padding:10px 6px}
+ .ctr>.k1{grid-area:a}.ctr>.k2{grid-area:b}.ctr>.k3{grid-area:c}.ctr>.k4{grid-area:d}.ctr>.k5{grid-area:e;text-align:right}.ctr>.k6{grid-area:f}.ctr>.k7{grid-area:g;width:112px}.ctr>.k8{grid-area:h}
+ .xp{grid-template-columns:minmax(0,1fr)}
+}
 @media (max-width:860px){
  .wrap{padding:calc(8px + env(safe-area-inset-top)) 12px calc(88px + env(safe-area-inset-bottom))}
  .hero{min-height:400px}.hero .t{padding:22px 18px 200px}
@@ -456,7 +509,7 @@ try{ if(window.supabase) sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{pe
 
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const S={mode:null,user:null,perfil:null,org:null,clientes:[],cargas:[],eventos:[],perfis:[],
-  view:"painel",filtro:"todas",filtroC:"ativas",busca:"",dia:null,calM:null,demoPapel:"operador",histTab:"eventos",importRows:null,drawerId:null};
+  view:"painel",filtro:"todas",filtroC:"todas",xp:null,busca:"",dia:null,calM:null,demoPapel:"operador",histTab:"eventos",importRows:null,drawerId:null};
 
 /* ================= HELPERS ================= */
 const $=s=>document.querySelector(s);
@@ -560,11 +613,19 @@ function demoSeed(){
     const c={id:uid(),cliente_id:master?null:cli.id,cliente_nome:master?"":cli.nome,cnpj:master?S.org.cnpj_proprio:cli.cnpj,container:cont,tipo_container:pick(["40HC","40HC","40DC","20DC","Reefer"]),
       bl:(v[1]==="MSC"?"MEDU":v[1].slice(0,4).toUpperCase())+Math.floor(1e7+r()*9e7),ce:"15"+String(Math.floor(1e12+r()*9e12)),tipo_bl:master?"Master":"Direto",
       navio:v[0],viagem:v[4],armador:v[1],terminal:v[3],eta:eta.toISOString(),prazo_limite:new Date(eta-48*H).toISOString(),
-      armazem:master?"Ecoporto":cli.armazem_padrao,fonte:r()<.7?"siscarga":"email",status:st,cliente_pendente:master,protocolo:["solicitado","confirmado","armazenado"].includes(st)?"PX-"+Math.floor(1e5+r()*9e5):"",obs:"",created_at:created,updated_at:created};
+      armazem:master?"Ecoporto":cli.armazem_padrao,fonte:r()<.6?"siscarga":(r()<.6?"email":"manual"),porto:"Santos",status:st,cliente_pendente:master,protocolo:["solicitado","confirmado","armazenado"].includes(st)?"PX-"+Math.floor(1e5+r()*9e5):"",obs:"",created_at:created,updated_at:created};
+    c.fonte_detalhe={siscarga:"Consulta diária automática por CNPJ",email:pick(["Pré-alerta do agente (Xangai) por e-mail","Arrival notice do armador por e-mail","Cópia do BL enviada pelo exportador"]),manual:pick(["Cliente avisou por WhatsApp","Ligação do agente de carga"])}[c.fonte];
     S.cargas.push(c);
-    S.eventos.push({id:ev++,carga_id:c.id,container:cont,tipo:"criado",detalhe:"Detectado via "+FONTE[c.fonte],user_nome:c.fonte==="siscarga"?"Siscarga (robô)":"Leitor de e-mail",created_at:created});
+    S.eventos.push({id:ev++,carga_id:c.id,container:cont,tipo:"criado",detalhe:"Detectado via "+FONTE[c.fonte]+" · "+c.fonte_detalhe,user_nome:c.fonte==="siscarga"?"Siscarga (robô)":c.fonte==="email"?"Leitor de e-mail":pick(users),created_at:created});
     const seq=["detectado","aprovado","solicitado","confirmado","armazenado"],to=seq.indexOf(st);
-    for(let i=1;i<=to;i++){const t=new Date(Math.min(now-(to-i+1)*2*H*(1+r()),new Date(created).getTime()+i*D)).toISOString();S.eventos.push({id:ev++,carga_id:c.id,container:cont,tipo:"status",detalhe:seq[i-1]+" → "+seq[i]+(seq[i]==="solicitado"?" · protocolo "+c.protocolo:""),user_nome:pick(users),created_at:t})}
+    const pz=new Date(c.prazo_limite).getTime(),ts=[];
+    for(let i=1;i<=to;i++){ts.push(Math.min(now-(to-i+1)*3*H*(1+r()),pz-(6-i)*4*H-r()*3*H))}
+    const ap=ts.length?ts[0]:(st==="permanece"?now-5*H:now);
+    [[72,"≤72h"],[48,"≤48h"],[24,"≤24h"],[0,"vencido"]].forEach(([hh,lv])=>{const t=pz-hh*H+r()*40*6e4;if(t<now&&t>new Date(created).getTime()&&t<ap){const u=pick(users);
+      S.eventos.push({id:ev++,carga_id:c.id,container:cont,tipo:"alarme",canal:"app",nivel:lv,destinatario:u,user_nome:u,detalhe:"Alarme no app",created_at:new Date(t).toISOString()});
+      if(r()<.6)S.eventos.push({id:ev++,carga_id:c.id,container:cont,tipo:"alarme_ack",canal:"app",user_nome:u,detalhe:pick(["Soneca 30 min","Abriu a fila de puxe"]),created_at:new Date(t+(3+r()*20)*6e4).toISOString()});
+      if(hh<=48&&r()<.55&&!master){const em=r()<.6;S.eventos.push({id:ev++,carga_id:c.id,container:cont,tipo:"aviso",canal:em?"email":"whatsapp",destinatario:em?`${cli.contato} <${cli.contato.toLowerCase()}@${cli.nome.split(" ")[0].toLowerCase()}.com.br>`:`${cli.contato} <(13) 9${Math.floor(1e7+r()*9e7)}>`,detalhe:em?"Enviado aviso de redestinação":"Confirmou destino "+c.armazem,user_nome:"Luis",created_at:new Date(t+(30+r()*90)*6e4).toISOString()})}}});
+    ts.forEach((t,j)=>{const i=j+1;S.eventos.push({id:ev++,carga_id:c.id,container:cont,tipo:"status",detalhe:seq[i-1]+" → "+seq[i]+(seq[i]==="solicitado"?" · protocolo "+c.protocolo:""),user_nome:pick(users),created_at:new Date(t).toISOString()})});
     if(st==="permanece")S.eventos.push({id:ev++,carga_id:c.id,container:cont,tipo:"status",detalhe:"detectado → permanece",user_nome:"Luis",created_at:new Date(now-5*H).toISOString()});
   })});
   S.eventos.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
@@ -572,22 +633,33 @@ function demoSeed(){
 
 /* ================= DATA LAYER ================= */
 function demoLog(c,tipo,det){S.eventos.unshift({id:Date.now()+Math.random(),carga_id:c.id,container:c.container,tipo,detalhe:det,user_nome:nomeUser(),created_at:new Date().toISOString()})}
+async function pageAll(mk){let out=[],from=0;for(;;){const {data,error}=await mk().range(from,from+999);if(error)throw error;out=out.concat(data||[]);if(!data||data.length<1000||from>30000)break;from+=1000}return out}
+const NEWCOLS=["porto","fonte_detalhe"];
+function semCols(o){const x=Object.assign({},o);NEWCOLS.forEach(k=>delete x[k]);return x}
+const colErr=e=>/column|schema cache/i.test((e&&e.message)||"")&&/porto|fonte_detalhe|canal|destinatario|nivel/i.test((e&&e.message)||"");
+function avisaSQL(){if(!S.avisouSQL){S.avisouSQL=1;setTimeout(()=>toast("Rode o SQL v2 no Supabase para gravar porto, alarmes e avisos"),2800)}}
 const DB={
+  async logEventos(rows){const now=new Date().toISOString();
+    if(S.mode==="demo"){rows.forEach(r=>S.eventos.unshift(Object.assign({id:Date.now()+Math.random(),user_nome:nomeUser(),created_at:now},r)));return}
+    const full=rows.map(r=>Object.assign({org_id:S.org.id,user_id:S.user.id,user_nome:nomeUser()},r));
+    let {error}=await sb.from("puxe_eventos").insert(full);
+    if(error&&colErr(error)){avisaSQL();({error}=await sb.from("puxe_eventos").insert(full.map(r=>{const{canal,destinatario,nivel,...x}=r;x.detalhe=[x.detalhe,canal&&CANAL[canal],destinatario&&("→ "+destinatario),nivel].filter(Boolean).join(" · ");return x})))}
+    if(error)throw error;full.forEach(r=>S.eventos.unshift(Object.assign({id:Math.random(),created_at:now},r)))},
   async load(){
     if(S.mode==="demo")return;
     const since=new Date(Date.now()-200*864e5).toISOString();
     const [o,c,k,e]=await Promise.all([
       sb.from("puxe_orgs").select("*").eq("id",S.perfil.org_id).single(),
       sb.from("puxe_clientes").select("*").order("nome"),
-      sb.from("puxe_cargas").select("*").gte("created_at",since).order("prazo_limite"),
-      sb.from("puxe_eventos").select("*").order("created_at",{ascending:false}).limit(400)]);
+      pageAll(()=>sb.from("puxe_cargas").select("*").gte("created_at",since).order("prazo_limite")).then(data=>({data}),error=>({error})),
+      pageAll(()=>sb.from("puxe_eventos").select("*").gte("created_at",since).order("created_at",{ascending:false})).then(data=>({data}),error=>({error}))]);
     for(const x of[o,c,k,e])if(x.error)throw x.error;
     S.org=o.data;S.clientes=c.data||[];S.cargas=k.data||[];S.eventos=e.data||[];
     if(papel()==="admin"){const p=await sb.from("puxe_perfis").select("*").order("created_at");if(!p.error)S.perfis=p.data||[]}
   },
   async addCargas(rows){
     if(S.mode==="demo"){rows.forEach(r=>{const c=Object.assign({id:uid(),created_at:new Date().toISOString(),updated_at:new Date().toISOString(),status:"detectado"},r);S.cargas.push(c);demoLog(c,"criado","Detectado via "+(FONTE[c.fonte]||c.fonte))});return}
-    const {error}=await sb.from("puxe_cargas").insert(rows);if(error)throw error;await DB.load();
+    let {error}=await sb.from("puxe_cargas").insert(rows);if(error&&colErr(error)){avisaSQL();({error}=await sb.from("puxe_cargas").insert(rows.map(semCols)))}if(error)throw error;await DB.load();
   },
   async updCarga(id,patch){
     if(S.mode==="demo"){const c=S.cargas.find(x=>x.id===id);if(!c)return;
@@ -595,7 +667,7 @@ const DB={
       if(patch.prazo_limite&&new Date(patch.prazo_limite).getTime()!==new Date(c.prazo_limite).getTime())demoLog(c,"prazo","Prazo alterado");
       if(patch.armazem&&patch.armazem!==c.armazem)demoLog(c,"armazem",(c.armazem||"—")+" → "+patch.armazem);
       Object.assign(c,patch,{updated_at:new Date().toISOString()});return}
-    const {error}=await sb.from("puxe_cargas").update(patch).eq("id",id);if(error)throw error;await DB.load();
+    let {error}=await sb.from("puxe_cargas").update(patch).eq("id",id);if(error&&colErr(error)){avisaSQL();({error}=await sb.from("puxe_cargas").update(semCols(patch)).eq("id",id))}if(error)throw error;await DB.load();
   },
   async saveCliente(obj){
     if(S.mode==="demo"){if(obj.id){Object.assign(S.clientes.find(x=>x.id===obj.id),obj)}else{S.clientes.push(Object.assign({id:uid(),created_at:new Date().toISOString()},obj))}S.clientes.sort((a,b)=>a.nome.localeCompare(b.nome));return}
@@ -725,17 +797,77 @@ function rCal(){const m=S.calM||new Date();const y=m.getFullYear(),mo=m.getMonth
   <div class="cal">${DS.map(d=>`<div class="wd">${d.slice(0,1).toUpperCase()}</div>`).join("")}${cells}</div></section>`}
 function rAtividade(){return`<section class="card p rc"><h3>Atividade recente<button class="more" data-act="nav" data-v="historico">ver tudo ›</button></h3><div style="margin-top:6px">${S.eventos.slice(0,6).map(evRow).join("")||`<div class="empty">Sem eventos.</div>`}</div></section>`}
 function evRow(e){return`<div class="ev"><span class="av s">${esc((e.user_nome||"?").slice(0,1).toUpperCase())}</span><div style="min-width:0"><b>${esc(e.user_nome||"sistema")}</b><small>${esc(e.container||"")} · ${esc(evTxt(e))}</small></div><span class="when">${ago(e.created_at)}</span></div>`}
-function evTxt(e){if(e.tipo==="status"){return(e.detalhe||"").replace(/\b(detectado|aprovado|solicitado|confirmado|armazenado|permanece|cancelado)\b/g,m=>STL[m].toLowerCase())}return e.detalhe||e.tipo}
+const CANAL={app:"Alarme no app",email:"E-mail",whatsapp:"WhatsApp",telefone:"Telefone",pessoal:"Pessoalmente",outro:"Outro"};
+const NIVL={vencido:"vencido",critico:"≤24h",alerta:"≤48h",atencao:"≤72h",normal:"",ok:""};
+const ETAPAS=["Captado","Alertado","Aprovado","Solicitado","Confirmado","Armazenado"];
+const fS=d=>{if(!d)return"—";d=new Date(d);return`${pad(d.getDate())}/${pad(d.getMonth()+1)} ${pad(d.getHours())}:${pad(d.getMinutes())}`};
+function evDe(c){return S.eventos.filter(e=>e.carga_id===c.id).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at))}
+function resp(c){const E=evDe(c),r={};const cr=E.find(e=>e.tipo==="criado");
+  r.captado={at:(cr&&cr.created_at)||c.created_at,by:(cr&&cr.user_nome)||"—",como:FONTE[c.fonte]||c.fonte||"—",det:c.fonte_detalhe||""};
+  r.alarmes=E.filter(e=>e.tipo==="alarme");r.avisos=E.filter(e=>e.tipo==="aviso");r.acks=E.filter(e=>e.tipo==="alarme_ack");
+  const fa=[...r.alarmes,...r.avisos].sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));if(fa.length)r.alertado={at:fa[0].created_at,by:fa[0].user_nome};r.ultimo=fa[fa.length-1]||null;
+  for(const s of["aprovado","solicitado","confirmado","armazenado","permanece","cancelado"]){const e=[...E].reverse().find(x=>x.tipo==="status"&&new RegExp("→ "+s+"\\b").test(x.detalhe||""));if(e)r[s]={at:e.created_at,by:e.user_nome}}
+  return r}
+function etapaK(c,r){const i={detectado:0,aprovado:2,solicitado:3,confirmado:4,armazenado:5}[c.status];let k=i==null?(r.alertado?1:0):i;if(k===0&&r.alertado)k=1;return k}
+function ms(c,r){const k=etapaK(c,r);const keys=["captado","alertado","aprovado","solicitado","confirmado","armazenado"];const at=r[keys[k]]?r[keys[k]].at:null;
+  let s="";for(let j=0;j<6;j++){const d=j===1?!!r.alertado:j<=k;if(j)s+=`<b class="${j<=k&&(j!==1||r.alertado||k>1)?"d":""}"></b>`;s+=`<i class="${d?(j===1?"a":"d"):""}" title="${ETAPAS[j]}${r[keys[j]]?" · "+fS(r[keys[j]].at)+" · "+(r[keys[j]].by||""):""}"></i>`}
+  return`<div class="ms">${s}</div><small>${["permanece","cancelado"].includes(c.status)?STL[c.status]:ETAPAS[k]} · ${fS(at)}</small>`}
+function alCell(c,r){const n=r.alarmes.length,m=r.avisos.length,lv=nivel(c);
+  if(!n&&!m)return`<b class="muted" style="font-weight:500">${ic("bell",12)} sem alarme</b><small>${["vencido","critico"].includes(lv)?`<span class="no">ninguém avisado</span>`:"—"}</small>`;
+  const u=r.ultimo;const dest=u.tipo==="aviso"?(u.destinatario||"—"):(u.destinatario||u.user_nome||"—");
+  return`<b>${ic("bell",12)} ${n} alarme${n!==1?"s":""} · ${m} aviso${m!==1?"s":""}</b><small>${esc(CANAL[u.canal]||u.canal||"App")} → ${esc(dest)} · ${fS(u.created_at)}</small>`}
+function ctRow(c){const r=resp(c),cli=S.clientes.find(x=>x.id===c.cliente_id),open=S.xp===c.id;
+  return`<button class="ctr ${open?"open":""}" data-act="xp" data-id="${c.id}">
+  <div class="who k1">${ctype(c)}<div style="min-width:0"><b>${esc(c.container)}</b><small>${esc(c.tipo_container||"")} · ${esc(c.armador||"—")}</small></div></div>
+  <div class="cell k2"><b>${esc(cliName(c))}</b><small>${c.cliente_pendente?"House pendente":esc(fmtCNPJ(c.cnpj)||"")}</small></div>
+  <div class="cell k3"><b>${fS(r.captado.at)}</b><small>${esc(r.captado.by)} · ${esc(r.captado.como)}</small></div>
+  <div class="cell k4"><b>${esc(c.navio||"—")} ${esc(c.viagem||"")}</b><small>${esc(c.porto||"Santos")} · ${esc(c.terminal||"")} · ETA ${fS(c.eta)}</small></div>
+  <div class="cell k5"><b>${fS(c.prazo_limite)}</b>${cdChip(c)||`<small>prazo puxe</small>`}</div>
+  <div class="cell alc k6">${alCell(c,r)}</div>
+  <div class="cell k7">${ms(c,r)}</div>
+  <div class="k8"><span class="st ${c.status}">${STL[c.status]}</span></div></button>${open?xpPanel(c,r,cli):""}`}
+function tlItems(c){const E=evDe(c).map(e=>{let t,s,col="var(--pri2)";
+  if(e.tipo==="criado"){t="Captado";s=`${e.user_nome||"—"} · ${e.detalhe||""}`;col="var(--pri2)"}
+  else if(e.tipo==="alarme"){t=`Alarme ${e.nivel||""}`.trim();s=`${CANAL[e.canal]||e.canal||"App"} → ${e.destinatario||e.user_nome||"—"}`;col="var(--bad)"}
+  else if(e.tipo==="alarme_ack"){t="Alarme reconhecido";s=`${e.user_nome||"—"} · ${e.detalhe||""}`;col="var(--warn)"}
+  else if(e.tipo==="aviso"){t=`Aviso · ${CANAL[e.canal]||e.canal||""}`;s=`para ${e.destinatario||"—"} · por ${e.user_nome||"—"}${e.detalhe?" · "+e.detalhe:""}`;col="var(--acc)"}
+  else if(e.tipo==="status"){const x=evTxt(e);t=x.charAt(0).toUpperCase()+x.slice(1);s=e.user_nome||"";col="var(--ok)"}
+  else if(e.tipo==="nota"){t="Nota";s=`${e.user_nome||""}: ${e.detalhe||""}`;col="var(--muted)"}
+  else{t=evTxt(e);s=e.user_nome||"";col="var(--muted)"}
+  return{at:new Date(e.created_at),t,s,col}});
+  const now=Date.now();if(c.prazo_limite&&PEND.includes(c.status)&&new Date(c.prazo_limite)>now)E.push({at:new Date(c.prazo_limite),t:"Prazo do puxe",s:`pedir a redestinação até aqui · ${c.armazem||""}`,fut:1});
+  if(c.eta)E.push({at:new Date(c.eta),t:new Date(c.eta)>now?"Atracação prevista (ETA)":"Atracação (ETA)",s:`${c.navio||""} · ${c.porto||"Santos"} · ${c.terminal||""}`,fut:new Date(c.eta)>now?1:0,col:"var(--pri)"});
+  return E.sort((a,b)=>a.at-b.at)}
+function timeline(c){return`<ul class="tl">${tlItems(c).map(i=>`<li class="${i.fut?"fut":""}" style="--c:${i.col||"var(--pri2)"}"><time>${fS(i.at)}</time><b>${esc(i.t)}</b><small>${esc(i.s||"")}</small></li>`).join("")}</ul>`}
+function respList(c,r){const p=x=>x?`${esc(x.by||"—")} <small>· ${fS(x.at)}</small>`:`<small>—</small>`;
+  const av=r.avisos.map(a=>`${esc(CANAL[a.canal]||a.canal)} → ${esc(a.destinatario||"—")} <small>· por ${esc(a.user_nome||"—")} · ${fS(a.created_at)}</small>`).join("<br>");
+  const al=r.alarmes.length?`${r.alarmes.length}× <small>· 1º ${fS(r.alarmes[0].created_at)} p/ ${esc(r.alarmes[0].destinatario||r.alarmes[0].user_nome||"—")} · último ${fS(r.alarmes[r.alarmes.length-1].created_at)}</small>`:`<small>nenhum</small>`;
+  const ak=r.acks.length?r.acks.map(a=>`${esc(a.user_nome||"—")} <small>· ${esc(a.detalhe||"")} · ${fS(a.created_at)}</small>`).join("<br>"):`<small>—</small>`;
+  return`<dl class="rs"><dt>Captou</dt><dd>${esc(r.captado.by)} <small>· ${fS(r.captado.at)} · ${esc(r.captado.como)}${r.captado.det?" · "+esc(r.captado.det):""}</small></dd>
+  <dt>Alarmes</dt><dd>${al}</dd><dt>Viu/agiu</dt><dd>${ak}</dd><dt>Avisos</dt><dd>${av||`<small>nenhum</small>`}</dd>
+  <dt>Aprovou</dt><dd>${p(r.aprovado)}</dd><dt>Solicitou</dt><dd>${p(r.solicitado)}${c.protocolo?` <small>· prot. ${esc(c.protocolo)}</small>`:""}</dd><dt>Confirmou</dt><dd>${p(r.confirmado)}</dd><dt>Armazenado</dt><dd>${p(r.armazenado)}</dd>${r.permanece?`<dt>Permanece</dt><dd>${p(r.permanece)}</dd>`:""}${r.cancelado?`<dt>Cancelou</dt><dd>${p(r.cancelado)}</dd>`:""}</dl>`}
+function xpPanel(c,r,cli){return`<div class="xp"><div><h4>Container</h4><div class="kv">
+   <div><small>BL</small><b>${esc(c.bl||"—")}</b></div><div><small>CE-Mercante</small><b>${esc(c.ce||"—")}</b></div>
+   <div><small>Tipo BL</small><b>${esc(c.tipo_bl||"—")}</b></div><div><small>Armazém destino</small><b>${esc(c.armazem||"—")}</b></div>
+   <div><small>Porto · terminal</small><b>${esc(c.porto||"Santos")} · ${esc(c.terminal||"—")}</b></div><div><small>ETA</small><b>${fDT(c.eta)}</b></div>
+   <div><small>Contato cliente</small><b>${esc((cli&&(cli.contato||cli.email||cli.whatsapp))||"—")}</b></div><div><small>Protocolo</small><b>${esc(c.protocolo||"—")}</b></div></div>
+   <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn sm" data-act="openCarga" data-id="${c.id}">Abrir / ações</button><button class="btn ghost sm" data-act="openAviso" data-id="${c.id}">Registrar aviso</button></div></div>
+  <div><h4>Linha do tempo</h4>${timeline(c)}</div>
+  <div><h4>Responsabilidade</h4>${respList(c,r)}</div></div>`}
+function evTxt(e){if(e.tipo==="alarme")return`Alarme ${e.nivel||""} · ${CANAL[e.canal]||"app"} → ${e.destinatario||e.user_nome||""}`;if(e.tipo==="aviso")return`Aviso ${CANAL[e.canal]||e.canal||""} → ${e.destinatario||""}`;if(e.tipo==="alarme_ack")return`Alarme reconhecido · ${e.detalhe||""}`;
+  if(e.tipo==="status"){return(e.detalhe||"").replace(/\b(detectado|aprovado|solicitado|confirmado|armazenado|permanece|cancelado)\b/g,m=>STL[m].toLowerCase())}return e.detalhe||e.tipo}
 
 /* ================= VIEW: CARGAS ================= */
 function vCargas(){
-  const F={ativas:c=>ATIVAS.includes(c.status),pendentes:c=>PEND.includes(c.status),todas:()=>true,encerradas:c=>["armazenado","permanece"].includes(c.status),canceladas:c=>c.status==="cancelado"};
+  const F={todas:()=>true,ativas:c=>ATIVAS.includes(c.status),pendentes:c=>PEND.includes(c.status),semacao:c=>c.status==="detectado"&&S.eventos.some(e=>e.carga_id===c.id&&(e.tipo==="alarme"||e.tipo==="aviso")),naoavisado:c=>PEND.includes(c.status)&&["vencido","critico"].includes(nivel(c))&&!S.eventos.some(e=>e.carga_id===c.id&&e.tipo==="aviso"),encerradas:c=>["armazenado","permanece"].includes(c.status),canceladas:c=>c.status==="cancelado"};
+  if(!F[S.filtroC])S.filtroC="todas";
   const L=S.cargas.filter(F[S.filtroC]).filter(c=>match(c,S.busca)).sort(byPrazo);
-  const chips=[["ativas","Em andamento"],["pendentes","Sem puxe"],["encerradas","Encerradas"],["canceladas","Canceladas"],["todas","Todas"]];
+  const chips=[["todas","Todas"],["ativas","Em andamento"],["pendentes","Sem puxe"],["semacao","Alarmados sem ação"],["naoavisado","Críticos sem aviso"],["encerradas","Encerradas"],["canceladas","Canceladas"]];
   return`<div class="ph"><div><span class="kick">SHIPMENTS</span><h1>Cargas</h1></div>${pode()?`<button class="btn" data-act="novaCarga">${ic("plus",18)} Nova carga</button>`:""}</div>
   <section class="card tblc"><div class="sec-h"><h2 style="font-size:18px">${L.length} container${L.length!==1?"s":""}</h2><label class="srch2">${ic("search",17)}<input data-in="busca" placeholder="Buscar…" value="${esc(S.busca)}"></label><button class="btn ghost sm" data-act="csv">Exportar CSV</button></div>
   <div class="chips">${chips.map(([f,l])=>`<button data-act="filtroC" data-f="${f}" class="${S.filtroC===f?"on":""}">${l} ${S.cargas.filter(F[f]).length}</button>`).join("")}</div>
-  <div class="tbl">${TH}${L.map(row).join("")||`<div class="empty">Nada encontrado.</div>`}</div></section>`}
+  <div class="tbl"><div class="cth"><span>Container</span><span>Cliente</span><span>Captação</span><span>Navio · porto · ETA</span><span>Prazo puxe</span><span>Alarmes / avisos</span><span>Etapa</span><span>Status</span></div>${L.map(ctRow).join("")||`<div class="empty">Nada encontrado.</div>`}</div>
+  <p class="muted" style="font-size:10.5px;margin:0;padding:0 16px 12px">Toque numa linha para ver a linha do tempo e quem fez cada etapa. Alarmes são registrados automaticamente quando aparecem para alguém.</p></section>`}
 
 /* ================= VIEW: FILA DE PUXE ================= */
 function groupBy(L,k){const g={};L.forEach(c=>{(g[c[k]||"—"]=g[c[k]||"—"]||[]).push(c)});return Object.entries(g).sort((a,b)=>b[1].length-a[1].length)}
@@ -790,7 +922,7 @@ function buildImport(txt){const out=[];const seen=new Set(S.cargas.map(c=>c.cont
       if(!ct){r.ok=false;r.msg="sem container"}else if(!eta){r.ok=false;r.msg="ETA inválida"}else if(!cli&&!proprio){r.ok=false;r.msg="CNPJ não cadastrado";r.novo=cnpj}else if(seen.has(ct+"|"+ce)){r.ok=false;r.msg="já existe"}
       else if(!contOk(ct))r.msg="confira o dígito";
       if(eta)r.prazo=new Date(eta-S.org.prazo_horas*36e5);
-      r.row={cliente_id:cli?cli.id:null,cliente_nome:cli?cli.nome:"",cnpj,container:ct,bl,ce,tipo_bl:proprio?"Master":"Direto",navio,terminal:term,eta:eta&&eta.toISOString(),prazo_limite:r.prazo&&r.prazo.toISOString(),armazem:r.armazem,fonte:"siscarga",status:cli&&cli.excecao?"permanece":"detectado",cliente_pendente:!!proprio};
+      r.row={cliente_id:cli?cli.id:null,cliente_nome:cli?cli.nome:"",cnpj,container:ct,bl,ce,tipo_bl:proprio?"Master":"Direto",navio,terminal:term,eta:eta&&eta.toISOString(),prazo_limite:r.prazo&&r.prazo.toISOString(),armazem:r.armazem,fonte:"siscarga",porto:"Santos",fonte_detalhe:"Lista colada na Captação",status:cli&&cli.excecao?"permanece":"detectado",cliente_pendente:!!proprio};
       if(cli&&cli.excecao&&r.ok)r.msg="permanece (exceção)";seen.add(ct+"|"+ce);out.push(r)})});return out}
 
 /* ================= VIEW: CLIENTES ================= */
@@ -853,7 +985,15 @@ function detalhe(c){S.drawerId=c.id;const ed=pode(),st=c.status;const h=S.evento
   ${c.obs?`<div class="note" style="margin-bottom:10px">${esc(c.obs)}</div>`:""}
   <div class="acts">${A.join("")}</div>
   ${ed?`<div style="display:flex;gap:8px"><input class="inp" id="notaD" placeholder="Adicionar nota ao histórico…"><button class="btn sm" data-act="nota">Anotar</button></div>`:""}
-  <h3 style="margin:22px 0 4px;font-size:17px">Histórico desta carga</h3><div class="hist">${h.map(evRow).join("")||`<div class="empty">Sem eventos.</div>`}</div>`}
+  ${avisoForm(c)}
+  <h3 style="margin:18px 0 8px;font-size:14px">Responsabilidade</h3>${respList(c,resp(c))}
+  <h3 style="margin:18px 0 8px;font-size:14px">Linha do tempo</h3>${timeline(c)}`}
+function avisoForm(c){const cli=S.clientes.find(x=>x.id===c.cliente_id)||{};
+  return`<div class="form qc" id="avisoBox" style="margin-top:14px"><b style="font-size:12.5px">Registrar aviso enviado</b>
+  <div class="lbl">Como avisou</div>${seg("canal",["email","whatsapp","telefone","pessoal"],cli.email?"email":(cli.whatsapp?"whatsapp":"email"),CANAL)}
+  <div class="row"><label>Para quem<input id="avPara" value="${esc(cli.contato||"")}" placeholder="nome"></label><label>Contato<input id="avCont" value="${esc(cli.email||cli.whatsapp||"")}" placeholder="e-mail ou telefone"></label></div>
+  <label>Observação<input id="avObs" placeholder="ex.: cliente confirmou, pediu Ecoporto"></label>
+  <div><button class="btn sm" data-act="avisoSave">Registrar aviso</button> <span class="hint">Fica no histórico com seu nome, data e hora.</span></div></div>`}
 function seg(name,opts,cur,lab){return`<div class="seg" data-name="${name}">${opts.map(v=>`<button type="button" data-act="seg" data-v="${esc(v)}" class="${v===cur?"on":""}">${esc(lab?lab[v]||v:v)}</button>`).join("")}</div>`}
 const ARM_PFX={MSC:["MSCU","MEDU","MSDU","MSMU","MSNU","MSBU","FSCU"],Maersk:["MSKU","MAEU","MRKU","MRSU","MSWU","SUDU","MNBU"],"CMA CGM":["CMAU","CGMU","ECMU","APHU","APZU","CMCU"],"Hapag-Lloyd":["HLXU","HLBU","HAMU","UACU"],ONE:["ONEU","NYKU","MOLU","KKFU","KKTU"],COSCO:["CSNU","CBHU","CCLU","CSLU"],OOCL:["OOLU","OOCU"],Evergreen:["EGHU","EMCU","EISU","EITU"],ZIM:["ZIMU","ZCSU"],HMM:["HMMU","HDMU"],"Yang Ming":["YMLU","YMMU"]};
 function armadorDe(ct){const p=(ct||"").slice(0,4);for(const[k,v]of Object.entries(ARM_PFX))if(v.includes(p))return k;return""}
@@ -889,12 +1029,14 @@ function formCarga(c){const o=S.org,isNew=!c;c=c||{tipo_container:"40HC",tipo_bl
    <div class="row"><label>Navio<input name="navio" value="${esc(c.navio||"")}" list="navL" autocomplete="off"><datalist id="navL">${navios().map(n=>`<option>${esc(n)}</option>`).join("")}</datalist></label><label>Viagem<input name="viagem" value="${esc(c.viagem||"")}"></label></div>
    <span class="hint" id="navHint"></span>
    <label><span>Armador <span style="font-weight:500">· automático pelo container</span></span><input name="armador" value="${esc(c.armador||"")}" list="armL"><datalist id="armL">${Object.keys(ARM_PFX).map(x=>`<option>${x}</option>`).join("")}</datalist></label>
+   <label>Porto de descarga<input name="porto" value="${esc(c.porto||"Santos")}" list="portoL"><datalist id="portoL">${["Santos","Itajaí","Navegantes","Itapoá","Paranaguá","Rio de Janeiro","Itaguaí","Vitória","Salvador","Suape","Pecém","Manaus","Rio Grande"].map(x=>`<option>${x}</option>`).join("")}</datalist></label>
    <div class="lbl">Terminal de atracação</div>${seg("terminal",o.terminais,c.terminal)}
    <div class="row3"><label>ETA — data<input type="date" name="eta_d" value="${ymd}"></label><label>Hora<select name="eta_h">${Array.from({length:24},(_,i)=>`<option ${i===eta.getHours()?"selected":""}>${pad(i)}</option>`).join("")}</select></label><label>Min<select name="eta_m">${["00","15","30","45"].map(x=>`<option ${+x===Math.floor(eta.getMinutes()/15)*15?"selected":""}>${x}</option>`).join("")}</select></label></div>
    <label>Pedir o puxe até quantas horas antes da atracação?<input name="ph" type="number" min="0" value="${ph}"></label>
    <div class="hint" id="etaLine"></div>
    <div class="lbl">Armazém de destino</div>${seg("armazem",o.armazens,c.armazem)}
-   <div class="lbl">Fonte</div>${seg("fonte",["siscarga","email","manual"],c.fonte,FONTE)}
+   <div class="lbl">Como soubemos (fonte)</div>${seg("fonte",["siscarga","email","manual"],c.fonte,FONTE)}
+   <label>Detalhe da captação<input name="fonte_detalhe" value="${esc(c.fonte_detalhe||"")}" placeholder="ex.: pré-alerta do agente de Xangai por e-mail"></label>
    <label class="chk"><input type="checkbox" name="cliente_pendente" ${c.cliente_pendente?"checked":""}> Cliente final pendente (house ainda não informado)</label>
    <div class="hint w" id="excMsg"></div>
    <label>Observação<textarea name="obs" rows="2">${esc(c.obs||"")}</textarea></label>
@@ -905,7 +1047,7 @@ function fcVal(){const f=$("#fc"),g=n=>f.querySelector(`[name="${n}"]`),sv=n=>{c
   const d=g("eta_d").value;let eta=null;if(d){const [y,m,dd]=d.split("-").map(Number);eta=new Date(y,m-1,dd,+g("eta_h").value,+g("eta_m").value)}
   const ph=Math.max(0,+g("ph").value||0);
   return{cliente_id:g("cliente_id").value,cnpj:normC(g("cnpj").value),conts:g("container").value.split(/[\s,;]+/).map(normC).filter(Boolean),tipo_container:sv("tipo_container"),bl:g("bl").value.trim(),ce:normC(g("ce").value),tipo_bl:sv("tipo_bl"),
-    navio:g("navio").value.trim(),viagem:g("viagem").value.trim(),armador:g("armador").value.trim(),terminal:sv("terminal"),eta,prazo:eta?new Date(eta-ph*36e5):null,armazem:sv("armazem"),fonte:sv("fonte"),cliente_pendente:g("cliente_pendente").checked,obs:g("obs").value.trim()}}
+    navio:g("navio").value.trim(),viagem:g("viagem").value.trim(),armador:g("armador").value.trim(),terminal:sv("terminal"),eta,prazo:eta?new Date(eta-ph*36e5):null,armazem:sv("armazem"),fonte:sv("fonte"),cliente_pendente:g("cliente_pendente").checked,obs:g("obs").value.trim(),porto:g("porto").value.trim()||"Santos",fonte_detalhe:g("fonte_detalhe").value.trim()}}
 function fcRefresh(){const f=$("#fc");if(!f)return;const v=fcVal();
   $("#etaLine").innerHTML=v.eta?`→ Atracação <b>${fDT(v.eta)}</b> · prazo do puxe <b style="color:var(--acc)">${fDT(v.prazo)}</b> (${leftTxt((v.prazo-Date.now())/36e5)})`:"Informe a data de atracação";
   const bad=v.conts.filter(c=>!contOk(c));$("#contMsg").className="hint"+(bad.length?" w":"");$("#contMsg").textContent=v.conts.length?(bad.length?`Confira: ${bad.join(", ")} (dígito/formato não confere)`:`${v.conts.length} container${v.conts.length>1?"s":""} ✓`):"";
@@ -922,7 +1064,12 @@ function checkAlarm(force){if(!S.mode||!$("#app")||$("#app").hidden)return;const
   if(!force&&Date.now()<LS.get("puxe-snooze",0))return;if(!$("#alarm").hidden)return;
   openAlarm(L.length?L:S.cargas.filter(c=>PEND.includes(c.status)).sort(byPrazo).slice(0,2),!L.length);
   if(document.hidden&&"Notification"in window&&Notification.permission==="granted"){try{new Notification("PUXE · prazo de redestinação",{body:`${L.length} container(s) vencido(s) ou a menos de 24h sem puxe`,tag:"puxe"})}catch(e){}}}
-function openAlarm(L,teste){const ed=pode();
+function logAlarmes(L){const day=new Date().toISOString().slice(0,10),me=(S.user&&S.user.id)||"demo",k=LS.get("puxe-alog",{}),rows=[];
+  Object.keys(k).forEach(x=>{if(!x.endsWith(day))delete k[x]});
+  L.forEach(c=>{const n=nivel(c),key=`${c.id}|${n}|${me}|${day}`;if(k[key])return;k[key]=1;rows.push({carga_id:c.id,container:c.container,tipo:"alarme",canal:"app",nivel:NIVL[n]||n,destinatario:nomeUser(),detalhe:"Alarme no app · "+leftTxt(hLeft(c))})});
+  LS.set("puxe-alog",k);if(rows.length)DB.logEventos(rows).catch(()=>{})}
+function logAck(txt){const L=S.alarmL||[];if(!L.length)return;DB.logEventos(L.map(c=>({carga_id:c.id,container:c.container,tipo:"alarme_ack",canal:"app",detalhe:txt}))).catch(()=>{});S.alarmL=[]}
+function openAlarm(L,teste){const ed=pode();S.alarmL=teste?[]:L;if(!teste)logAlarmes(L);
   $("#alarm").innerHTML=`<div class="box"><div class="ring">${ic("bell",34)}</div><h2>${teste?"Teste de alarme":"Prazo de redestinação!"}</h2>
   <p class="muted" style="text-align:center;margin:0">${teste?"É assim que o alarme toca.":`${L.length} container${L.length>1?"s":""} vencido${L.length>1?"s":""} ou a menos de 24h, ainda sem puxe solicitado.`}</p>
   <div class="lst">${L.map(c=>`<div class="ln"><div class="x"><b>${esc(c.container)}</b><small>${esc(cliName(c))} → ${esc(c.armazem||"")} · ${fDT(c.prazo_limite)}</small></div>${cdChip(c)}</div>`).join("")}</div>
@@ -961,6 +1108,11 @@ const ACT={
   demoRole(){S.demoPapel=S.demoPapel==="operador"?"consulta":"operador";renderAll();toast(S.demoPapel==="operador"?"Agora: Operador (vê e altera)":"Agora: Consulta (só vê)")},
   openCarga(t){const c=S.cargas.find(x=>x.id===t.dataset.id);if(c){stopAlarm();openDrawer(detalhe(c))}},
   closeAll(){closeAll()},
+  xp(t){S.xp=S.xp===t.dataset.id?null:t.dataset.id;renderAll()},
+  openAviso(t){const c=S.cargas.find(x=>x.id===t.dataset.id);if(!c)return;openDrawer(detalhe(c));setTimeout(()=>{const b=$("#avisoBox");if(b){b.scrollIntoView({block:"center"});$("#avPara").focus()}},60)},
+  async avisoSave(){const c=cur();if(!c)return;const sv=$("#avisoBox .seg .on"),canal=sv?sv.dataset.v:"email",para=$("#avPara").value.trim(),cont=$("#avCont").value.trim(),obs=$("#avObs").value.trim();
+    if(!para&&!cont){toast("Informe para quem avisou");$("#avPara").focus();return}
+    if(await run(()=>DB.logEventos([{carga_id:c.id,container:c.container,tipo:"aviso",canal,destinatario:[para,cont&&("<"+cont+">")].filter(Boolean).join(" "),detalhe:obs}]),"Aviso registrado ✓")){openDrawer(detalhe(c));renderAll()}},
   novaCarga(){if(!pode())return;openDrawer(formCarga());fcRefresh()},
   editCarga(){const c=cur();if(c){openDrawer(formCarga(c));fcRefresh()}},
   seg(t){t.parentElement.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b===t));fcRefresh()},
@@ -970,7 +1122,7 @@ const ACT={
     if(v.cliente_id==="__novo"&&!$("#qc").hidden)return err("Salve o novo cliente primeiro (botão “Salvar e usar nesta carga”).");
     if(!cli&&!master){const m=S.clientes.find(c=>normC(c.cnpj)===v.cnpj);if(m)return selCli(m),err("Cliente selecionado pelo CNPJ — confira e salve de novo.");return err(v.cnpj?"Esse CNPJ não está cadastrado — use “Cadastrar como cliente”.":"Escolha o cliente ou digite o CNPJ.")}
     const base={cliente_id:cli?cli.id:null,cliente_nome:cli?cli.nome:"",cnpj:v.cnpj||(cli?normC(cli.cnpj):master?normC(S.org.cnpj_proprio):""),tipo_container:v.tipo_container,bl:v.bl,ce:v.ce,tipo_bl:master&&v.tipo_bl==="Direto"?"Master":v.tipo_bl,navio:v.navio,viagem:v.viagem,armador:v.armador,
-      terminal:v.terminal,eta:v.eta.toISOString(),prazo_limite:v.prazo.toISOString(),armazem:v.armazem,fonte:v.fonte,cliente_pendente:master||v.cliente_pendente,obs:v.obs};
+      terminal:v.terminal,eta:v.eta.toISOString(),prazo_limite:v.prazo.toISOString(),armazem:v.armazem,fonte:v.fonte,cliente_pendente:master||v.cliente_pendente,obs:v.obs,porto:v.porto,fonte_detalhe:v.fonte_detalhe};
     let ok;if(id){ok=await run(()=>DB.updCarga(id,Object.assign(base,{container:v.conts[0]})),"Carga atualizada ✓");if(ok){openDrawer(detalhe(S.cargas.find(c=>c.id===id)));renderAll()}}
     else{const dup=v.conts.filter(ct=>S.cargas.some(c=>c.container===ct&&(c.ce||"")===v.ce));if(dup.length)return err("Já cadastrado: "+dup.join(", "));
       const st=cli&&cli.excecao?"permanece":"detectado";ok=await run(()=>DB.addCargas(v.conts.map(ct=>Object.assign({},base,{container:ct,status:st}))),`${v.conts.length} container${v.conts.length>1?"s":""} cadastrado${v.conts.length>1?"s":""} ✓`);if(ok){closeAll();renderAll();checkAlarm()}}},
@@ -988,9 +1140,9 @@ const ACT={
   resumoWA(){copy(resumoTxt())},
   openAlarm(){const L=S.cargas.filter(c=>["vencido","critico","alerta"].includes(nivel(c))).sort(byPrazo);if(!L.length)return toast("Nenhum alarme agora ✓");openAlarm(L)},
   testAlarm(){openAlarm(S.cargas.filter(c=>PEND.includes(c.status)).sort(byPrazo).slice(0,2),true)},
-  alarmGo(){stopAlarm();LS.set("puxe-snooze",Date.now()+10*6e4);S.view="fila";renderAll()},
-  alarmWA(){copy(resumoTxt());stopAlarm();LS.set("puxe-snooze",Date.now()+30*6e4)},
-  snooze(){stopAlarm();LS.set("puxe-snooze",Date.now()+30*6e4);toast("Soneca: volta em 30 min")},
+  alarmGo(){logAck("Abriu a fila de puxe");stopAlarm();LS.set("puxe-snooze",Date.now()+10*6e4);S.view="fila";renderAll()},
+  alarmWA(){logAck("Copiou o resumo para avisar o operador");copy(resumoTxt());stopAlarm();LS.set("puxe-snooze",Date.now()+30*6e4)},
+  snooze(){logAck("Soneca 30 min");stopAlarm();LS.set("puxe-snooze",Date.now()+30*6e4);toast("Soneca: volta em 30 min")},
   async notif(){if(!("Notification"in window))return toast("Este navegador não suporta notificações");const p=await Notification.requestPermission();toast(p==="granted"?"Notificações ativadas ✓":"Notificações bloqueadas")},
   impEx(){$("#imp").value=[S.clientes[0],S.clientes[1],S.clientes[2]].filter(Boolean).map((c,i)=>{const p=["MSCU","HLXU","CMAU"][i]+String(400000+i*1371).padStart(6,"0");const d=new Date(Date.now()+(3+i)*864e5);return`${fmtCNPJ(c.cnpj)};${p+contDV(p)};15260${String(5100000000+i)};Sea Pioneer;${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} 06:00;BTP`}).join("\n")},
   impPrev(){S.importText=$("#imp").value;S.importRows=buildImport(S.importText);renderAll()},
@@ -1021,7 +1173,13 @@ const ACT={
   async saveOrg(){const f=$("#fo"),g=n=>f.querySelector(`[name="${n}"]`).value;const arr=s=>s.split(",").map(x=>x.trim()).filter(Boolean);
     const a=arr(g("alerta_horas")).map(Number).filter(n=>n>0);
     await run(()=>DB.updOrg({nome:g("nome").trim(),cnpj_proprio:normC(g("cnpj_proprio")),prazo_horas:Math.max(1,+g("prazo_horas")||48),alerta_horas:a.length>=3?a.slice(0,3):[72,48,24],armazens:arr(g("armazens")),terminais:arr(g("terminais"))}),"Regras salvas ✓");renderAll()},
-  csv(){const cols=["container","tipo_container","cliente_nome","cnpj","bl","ce","tipo_bl","navio","viagem","armador","terminal","eta","prazo_limite","armazem","status","protocolo","fonte","cliente_pendente"];
+  csv(){const q=v=>{v=v==null?"":String(v);return/[;"\n]/.test(v)?`"${v.replace(/"/g,'""')}"`:v};
+    const H=["container","tipo","armador","cliente","cnpj","porto","terminal","navio","viagem","eta","prazo_puxe","armazem","status","captado_em","captado_por","fonte","detalhe_captacao","qtd_alarmes","primeiro_alarme","ultimo_alarme","alarme_para","quem_viu","avisos","aprovado_em","aprovado_por","solicitado_em","solicitado_por","protocolo","confirmado_em","armazenado_em"];
+    const rows=S.cargas.slice().sort(byPrazo).map(c=>{const r=resp(c),a=r.alarmes;return[c.container,c.tipo_container,c.armador,cliName(c),fmtCNPJ(c.cnpj),c.porto||"Santos",c.terminal,c.navio,c.viagem,fS(c.eta),fS(c.prazo_limite),c.armazem,STL[c.status],fS(r.captado.at),r.captado.by,r.captado.como,r.captado.det,a.length,a[0]?fS(a[0].created_at):"",a.length?fS(a[a.length-1].created_at):"",[...new Set(a.map(x=>x.destinatario||x.user_nome))].join(", "),r.acks.map(x=>x.user_nome+" ("+x.detalhe+")").join(", "),r.avisos.map(x=>`${CANAL[x.canal]||x.canal} → ${x.destinatario} por ${x.user_nome} em ${fS(x.created_at)}`).join(" | "),r.aprovado?fS(r.aprovado.at):"",r.aprovado?r.aprovado.by:"",r.solicitado?fS(r.solicitado.at):"",r.solicitado?r.solicitado.by:"",c.protocolo,r.confirmado?fS(r.confirmado.at):"",r.armazenado?fS(r.armazenado.at):""].map(q).join(";")});
+    const txt="\ufeff"+[H.join(";")].concat(rows).join("\n");
+    if(window.PUXE_PREVIEW)return copy(txt.slice(1));
+    try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type:"text/csv;charset=utf-8"}));a.download=`puxe-rastreio-${new Date().toISOString().slice(0,10)}.csv`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);toast("Planilha baixada ✓")}catch(e){copy(txt.slice(1))}},
+  csvOld2(){const cols=["container","tipo_container","cliente_nome","cnpj","bl","ce","tipo_bl","navio","viagem","armador","terminal","eta","prazo_limite","armazem","status","protocolo","fonte","cliente_pendente"];
     copy([cols.join(";")].concat(S.cargas.map(c=>cols.map(k=>String(c[k]==null?"":c[k]).replace(/;/g,",")).join(";"))).join("\n"))}
 };
 function formCli(c){const isNew=!c;c=c||{armazem_padrao:"Ecoporto",ativo:true};
