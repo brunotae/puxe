@@ -565,11 +565,14 @@ function mkCNPJ(b8){let s=b8+"0001";const v=ch=>ch.charCodeAt(0)-48;const dv=n=>
 const CMAP=(()=>{const m={};let v=10;for(const L of"ABCDEFGHIJKLMNOPQRSTUVWXYZ"){if(v%11===0)v++;m[L]=v++}return m})();
 function contDV(c10){let t=0;for(let i=0;i<10;i++)t+=(i<4?CMAP[c10[i]]:+c10[i])*Math.pow(2,i);return(t%11)%10}
 function contOk(c){return /^[A-Z]{3}[UJZ]\d{7}$/.test(c)&&contDV(c.slice(0,10))===+c[10]}
-const PEND=["detectado","aprovado"],ATIVAS=["detectado","aprovado","solicitado","confirmado"];
-const STL={detectado:"Detectado",aprovado:"Na fila de puxe",solicitado:"Puxe solicitado",confirmado:"Confirmado",armazenado:"Armazenado",permanece:"Permanece no terminal",cancelado:"Cancelado"};
+const PEND=["detectado","aprovado"],ALERT_ST=["detectado","aprovado","solicitado"],ATIVAS=["detectado","aprovado","solicitado","confirmado"];
+const STL={detectado:"Detectado",aprovado:"Na fila de puxe",solicitado:"Solicitado · acompanhando",confirmado:"Redestinação confirmada",armazenado:"Armazenado",permanece:"Permanece no terminal",cancelado:"Cancelado"};
 const FONTE={siscarga:"Siscarga",email:"E-mail",manual:"Manual"};
-function nivel(c){if(!PEND.includes(c.status)||!c.prazo_limite)return"ok";const h=hLeft(c),a=[...(S.org.alerta_horas||[72,48,24])].sort((x,y)=>x-y);
-  if(h<0)return"vencido";if(h<=a[0])return"critico";if(h<=a[1])return"alerta";if(h<=a[2])return"atencao";return"normal"}
+const hEta=c=>(new Date(c.eta)-Date.now())/36e5;
+const ALH=()=>{const a=[...((S.org&&S.org.alerta_horas)||[120,48,24])].map(Number).filter(x=>x>0).sort((x,y)=>x-y);return a.length>=3?a:[24,48,120]};
+function nivel(c){if(!ALERT_ST.includes(c.status)||!c.eta)return"ok";const h=hEta(c),a=ALH();
+  const pzPassou=c.status!=="solicitado"&&c.prazo_limite&&hLeft(c)<0;
+  if(h<0||pzPassou)return"vencido";if(h<=a[0])return"critico";if(h<=a[1])return"alerta";if(h<=a[2])return"atencao";return"normal"}
 const NCOL={vencido:"var(--bad)",critico:"var(--bad)",alerta:"var(--acc)",atencao:"var(--warn)",normal:"var(--muted)",ok:"var(--ok)"};
 const TCOL={"20DC":"#2F7D6D","40DC":"#1E4D6E","40HC":"#D2642C","Reefer":"#5E7FA3"};
 const papel=()=>S.mode==="demo"?S.demoPapel:(S.perfil?S.perfil.papel:"consulta");
@@ -626,11 +629,11 @@ const radarSVG=()=>`<svg class="rs" viewBox="0 0 200 200" fill="none" stroke="#f
 /* ================= DEMO DATA ================= */
 function demoSeed(){
   const r=rng(42),now=Date.now(),H=36e5,D=24*H,pick=a=>a[Math.floor(r()*a.length)];
-  S.org={id:"demo",nome:"DLT Internacional",cnpj_proprio:mkCNPJ("11222333"),prazo_horas:48,alerta_horas:[72,48,24],
+  S.org={id:"demo",nome:"DLT Internacional",cnpj_proprio:mkCNPJ("11222333"),prazo_horas:24,alerta_horas:[120,48,24],custo_container:1000,regras:{aviso_cliente:"critico",escala_min:30,canais:{email:true,sms:true,whatsapp:true}},plantao:[{periodo:"Seg–Sex 19h–7h",pessoa:"Pedro",telefone:"(13) 99701-2201"},{periodo:"Sábado",pessoa:"Carla",telefone:"(13) 99701-2202"},{periodo:"Domingo",pessoa:"Marcos",telefone:"(13) 99701-2204"},{periodo:"Feriados",pessoa:"Luis",telefone:"(13) 99701-2200"}],
     armazens:["Ecoporto","Marimex","Deicmar","Transbrasa","Eudmarco","DP World","Santos Brasil"],terminais:["BTP","Santos Brasil","DP World","Ecoporto Santos"]};
   const nomes=["Alfa Têxtil Importadora","Brisa Cosméticos","Cais Autopeças","Delta Eletrônicos","Estrela Brinquedos","Fiel Utilidades","Gama Química","Horizonte Móveis","Iguaçu Ferramentas","Jade Alimentos","Kappa Calçados","Lumen Iluminação"];
   const arm=["Ecoporto","Ecoporto","Ecoporto","Marimex","Ecoporto","Santos Brasil","Ecoporto","Deicmar","Ecoporto","Marimex","Ecoporto","Ecoporto"];
-  S.clientes=nomes.map((n,i)=>({id:"cli"+i,nome:n,cnpj:mkCNPJ(String(10203040+i*1111)),contato:["Ana","Bruno","Carlos","Dani","Edu","Fê"][i%6],whatsapp:"",email:"",armazem_padrao:arm[i],excecao:n==="Gama Química",ativo:true,created_at:new Date(now-90*D).toISOString()}));
+  S.clientes=nomes.map((n,i)=>({id:"cli"+i,nome:n,cnpj:mkCNPJ(String(10203040+i*1111)),contato:["Ana","Bruno","Carlos","Dani","Edu","Fê"][i%6],operador:i%2?"Pedro":"Carla",whatsapp:"",email:"",armazem_padrao:arm[i],excecao:n==="Gama Química",ativo:true,created_at:new Date(now-90*D).toISOString()}));
   const V=[["Atlantic Lyra","MSC",-4.5,"BTP","2541S"],["Ocean Vega","Maersk",-1.6,"Santos Brasil","442W"],["Pacific Orion","CMA CGM",1.65,"DP World","0PE3MS"],
     ["Sea Pioneer","Hapag-Lloyd",2.6,"BTP","2539N"],["Cap Austral","ONE",3.8,"Santos Brasil","071S"],["Nordic Star","COSCO",4.75,"Ecoporto Santos","118W"],["Aurora Bay","MSC",9.2,"BTP","2544S"],["Andes Trader","Maersk",15.3,"DP World","447W"]];
   const PFX={MSC:"MSCU",Maersk:"MSKU","CMA CGM":"CMAU","Hapag-Lloyd":"HLXU",ONE:"ONEU",COSCO:"CSNU"};
@@ -646,7 +649,7 @@ function demoSeed(){
     const created=new Date(Math.min(now-H,eta-(10+r()*20)*D)).toISOString();
     const c={id:uid(),cliente_id:master?null:cli.id,cliente_nome:master?"":cli.nome,cnpj:master?S.org.cnpj_proprio:cli.cnpj,container:cont,tipo_container:pick(["40HC","40HC","40DC","20DC","Reefer"]),
       bl:(v[1]==="MSC"?"MEDU":v[1].slice(0,4).toUpperCase())+Math.floor(1e7+r()*9e7),ce:"15"+String(Math.floor(1e12+r()*9e12)),tipo_bl:master?"Master":"Direto",
-      navio:v[0],viagem:v[4],armador:v[1],terminal:v[3],eta:eta.toISOString(),prazo_limite:new Date(eta-48*H).toISOString(),
+      navio:v[0],viagem:v[4],armador:v[1],terminal:v[3],eta:eta.toISOString(),prazo_limite:new Date(eta-24*H).toISOString(),
       armazem:master?"Ecoporto":cli.armazem_padrao,fonte:r()<.6?"siscarga":(r()<.6?"email":"manual"),porto:"Santos",status:st,cliente_pendente:master,protocolo:["solicitado","confirmado","armazenado"].includes(st)?"PX-"+Math.floor(1e5+r()*9e5):"",obs:"",created_at:created,updated_at:created};
     c.fonte_detalhe={siscarga:"Consulta diária automática por CNPJ",email:pick(["Pré-alerta do agente (Xangai) por e-mail","Arrival notice do armador por e-mail","Cópia do BL enviada pelo exportador"]),manual:pick(["Cliente avisou por WhatsApp","Ligação do agente de carga"])}[c.fonte];
     S.cargas.push(c);
@@ -654,24 +657,27 @@ function demoSeed(){
     const seq=["detectado","aprovado","solicitado","confirmado","armazenado"],to=seq.indexOf(st);
     const pz=new Date(c.prazo_limite).getTime(),ts=[];
     for(let i=1;i<=to;i++){ts.push(Math.min(now-(to-i+1)*3*H*(1+r()),pz-(6-i)*4*H-r()*3*H))}
-    const ap=ts.length?ts[0]:(st==="permanece"?now-5*H:now);
-    [[72,"≤72h"],[48,"≤48h"],[24,"≤24h"],[0,"vencido"]].forEach(([hh,lv])=>{const t=pz-hh*H+r()*40*6e4;if(t<now&&t>new Date(created).getTime()&&t<ap){const u=pick(users);
+    const ap=ts.length>=3?ts[2]:(st==="permanece"?now-5*H:now);const etaT=eta.getTime(),op=master?"Carla":(cli.operador||"Carla");
+    [[120,"D-5"],[48,"D-2"],[24,"D-1 urgente"],[-12,"sem confirmação"]].forEach(([hh,lv])=>{const t=etaT-hh*H+r()*40*6e4;if(t<now&&t>new Date(created).getTime()&&t<ap){const u=pick(users);
+      [op].concat(hh<=24?["Marcos"]:[]).forEach(d=>S.eventos.push({id:ev++,carga_id:c.id,container:cont,tipo:"alarme",canal:"email",nivel:lv,destinatario:`${d} <${d.toLowerCase()}@dlt.com.br>`,user_nome:"Sistema (e-mail)",detalhe:`E-mail ${lv} · ETA ${fS(eta)}`,created_at:new Date(t-5*6e4).toISOString()}));
       S.eventos.push({id:ev++,carga_id:c.id,container:cont,tipo:"alarme",canal:"app",nivel:lv,destinatario:u,user_nome:u,detalhe:"Alarme no app",created_at:new Date(t).toISOString()});
       if(r()<.6)S.eventos.push({id:ev++,carga_id:c.id,container:cont,tipo:"alarme_ack",canal:"app",user_nome:u,detalhe:pick(["Soneca 30 min","Abriu a fila de puxe"]),created_at:new Date(t+(3+r()*20)*6e4).toISOString()});
       if(hh<=48&&r()<.55&&!master){const em=r()<.6;S.eventos.push({id:ev++,carga_id:c.id,container:cont,tipo:"aviso",canal:em?"email":"whatsapp",destinatario:em?`${cli.contato} <${cli.contato.toLowerCase()}@${cli.nome.split(" ")[0].toLowerCase()}.com.br>`:`${cli.contato} <(13) 9${Math.floor(1e7+r()*9e7)}>`,detalhe:em?"Enviado aviso de redestinação":"Confirmou destino "+c.armazem,user_nome:"Luis",created_at:new Date(t+(30+r()*90)*6e4).toISOString()})}}});
     ts.forEach((t,j)=>{const i=j+1;S.eventos.push({id:ev++,carga_id:c.id,container:cont,tipo:"status",detalhe:seq[i-1]+" → "+seq[i]+(seq[i]==="solicitado"?" · protocolo "+c.protocolo:""),user_nome:pick(users),created_at:new Date(t).toISOString()})});
     if(st==="permanece")S.eventos.push({id:ev++,carga_id:c.id,container:cont,tipo:"status",detalhe:"detectado → permanece",user_nome:"Luis",created_at:new Date(now-5*H).toISOString()});
   })});
+  S.cargas.filter(c=>c.navio==="Sea Pioneer").forEach(c=>S.eventos.push({id:ev++,carga_id:c.id,container:c.container,tipo:"eta",detalhe:`ETA ${fS(new Date(c.eta).getTime()+10*H)} → ${fS(c.eta)} (antecipou 10h)`,user_nome:"Carla",created_at:new Date(now-20*H).toISOString()}));
+  S.perfis=[{user_id:"d1",nome:"Luis",email:"luis@dlt.com.br",papel:"admin",cargo:"Diretor",telefone:"(13) 99701-2200"},{user_id:"d2",nome:"Carla",email:"carla@dlt.com.br",papel:"operador",cargo:"Operador",telefone:"(13) 99701-2202"},{user_id:"d3",nome:"Pedro",email:"pedro@dlt.com.br",papel:"operador",cargo:"Operador",telefone:"(13) 99701-2201"},{user_id:"d4",nome:"Marcos",email:"marcos@dlt.com.br",papel:"operador",cargo:"Gerente",telefone:"(13) 99701-2204"}];
   S.eventos.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
 }
 
 /* ================= DATA LAYER ================= */
 function demoLog(c,tipo,det){S.eventos.unshift({id:Date.now()+Math.random(),carga_id:c.id,container:c.container,tipo,detalhe:det,user_nome:nomeUser(),created_at:new Date().toISOString()})}
 async function pageAll(mk){let out=[],from=0;for(;;){const {data,error}=await mk().range(from,from+999);if(error)throw error;out=out.concat(data||[]);if(!data||data.length<1000||from>30000)break;from+=1000}return out}
-const NEWCOLS=["porto","fonte_detalhe"];
+const NEWCOLS=["porto","fonte_detalhe","custo_container","regras","plantao","operador","cargo","telefone"];
 function semCols(o){const x=Object.assign({},o);NEWCOLS.forEach(k=>delete x[k]);return x}
-const colErr=e=>/column|schema cache/i.test((e&&e.message)||"")&&/porto|fonte_detalhe|canal|destinatario|nivel/i.test((e&&e.message)||"");
-function avisaSQL(){if(!S.avisouSQL){S.avisouSQL=1;setTimeout(()=>toast("Rode o SQL v2 no Supabase para gravar porto, alarmes e avisos"),2800)}}
+const colErr=e=>/column|schema cache/i.test((e&&e.message)||"");
+function avisaSQL(){if(!S.avisouSQL){S.avisouSQL=1;setTimeout(()=>toast("Falta rodar o SQL mais recente (v2/v3) no Supabase"),2800)}}
 const DB={
   async logEventos(rows){const now=new Date().toISOString();
     if(S.mode==="demo"){rows.forEach(r=>S.eventos.unshift(Object.assign({id:Date.now()+Math.random(),user_nome:nomeUser(),created_at:now},r)));return}
@@ -700,19 +706,20 @@ const DB={
       if(patch.status&&patch.status!==c.status)demoLog(c,"status",c.status+" → "+patch.status+(patch.protocolo?" · protocolo "+patch.protocolo:""));
       if(patch.prazo_limite&&new Date(patch.prazo_limite).getTime()!==new Date(c.prazo_limite).getTime())demoLog(c,"prazo","Prazo alterado");
       if(patch.armazem&&patch.armazem!==c.armazem)demoLog(c,"armazem",(c.armazem||"—")+" → "+patch.armazem);
+      if(patch.eta&&new Date(patch.eta).getTime()!==new Date(c.eta).getTime()){const dh=(new Date(c.eta)-new Date(patch.eta))/36e5;demoLog(c,"eta",`ETA ${fS(c.eta)} → ${fS(patch.eta)}${dh>0?` (antecipou ${fH(dh)})`:` (atrasou ${fH(-dh)})`}`)}
       Object.assign(c,patch,{updated_at:new Date().toISOString()});return}
     let {error}=await sb.from("puxe_cargas").update(patch).eq("id",id);if(error&&colErr(error)){avisaSQL();({error}=await sb.from("puxe_cargas").update(semCols(patch)).eq("id",id))}if(error)throw error;await DB.load();
   },
   async saveCliente(obj){
     if(S.mode==="demo"){if(obj.id){Object.assign(S.clientes.find(x=>x.id===obj.id),obj)}else{S.clientes.push(Object.assign({id:uid(),created_at:new Date().toISOString()},obj))}S.clientes.sort((a,b)=>a.nome.localeCompare(b.nome));return}
-    const {id,...rest}=obj;const r=id?await sb.from("puxe_clientes").update(rest).eq("id",id):await sb.from("puxe_clientes").insert(rest);if(r.error)throw r.error;await DB.load();
+    const {id,...rest}=obj;const go=x=>id?sb.from("puxe_clientes").update(x).eq("id",id):sb.from("puxe_clientes").insert(x);let r=await go(rest);if(r.error&&colErr(r.error)){avisaSQL();r=await go(semCols(rest))}if(r.error)throw r.error;await DB.load();
   },
   async addClientes(rows){
     if(S.mode==="demo"){rows.forEach(r=>S.clientes.push(Object.assign({id:uid(),created_at:new Date().toISOString(),ativo:true,excecao:false},r)));S.clientes.sort((a,b)=>a.nome.localeCompare(b.nome));return}
     const {error}=await sb.from("puxe_clientes").insert(rows);if(error)throw error;await DB.load();
   },
-  async updOrg(patch){if(S.mode==="demo"){Object.assign(S.org,patch);return}const {error}=await sb.from("puxe_orgs").update(patch).eq("id",S.org.id);if(error)throw error;await DB.load()},
-  async updPerfil(user_id,patch){if(S.mode==="demo")return;const {error}=await sb.from("puxe_perfis").update(patch).eq("user_id",user_id);if(error)throw error;await DB.load()},
+  async updOrg(patch){if(S.mode==="demo"){Object.assign(S.org,patch);return}let {error}=await sb.from("puxe_orgs").update(patch).eq("id",S.org.id);if(error&&colErr(error)){avisaSQL();const x=semCols(patch);if(!Object.keys(x).length)throw new Error("Rode o SQL v3 no Supabase para salvar estas regras");({error}=await sb.from("puxe_orgs").update(x).eq("id",S.org.id))}if(error)throw error;await DB.load()},
+  async updPerfil(user_id,patch){if(S.mode==="demo"){Object.assign((S.perfis||[]).find(p=>p.user_id===user_id)||{},patch);return}let {error}=await sb.from("puxe_perfis").update(patch).eq("user_id",user_id);if(error&&colErr(error)){avisaSQL();const x=semCols(patch);if(!Object.keys(x).length)throw new Error("Rode o SQL v3 no Supabase para salvar cargo e telefone");({error}=await sb.from("puxe_perfis").update(x).eq("user_id",user_id))}if(error)throw error;await DB.load()},
   async nota(c,txt){if(S.mode==="demo"){demoLog(c,"nota",txt);return}
     const {error}=await sb.from("puxe_eventos").insert({org_id:S.org.id,carga_id:c.id,container:c.container,tipo:"nota",detalhe:txt,user_id:S.user.id,user_nome:nomeUser()});if(error)throw error;await DB.load()}
 };
@@ -754,7 +761,7 @@ const NAV=[["#","OPERAÇÃO"],["painel","home","Painel","Dashboard"],["cargas","
   ["#","GESTÃO"],["relatorios","chart","Relatórios","Reports"],["equipe","team","Equipe","Team"],["historico","clock","Histórico","Audit log"],
   ["#","SISTEMA"],["integracoes","plug","Integrações","Integrations"],["config","gear","Configurações","Settings"]];
 const MAIS=["navios","captacao","armazens","clientes","relatorios","equipe","historico","integracoes","config"];
-function counts(){const pend=S.cargas.filter(c=>PEND.includes(c.status));return{det:S.cargas.filter(c=>c.status==="detectado").length,fila:S.cargas.filter(c=>c.status==="aprovado").length,
+function counts(){const pend=S.cargas.filter(c=>ALERT_ST.includes(c.status));return{det:S.cargas.filter(c=>c.status==="detectado").length,fila:S.cargas.filter(c=>c.status==="aprovado").length,
   crit:pend.filter(c=>["vencido","critico"].includes(nivel(c))).length,alarm:pend.filter(c=>["vencido","critico","alerta"].includes(nivel(c))).length}}
 function renderChrome(){
   const k=counts();
@@ -776,7 +783,9 @@ function renderAll(){renderChrome();const f={painel:vPainel,cargas:vCargas,fila:
 const SEQ=["detectado","aprovado","solicitado","confirmado","armazenado"],SEQL=["Detectado","Aprovado","Solicitado","Confirmado","Armazenado"];
 function stepper(c){const i=SEQ.indexOf(c.status);if(i<0)return`<span class="st ${c.status}">${STL[c.status]}</span>`;
   return`<div class="steps">${SEQL.map((l,k)=>`<div class="stp ${k<=i?"done":""} ${k===i?"cur":""}"><i></i><small>${l}</small></div>`).join("")}</div>`}
-function cdChip(c){const n=nivel(c);if(n==="ok")return"";return`<span class="cd ${n}"><i></i>${leftTxt(hLeft(c))}</span>`}
+function cdChip(c){const n=nivel(c);if(n==="ok")return"";
+  if(c.status==="solicitado")return`<span class="cd ${n}" title="Solicitado, aguardando confirmação do armazém"><i></i>${hEta(c)<0?"ETA passou · sem confirmação":"sem confirmação · ETA "+leftTxt(hEta(c)).replace("vence em ","em ")}</span>`;
+  return`<span class="cd ${n}"><i></i>${leftTxt(hLeft(c))}</span>`}
 function ctype(c){return`<span class="ctype" style="background:${TCOL[c.tipo_container]||"#5C6B7A"}"><span>${esc((c.tipo_container||"CTR").replace("Reefer","RF"))}</span></span>`}
 function cliName(c){return c.cliente_pendente&&!c.cliente_nome?"Cliente final pendente":(c.cliente_nome||"—")}
 function row(c){return`<button class="tr" data-act="openCarga" data-id="${c.id}">
@@ -835,9 +844,16 @@ function rCal(){const m=S.calM||new Date();const y=m.getFullYear(),mo=m.getMonth
   <div class="cal">${DS.map(d=>`<div class="wd">${d.slice(0,1).toUpperCase()}</div>`).join("")}${cells}</div></section>`}
 function rAtividade(){return`<section class="card p rc"><h3>Atividade recente<button class="more" data-act="nav" data-v="historico">ver tudo ›</button></h3><div style="margin-top:6px">${S.eventos.slice(0,6).map(evRow).join("")||`<div class="empty">Sem eventos.</div>`}</div></section>`}
 function evRow(e){return`<div class="ev"><span class="av s">${esc((e.user_nome||"?").slice(0,1).toUpperCase())}</span><div style="min-width:0"><b>${esc(e.user_nome||"sistema")}</b><small>${esc(e.container||"")} · ${esc(evTxt(e))}</small></div><span class="when">${ago(e.created_at)}</span></div>`}
+const REG=()=>Object.assign({aviso_cliente:"critico",escala_min:30,canais:{email:true,sms:true,whatsapp:true}},(S.org&&S.org.regras)||{});
+const CUSTO=()=>+((S.org&&S.org.custo_container)!=null?S.org.custo_container:1000);
+const opDe=c=>((S.clientes.find(x=>x.id===c.cliente_id)||{}).operador||"");
+const antecipou=c=>S.eventos.some(e=>e.carga_id===c.id&&e.tipo==="eta"&&/antecipou/.test(e.detalhe||""));
+const AVC={nenhum:"Nunca avisar o cliente automaticamente",critico:"1 aviso só se faltar ≤24h e o puxe não foi pedido",captacao_critico:"Máx. 2: ao captar + se ficar crítico"};
+function plRead(){const T=$("#plt");if(!T||!T.querySelector("[data-pl]"))return((S.org&&S.org.plantao)||[]).slice();return[...T.querySelectorAll("tr")].map(tr=>({periodo:tr.querySelector('[data-pl=periodo]').value,pessoa:tr.querySelector('[data-pl=pessoa]').value.trim(),telefone:tr.querySelector('[data-pl=telefone]').value.trim()}))}
+function plantaoHoje(){const P=(S.org&&S.org.plantao)||[];const d=new Date(),wd=d.getDay(),hr=d.getHours();const k=wd===6?"Sábado":wd===0?"Domingo":(hr>=19||hr<7)?"Seg–Sex 19h–7h":null;return k?P.find(x=>x.periodo===k)||null:null}
 const CANAL={app:"Alarme no app",email:"E-mail",whatsapp:"WhatsApp",telefone:"Telefone",pessoal:"Pessoalmente",outro:"Outro"};
-const NIVL={vencido:"vencido",critico:"≤24h",alerta:"≤48h",atencao:"≤72h",normal:"",ok:""};
-const ETAPAS=["Captado","Alertado","Aprovado","Solicitado","Confirmado","Armazenado"];
+const NIVL={vencido:"sem confirmação",critico:"D-1 urgente",alerta:"D-2",atencao:"D-5",normal:"",ok:""};
+const ETAPAS=["Captado","Alertado","Aprovado","Solicitado","Confirmada","Armazenado"];
 const fS=d=>{if(!d)return"—";d=new Date(d);return`${pad(d.getDate())}/${pad(d.getMonth()+1)} ${pad(d.getHours())}:${pad(d.getMinutes())}`};
 function evDe(c){return S.eventos.filter(e=>e.carga_id===c.id).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at))}
 function resp(c){const E=evDe(c),r={};const cr=E.find(e=>e.tipo==="criado");
@@ -857,19 +873,20 @@ function alCell(c,r){const n=r.alarmes.length,m=r.avisos.length,lv=nivel(c);
 function ctRow(c){const r=resp(c),cli=S.clientes.find(x=>x.id===c.cliente_id),open=S.xp===c.id;
   return`<button class="ctr ${open?"open":""}" data-act="xp" data-id="${c.id}">
   <div class="who k1">${ctype(c)}<div style="min-width:0"><b>${esc(c.container)}</b><small>${esc(c.tipo_container||"")} · ${esc(c.armador||"—")}</small></div></div>
-  <div class="cell k2"><b>${esc(cliName(c))}</b><small>${c.cliente_pendente?"House pendente":esc(fmtCNPJ(c.cnpj)||"")}</small></div>
+  <div class="cell k2"><b>${esc(cliName(c))}</b><small>${opDe(c)?"Resp. "+esc(opDe(c))+" · ":""}${c.cliente_pendente?"House pendente":esc(fmtCNPJ(c.cnpj)||"")}</small></div>
   <div class="cell k3"><b>${fS(r.captado.at)}</b><small>${esc(r.captado.by)} · ${esc(r.captado.como)}</small></div>
-  <div class="cell k4"><b>${esc(c.navio||"—")} ${esc(c.viagem||"")}</b><small>${esc(c.porto||"Santos")} · ${esc(c.terminal||"")} · ETA ${fS(c.eta)}</small></div>
+  <div class="cell k4"><b>${esc(c.navio||"—")} ${esc(c.viagem||"")}${antecipou(c)?` <span class="tag warn">antecipou</span>`:""}</b><small>${esc(c.porto||"Santos")} · ${esc(c.terminal||"")} · ETA ${fS(c.eta)}</small></div>
   <div class="cell k5"><b>${fS(c.prazo_limite)}</b>${cdChip(c)||`<small>prazo puxe</small>`}</div>
   <div class="cell alc k6">${alCell(c,r)}</div>
   <div class="cell k7">${ms(c,r)}</div>
   <div class="k8"><span class="st ${c.status}">${STL[c.status]}</span></div></button>${open?xpPanel(c,r,cli):""}`}
 function tlItems(c){const E=evDe(c).map(e=>{let t,s,col="var(--pri2)";
   if(e.tipo==="criado"){t="Captado";s=`${e.user_nome||"—"} · ${e.detalhe||""}`;col="var(--pri2)"}
-  else if(e.tipo==="alarme"){t=`Alarme ${e.nivel||""}`.trim();s=`${CANAL[e.canal]||e.canal||"App"} → ${e.destinatario||e.user_nome||"—"}`;col="var(--bad)"}
+  else if(e.tipo==="alarme"){t=`${e.canal==="email"?"E-mail de alerta":"Alarme"} ${e.nivel||""}`.trim();s=`${CANAL[e.canal]||e.canal||"App"} → ${e.destinatario||e.user_nome||"—"}`;col="var(--bad)"}
   else if(e.tipo==="alarme_ack"){t="Alarme reconhecido";s=`${e.user_nome||"—"} · ${e.detalhe||""}`;col="var(--warn)"}
   else if(e.tipo==="aviso"){t=`Aviso · ${CANAL[e.canal]||e.canal||""}`;s=`para ${e.destinatario||"—"} · por ${e.user_nome||"—"}${e.detalhe?" · "+e.detalhe:""}`;col="var(--acc)"}
   else if(e.tipo==="status"){const x=evTxt(e);t=x.charAt(0).toUpperCase()+x.slice(1);s=e.user_nome||"";col="var(--ok)"}
+  else if(e.tipo==="eta"){t=/antecipou/.test(e.detalhe||"")?"Navio antecipou":"ETA alterada";s=`${e.detalhe||""} · ${e.user_nome||""}`;col="var(--warn)"}
   else if(e.tipo==="nota"){t="Nota";s=`${e.user_nome||""}: ${e.detalhe||""}`;col="var(--muted)"}
   else{t=evTxt(e);s=e.user_nome||"";col="var(--muted)"}
   return{at:new Date(e.created_at),t,s,col}});
@@ -892,7 +909,7 @@ function indic(c,r){const pz=new Date(c.prazo_limite);const ant=(pz-new Date(r.c
 function reacoes(){const byC={},out=[];S.eventos.forEach(e=>{(byC[e.carga_id]=byC[e.carga_id]||[]).push(e)});
   Object.values(byC).forEach(L=>{L.sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));L.forEach((e,i)=>{if(e.tipo!=="alarme")return;const nx=L.slice(i+1).find(x=>["alarme_ack","aviso","status"].includes(x.tipo));out.push({e,nx,min:nx?(new Date(nx.created_at)-new Date(e.created_at))/6e4:null})})});return out}
 const avg=a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:null;
-const BOTS=["Siscarga (robô)","Leitor de e-mail","sistema",""];
+const BOTS=["Siscarga (robô)","Leitor de e-mail","sistema","Sistema (e-mail)",""];
 function tiles(T){return`<div class="kp4">${T.map(t=>`<div class="tile ${t[3]||""}"><small>${t[0]}</small><b>${t[1]}</b><i>${t[2]||""}</i></div>`).join("")}</div>`}
 function barsH(L,max){max=max||Math.max(1,...L.map(x=>x[1]));return`<div class="bars">${L.map(([l,v,t])=>`<div class="br" title="${esc(l)}: ${v}"><span>${esc(l)}</span><div class="bar"><i style="width:${Math.max(2,v/max*100)}%"></i></div><em>${t==null?v:t}</em></div>`).join("")||`<div class="empty">Sem dados.</div>`}</div>`}
 function situacao(c){if(["cancelado","permanece"].includes(c.status))return"na";const r=resp(c),pz=new Date(c.prazo_limite);if(r.solicitado)return new Date(r.solicitado.at)<=pz?"ok":"tarde";if(["solicitado","confirmado","armazenado"].includes(c.status))return"ok";return pz<Date.now()?"perdido":"aberto"}
@@ -903,20 +920,20 @@ function vNavios(){const now=Date.now();const G={};S.cargas.filter(c=>c.status!=
   const tot=L.reduce((s,g)=>s+g.cs.length,0),pend=L.reduce((s,g)=>s+g.cs.filter(c=>PEND.includes(c.status)).length,0);
   return`<div class="ph"><div><span class="kick">VESSEL LINE-UP</span><h1>Navios</h1></div></div>
   ${tiles([["Navios na janela",L.length,"atracados há até 4 dias + próximos"],["Containers",tot,"nestes navios"],["Sem puxe",pend,"detectados ou na fila",pend?"bad":""],["Próxima atracação",L.find(g=>g.eta>now)?fS(L.find(g=>g.eta>now).eta):"—",L.find(g=>g.eta>now)?esc(L.find(g=>g.eta>now).cs[0].navio):""]])}
-  <section class="card sect"><div class="tbw"><table class="tb"><thead><tr><th>Navio · viagem</th><th>Armador</th><th>Porto · terminal</th><th>ETA</th><th>Próximo prazo</th><th class="num">Ctrs</th><th>Clientes</th><th>Puxes</th><th>Situação</th></tr></thead><tbody>
+  <section class="card sect"><div class="tbw"><table class="tb"><thead><tr><th>Navio · viagem</th><th>Armador</th><th>Porto · terminal</th><th>ETA</th><th>Próximo prazo</th><th class="num">Ctrs</th><th>Clientes</th><th>Puxes</th><th>Situação</th>${pode()?"<th></th>":""}</tr></thead><tbody>
   ${L.map(g=>{const c0=g.cs[0],ok=g.cs.filter(c=>["solicitado","confirmado","armazenado","permanece"].includes(c.status)).length,n=g.cs.length,p=g.cs.filter(c=>PEND.includes(c.status)),crit=p.some(c=>["vencido","critico"].includes(nivel(c)));
    const cl=[...new Set(g.cs.map(cliName))];const at=g.eta<now;
    return`<tr class="clk" data-act="navioGo" data-n="${esc(c0.navio||"")}"><td><b>${esc(c0.navio||"—")}</b> ${esc(c0.viagem||"")}</td><td>${esc(c0.armador||"—")}</td><td>${esc(c0.porto||"Santos")} · ${esc(c0.terminal||"—")}</td>
    <td>${fS(g.eta)}<small>${at?"atracado":leftTxt((g.eta-now)/36e5).replace("vence em","em")}</small></td><td>${isFinite(g.pz)?fS(g.pz):"—"}${isFinite(g.pz)?`<small class="${g.pz<now?"bad-t":""}">${leftTxt((g.pz-now)/36e5)}</small>`:"<small>nada pendente</small>"}</td>
    <td class="num"><b>${n}</b></td><td>${esc(cl.slice(0,2).join(", "))}${cl.length>2?` <small>+${cl.length-2}</small>`:""}</td>
-   <td><span class="prog"><i style="width:${ok/n*100}%"></i></span>${ok}/${n}</td><td>${p.length?`<span class="sp ${crit?"bad":"warn"}">${p.length} sem puxe</span>`:`<span class="sp ok">ok</span>`}</td></tr>`}).join("")||`<tr><td colspan="9" class="empty">Nenhum navio na janela.</td></tr>`}
+   <td><span class="prog"><i style="width:${ok/n*100}%"></i></span>${ok}/${n}</td><td>${p.length?`<span class="sp ${crit?"bad":"warn"}">${p.length} sem puxe</span>`:`<span class="sp ok">ok</span>`}${g.cs.some(antecipou)?` <span class="sp warn">antecipou</span>`:""}</td>${pode()?`<td><button class="btn ghost sm" data-act="etaNavio" data-k="${esc(g.k)}">Alterar ETA</button></td>`:""}</tr>`}).join("")||`<tr><td colspan="10" class="empty">Nenhum navio na janela.</td></tr>`}
   </tbody></table></div></section>
-  <p class="muted" style="font-size:10.5px;margin:0">Toque num navio para ver os containers dele. Fase 2: ETA e atracação atualizados sozinhos pelo rastreio do armador e line-up do terminal.</p>`}
+  <p class="muted" style="font-size:10.5px;margin:0">Toque num navio para ver os containers dele. Navio antecipou ou atrasou? Use <b>Alterar ETA</b>: o prazo de todos os containers do navio é recalculado e fica registrado quem mudou. Fase 2: ETA e atracação atualizados sozinhos pelo rastreio do armador e line-up do terminal.</p>`}
 
 /* ================= VIEW: ALARMES ================= */
 function vAlarmes(){const now=Date.now(),day=new Date();day.setHours(0,0,0,0);
   const R=reacoes(),R30=R.filter(x=>new Date(x.e.created_at)>now-30*864e5&&x.min!=null);
-  const pend=S.cargas.filter(c=>PEND.includes(c.status)&&["vencido","critico","alerta"].includes(nivel(c))).sort(byPrazo);
+  const pend=S.cargas.filter(c=>ALERT_ST.includes(c.status)&&["vencido","critico","alerta"].includes(nivel(c))).sort(byPrazo);
   const semAviso=pend.filter(c=>["vencido","critico"].includes(nivel(c))&&!S.eventos.some(e=>e.carga_id===c.id&&e.tipo==="aviso"));
   const hoje=S.eventos.filter(e=>e.tipo==="alarme"&&new Date(e.created_at)>=day).length;
   const T=S.alTipo||"todos",U=S.alUser||"";
@@ -929,12 +946,15 @@ function vAlarmes(){const now=Date.now(),day=new Date();day.setHours(0,0,0,0);
   ${pend.map(c=>{const r=resp(c),la=r.alarmes[r.alarmes.length-1];return`<tr><td><b>${esc(c.container)}</b><small>${esc(c.navio||"")}</small></td><td>${esc(cliName(c))}</td><td>${esc(c.armazem||"—")}</td><td>${fS(c.prazo_limite)} ${cdChip(c)}</td><td class="num">${r.alarmes.length}</td><td>${la?`${fS(la.created_at)}<small>→ ${esc(la.destinatario||la.user_nome||"")}</small>`:"—"}</td>
   <td>${r.avisos.length?`<span class="sp ok">${r.avisos.length} aviso${r.avisos.length>1?"s":""}</span><small>${esc(CANAL[r.avisos[r.avisos.length-1].canal]||"")} → ${esc((r.avisos[r.avisos.length-1].destinatario||"").split(" <")[0])}</small>`:`<span class="sp bad">ninguém avisado</span>`}</td>
   <td><button class="btn ghost sm" data-act="openAviso" data-id="${c.id}">Registrar aviso</button> <button class="btn sm" data-act="openCarga" data-id="${c.id}">Abrir</button></td></tr>`}).join("")||`<tr><td colspan="8" class="empty">Nada crítico agora ✓</td></tr>`}</tbody></table></div></section>
-  <section class="card sect"><div class="sect-h"><h3>Regras de escalonamento</h3><span class="sp warn">proposta · ajustar com o Luis</span></div><div class="tbw"><table class="tb rules"><thead><tr><th>Nível</th><th>Quando</th><th>Quem recebe</th><th>Como</th><th>Repetição</th></tr></thead><tbody>
-   <tr><td><span class="cd atencao"><i></i>Atenção</span></td><td>≤ 72h do prazo</td><td>Operador do cliente</td><td>App <span class="sp ok">ativo</span></td><td>1× ao dia</td></tr>
-   <tr><td><span class="cd alerta"><i></i>Alerta</span></td><td>≤ 48h</td><td>Todos os operadores</td><td>App <span class="sp ok">ativo</span> · e-mail <span class="sp plan">fase 2</span></td><td>a cada 4h</td></tr>
-   <tr><td><span class="cd critico"><i></i>Crítico</span></td><td>≤ 24h</td><td>Operadores + supervisor</td><td>App tocando até agir <span class="sp ok">ativo</span> · WhatsApp <span class="sp plan">fase 2</span></td><td>a cada minuto no app</td></tr>
-   <tr><td><span class="cd vencido"><i></i>Vencido</span></td><td>prazo passou sem puxe</td><td>Todos + dono (Luis)</td><td>App · WhatsApp · e-mail ao cliente <span class="sp plan">fase 2</span></td><td>contínuo até resolver</td></tr>
-  </tbody></table></div><p class="muted" style="font-size:10.5px;margin:0;padding:8px 16px 12px">Hoje o alarme toca no app aberto, para todos os usuários, e cada exibição e reação fica registrada. Envio automático por e-mail/WhatsApp com confirmação de entrega entra na fase 2.</p></section>
+  <section class="card sect"><div class="sect-h"><h3>Regras de escalonamento</h3><span class="sp ok">documento DLT · 19/10</span>${isAdmin()?`<button class="btn ghost sm" data-act="nav" data-v="config">Ajustar</button>`:""}</div><div class="tbw"><table class="tb rules"><thead><tr><th>Nível</th><th>Quando</th><th>Quem recebe</th><th>Como</th><th>Repetição</th></tr></thead><tbody>
+   <tr><td><span class="cd atencao"><i></i>D-5 · 1º alerta</span></td><td>5 dias antes da chegada (ETA)</td><td>Operador da carteira do cliente</td><td>E-mail <span class="sp warn">pronto p/ ativar</span> · App <span class="sp ok">ativo</span></td><td>1 vez</td></tr>
+   <tr><td><span class="cd alerta"><i></i>D-2 · novo alerta</span></td><td>2 dias antes, se a redestinação não estiver confirmada</td><td>Operador da carteira + demais operadores</td><td>E-mail <span class="sp warn">pronto p/ ativar</span> · App <span class="sp ok">ativo</span></td><td>1 vez</td></tr>
+   <tr><td><span class="cd critico"><i></i>D-1 · urgente</span></td><td>1 dia antes, sem confirmação</td><td>Responsáveis: operadores + gerentes</td><td>E-mail urgente <span class="sp warn">pronto p/ ativar</span> · App tocando até agir <span class="sp ok">ativo</span> · WhatsApp/SMS <span class="sp plan">fase 2</span></td><td>app a cada minuto · escala p/ gerente se ninguém reagir em ${REG().escala_min} min</td></tr>
+   <tr><td><span class="cd vencido"><i></i>Sem confirmação</span></td><td>ETA passou, ou puxe não pedido até ${S.org.prazo_horas}h antes</td><td>Todos + gerentes + diretoria</td><td>E-mail <span class="sp warn">pronto p/ ativar</span> · App <span class="sp ok">ativo</span></td><td>a cada 24h até confirmar</td></tr>
+   <tr><td><span class="st solicitado">Solicitado</span></td><td>puxe pedido no armazém</td><td colspan="2">continua em acompanhamento e recebendo os alertas acima</td><td>até chegar a confirmação</td></tr>
+   <tr><td><span class="sp info">Fora do horário</span></td><td>noite, sábado, domingo, feriado</td><td>Plantão do dia${plantaoHoje()?` <small>agora: ${esc(plantaoHoje().pessoa)}</small>`:""}</td><td>WhatsApp + SMS <span class="sp plan">fase 2</span></td><td>conforme nível</td></tr>
+   <tr><td><span class="sp warn">Cliente</span></td><td colspan="2">${esc(AVC[REG().aviso_cliente]||"")}</td><td>e-mail · WhatsApp <span class="sp plan">fase 2</span></td><td>poucos avisos, por decisão do Luis</td></tr>
+  </tbody></table></div><p class="muted" style="font-size:10.5px;margin:0;padding:8px 16px 12px"><b>Regra principal (DLT):</b> os alertas só terminam quando a redestinação estiver <b>confirmada</b> — solicitar não basta. As datas dos alertas contam a partir do ETA atual: quando o ETA muda (Navios → Alterar ETA), tudo é recalculado sozinho. Prazo oficial do puxe: até ${S.org.prazo_horas}h antes da atracação.</p></section>
   <section class="card sect"><div class="sect-h"><h3>Registro de alarmes e avisos</h3>
    ${[["todos","Tudo"],["alarme","Alarmes"],["alarme_ack","Reações"],["aviso","Avisos"]].map(([v,l])=>`<button class="btn ${T===v?"":"ghost"} sm" data-act="alTipo" data-v="${v}">${l}</button>`).join("")}
    <select class="inp" style="width:auto;min-height:28px;padding:2px 8px" data-sel="alUser"><option value="">Todas as pessoas</option>${pessoas.map(x=>`<option ${x===U?"selected":""}>${esc(x)}</option>`).join("")}</select></div>
@@ -950,13 +970,13 @@ function vArmazens(){const m0=new Date();m0.setDate(1);m0.setHours(0,0,0,0);
    const t=avg(L.map(c=>{const r=resp(c);return r.solicitado&&r.confirmado?(new Date(r.confirmado.at)-new Date(r.solicitado.at))/6e4:null}).filter(x=>x!=null));
    const cl=S.clientes.filter(c=>c.armazem_padrao===a).length;
    return`<div class="icard"><h3>${ic("wh",16)} ${esc(a)}</h3><div class="kv"><div><small>Em andamento</small><b>${at.length}</b></div><div><small>Na fila p/ solicitar</small><b>${fila}</b></div><div><small>Aguardando confirmação</small><b>${sol}</b></div><div><small>Puxes no mês</small><b>${mes}</b></div><div><small>Solicitado → confirmado</small><b>${fMin(t)}</b></div><div><small>Clientes com este padrão</small><b>${cl}</b></div></div>
-   <p>Solicitação: <b>manual no portal</b> · robô automático <span class="sp plan">fase 3</span></p>${fila?`<button class="btn sm" data-act="nav" data-v="fila" style="align-self:flex-start">Ver ${fila} na fila</button>`:""}</div>`}).join("")}</div>`}
+   <p>Solicitação: <b>manual no portal</b> · robô automático ${a==="Ecoporto"?`<span class="sp warn">1º robô · maior volume</span>`:`<span class="sp plan">depois do Ecoporto</span>`}</p>${fila?`<button class="btn sm" data-act="nav" data-v="fila" style="align-self:flex-start">Ver ${fila} na fila</button>`:""}</div>`}).join("")}</div>`}
 
 /* ================= VIEW: RELATÓRIOS ================= */
 function vRelatorios(){const P=S.rper||30,now=Date.now(),since=P==="tudo"?0:now-P*864e5;
   const L=S.cargas.filter(c=>new Date(c.created_at||0)>=since&&c.status!=="cancelado");const sit=L.map(situacao);
   const ok=sit.filter(s=>s==="ok").length,tarde=sit.filter(s=>s==="tarde").length,perd=sit.filter(s=>s==="perdido").length,dec=ok+tarde+perd;
-  const custo=+LS.get("puxe-custo",1500)||0;
+  const custo=CUSTO();
   const ant=avg(L.map(c=>(new Date(c.prazo_limite)-new Date(resp(c).captado.at))/36e5).filter(x=>!isNaN(x)));
   const R=reacoes().filter(x=>new Date(x.e.created_at)>=since&&x.min!=null);
   const wk=[];for(let i=7;i>=0;i--){const a=new Date(now-i*7*864e5);a.setHours(0,0,0,0);a.setDate(a.getDate()-a.getDay());const b=new Date(a.getTime()+7*864e5);wk.push([`${pad(a.getDate())}/${pad(a.getMonth()+1)}`,S.cargas.filter(c=>{const t=new Date(c.created_at);return t>=a&&t<b}).length])}
@@ -965,7 +985,7 @@ function vRelatorios(){const P=S.rper||30,now=Date.now(),since=P==="tudo"?0:now-
   const porCli=cnt(L,cliName).slice(0,8),porArm=cnt(L,c=>c.armazem||"—"),porFonte=cnt(L,c=>FONTE[c.fonte]||c.fonte);
   const cliRows=[...new Set(L.map(cliName))].map(n=>{const X=L.filter(c=>cliName(c)===n),s=X.map(situacao);return[n,X.length,s.filter(x=>x==="ok").length,s.filter(x=>x==="tarde"||x==="perdido").length,X.reduce((t,c)=>t+S.eventos.filter(e=>e.carga_id===c.id&&e.tipo==="aviso").length,0)]}).sort((a,b)=>b[1]-a[1]);
   return`<div class="ph"><div><span class="kick">REPORTS</span><h1>Relatórios</h1></div>${[[30,"30 dias"],[90,"90 dias"],["tudo","Tudo"]].map(([v,l])=>`<button class="btn ${P===v?"":"ghost"} sm" data-act="rper" data-v="${v}">${l}</button>`).join("")}<button class="btn ghost sm" data-act="csv">Exportar CSV</button></div>
-  ${tiles([["Containers captados",L.length,P==="tudo"?"desde o início":`últimos ${P} dias`],["Puxe no prazo",dec?Math.round(ok/dec*100)+"%":"—",`${ok} de ${dec} com prazo vencido`,"ok"],["Perdidos / atrasados",perd+tarde,`${perd} sem puxe · ${tarde} pedidos depois`,perd+tarde?"bad":""],["Economia estimada",(ok*custo).toLocaleString("pt-BR",{style:"currency",currency:"BRL",maximumFractionDigits:0}),`${ok} puxes × R$ ${custo.toLocaleString("pt-BR")} (ajustável)`]])}
+  ${tiles([["Containers captados",L.length,P==="tudo"?"desde o início":`últimos ${P} dias`],["Puxe no prazo",dec?Math.round(ok/dec*100)+"%":"—",`${ok} de ${dec} com prazo vencido`,"ok"],["Perdidos / atrasados",perd+tarde,`${perd} sem puxe · ${tarde} pedidos depois`,perd+tarde?"bad":""],["Economia estimada",(ok*custo).toLocaleString("pt-BR",{style:"currency",currency:"BRL",maximumFractionDigits:0}),`${ok} puxes × R$ ${custo.toLocaleString("pt-BR")} por container`]])}
   ${tiles([["Antecedência média",fH(ant),"captação → prazo do puxe"],["Reação média ao alarme",fMin(avg(R.map(x=>x.min))),`${R.length} alarmes com reação`],["Avisos enviados",S.eventos.filter(e=>e.tipo==="aviso"&&new Date(e.created_at)>=since).length,"e-mail, WhatsApp, telefone"],["Em andamento agora",S.cargas.filter(c=>ATIVAS.includes(c.status)).length,`${S.cargas.filter(c=>PEND.includes(c.status)).length} ainda sem puxe`]])}
   <div class="two">
    <section class="card sect"><div class="sect-h"><h3>Containers captados por semana</h3><span class="muted" style="font-size:10.5px">últimas 8 semanas</span></div><div class="cols">${wk.map(([l,v])=>`<div title="Semana de ${l}: ${v}"><em>${v}</em><i style="height:${v/wmax*100}%"></i></div>`).join("")}</div><div class="cols-l">${wk.map(([l])=>`<span>${l}</span>`).join("")}</div></section>
@@ -974,11 +994,12 @@ function vRelatorios(){const P=S.rper||30,now=Date.now(),since=P==="tudo"?0:now-
    <section class="card sect"><div class="sect-h"><h3>Como as cargas foram captadas</h3></div>${barsH(porFonte)}<p class="muted" style="font-size:10.5px;margin:0;padding:0 16px 12px">Quanto mais Siscarga/e-mail automático, menos depende de alguém lembrar.</p></section>
   </div>
   <section class="card sect"><div class="sect-h"><h3>Desempenho por cliente</h3></div><div class="tbw"><table class="tb"><thead><tr><th>Cliente</th><th class="num">Containers</th><th class="num">Puxe no prazo</th><th class="num">Perdidos/atrasados</th><th class="num">Avisos enviados</th></tr></thead><tbody>${cliRows.map(r=>`<tr><td>${esc(r[0])}</td><td class="num">${r[1]}</td><td class="num">${r[2]}</td><td class="num">${r[3]?`<span class="bad-t">${r[3]}</span>`:0}</td><td class="num">${r[4]}</td></tr>`).join("")||`<tr><td colspan="5" class="empty">Sem dados.</td></tr>`}</tbody></table></div></section>
-  <p class="muted" style="font-size:10.5px;margin:0">Custo médio evitado por container: <input class="inp" style="width:110px;min-height:26px;padding:2px 8px;display:inline-block" type="number" min="0" step="100" value="${custo}" data-sel="custo"> R$ — valor de referência para a estimativa; ajuste com o número real da DLT.</p>`}
+  <section class="card sect"><div class="sect-h"><h3>Desempenho por operador (carteira)</h3></div><div class="tbw"><table class="tb"><thead><tr><th>Operador</th><th class="num">Clientes</th><th class="num">Containers</th><th class="num">Puxe no prazo</th><th class="num">Perdidos/atrasados</th><th class="num">Avisos enviados</th><th>Reação média</th></tr></thead><tbody>${[...new Set(S.clientes.map(c=>c.operador||"Sem operador"))].sort().map(op=>{const cls=S.clientes.filter(c=>(c.operador||"Sem operador")===op).map(c=>c.id),X=L.filter(c=>cls.includes(c.cliente_id)),s=X.map(situacao),ids=X.map(c=>c.id);const rm=avg(reacoes().filter(x=>ids.includes(x.e.carga_id)&&x.min!=null).map(x=>x.min));return`<tr><td><b>${esc(op)}</b></td><td class="num">${cls.length}</td><td class="num">${X.length}</td><td class="num">${s.filter(x=>x==="ok").length}</td><td class="num">${s.filter(x=>x==="tarde"||x==="perdido").length}</td><td class="num">${S.eventos.filter(e=>e.tipo==="aviso"&&ids.includes(e.carga_id)).length}</td><td>${fMin(rm)}</td></tr>`}).join("")}</tbody></table></div></section>
+  <p class="muted" style="font-size:10.5px;margin:0">Economia estimada com R$ ${custo.toLocaleString("pt-BR")} por container que deixa de ficar no terminal (o Luis estima mais de R$ 1.000). Ajuste em Configurações.</p>`}
 
 /* ================= VIEW: EQUIPE ================= */
 function vEquipe(){const R=reacoes();const nomes=[...new Set([...S.eventos.map(e=>e.user_nome),...S.eventos.map(e=>e.tipo==="alarme"?e.destinatario:null),...(S.perfis||[]).map(p=>p.nome)])].filter(x=>x&&!BOTS.includes(x)).sort();
-  const papelDe=n=>{const p=(S.perfis||[]).find(x=>x.nome===n);if(p)return p.papel;return S.mode==="demo"?({Luis:"admin",Carla:"operador",Pedro:"operador"}[n]||"operador"):"—"};
+  const papelDe=n=>{const p=(S.perfis||[]).find(x=>x.nome===n);if(p)return p.cargo||p.papel;return S.mode==="demo"?({Luis:"admin",Carla:"operador",Pedro:"operador"}[n]||"operador"):"—"};
   const st=(n,s)=>S.eventos.filter(e=>e.tipo==="status"&&e.user_nome===n&&new RegExp("→ "+s+"\\b").test(e.detalhe||"")).length;
   const rows=nomes.map(n=>{const rec=S.eventos.filter(e=>e.tipo==="alarme"&&e.destinatario===n).length,ack=S.eventos.filter(e=>e.tipo==="alarme_ack"&&e.user_nome===n).length,av=S.eventos.filter(e=>e.tipo==="aviso"&&e.user_nome===n).length;
     const rm=avg(R.filter(x=>x.e.destinatario===n&&x.nx&&x.nx.user_nome===n).map(x=>x.min));const last=S.eventos.filter(e=>e.user_nome===n).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];
@@ -986,18 +1007,26 @@ function vEquipe(){const R=reacoes();const nomes=[...new Set([...S.eventos.map(e
   return`<div class="ph"><div><span class="kick">TEAM</span><h1>Equipe</h1></div>${papel()==="admin"?`<button class="btn ghost sm" data-act="nav" data-v="config">Gerenciar acessos</button>`:""}</div>
   <section class="card sect"><div class="tbw"><table class="tb"><thead><tr><th>Pessoa</th><th>Acesso</th><th class="num">Captou</th><th class="num">Alarmes recebidos</th><th class="num">Reagiu</th><th>Tempo médio de reação</th><th class="num">Avisos enviados</th><th class="num">Aprovou</th><th class="num">Solicitou puxe</th><th>Última atividade</th></tr></thead><tbody>
   ${rows.map(r=>`<tr><td><b>${esc(r.n)}</b></td><td><span class="sp ${r.p==="admin"?"info":r.p==="consulta"?"plan":"ok"}">${esc(r.p)}</span></td><td class="num">${r.cap}</td><td class="num">${r.rec}</td><td class="num">${r.ack}</td><td>${fMin(r.rm)}</td><td class="num">${r.av}</td><td class="num">${r.apr}</td><td class="num">${r.sol}</td><td>${r.last?fS(r.last.created_at):"—"}<small>${r.last?esc(evTxt(r.last)).slice(0,40):""}</small></td></tr>`).join("")||`<tr><td colspan="10" class="empty">Ninguém ainda.</td></tr>`}</tbody></table></div></section>
-  <div class="cgrid"><div class="icard"><h3>${ic("clock",16)} Plantão</h3><p>Definir quem responde aos alarmes fora do horário (noite, fim de semana) e para quem escala se ninguém reagir em X minutos.</p><span class="sp plan" style="align-self:flex-start">a definir com o Luis</span></div>
-  <div class="icard"><h3>${ic("users",16)} Carteira por operador</h3><p>Cada cliente com um operador responsável: o alarme de 72h vai primeiro para ele, e o relatório mostra o desempenho por carteira.</p><span class="sp plan" style="align-self:flex-start">a definir com o Luis</span></div>
-  <div class="icard"><h3>${ic("check",16)} Meta de reação</h3><p>Ex.: todo alarme crítico com ação em até 30 min. O sistema mostra quem cumpre e quem não.</p><span class="sp plan" style="align-self:flex-start">a definir com o Luis</span></div></div>`}
+  <div class="two">
+  <section class="card sect"><div class="sect-h"><h3>Plantão</h3>${plantaoHoje()?`<span class="sp info">agora: ${esc(plantaoHoje().pessoa)}</span>`:`<span class="sp plan">horário comercial</span>`}</div>
+   <div class="tbw"><table class="tb"><thead><tr><th>Período</th><th>Pessoa</th><th>Telefone</th>${isAdmin()?"<th></th>":""}</tr></thead><tbody id="plt">${((S.org.plantao)||[]).map((x,i)=>isAdmin()?`<tr><td><select class="inp" data-pl="periodo" style="min-height:28px;padding:2px 6px;min-width:140px">${["Seg–Sex 19h–7h","Sábado","Domingo","Feriados"].map(o=>`<option ${o===x.periodo?"selected":""}>${o}</option>`).join("")}</select></td><td><input class="inp" data-pl="pessoa" list="eqL" value="${esc(x.pessoa||"")}" style="min-height:28px;padding:2px 8px"></td><td><input class="inp" data-pl="telefone" value="${esc(x.telefone||"")}" style="min-height:28px;padding:2px 8px"></td><td><button class="btn ghost sm" data-act="plDel" data-i="${i}">remover</button></td></tr>`:`<tr><td>${esc(x.periodo)}</td><td>${esc(x.pessoa)}</td><td>${esc(x.telefone||"")}</td></tr>`).join("")||`<tr><td colspan="4" class="empty">Ninguém escalado.</td></tr>`}</tbody></table></div>
+   <datalist id="eqL">${nomes.map(n=>`<option>${esc(n)}</option>`).join("")}</datalist>
+   ${isAdmin()?`<div style="display:flex;gap:6px;padding:10px 16px 14px"><button class="btn ghost sm" data-act="plAdd">+ Período</button><button class="btn sm" data-act="plSave">Salvar plantão</button></div>`:""}
+   <p class="muted" style="font-size:10.5px;margin:0;padding:0 16px 12px">Fora do horário, alarmes críticos vão para o plantão do dia (WhatsApp/SMS na fase 2). Se ninguém reagir em ${REG().escala_min} min, escala para os gerentes.</p></section>
+  <section class="card sect"><div class="sect-h"><h3>Carteiras</h3><span class="muted" style="font-size:10.5px">operador responsável de cada cliente</span></div><div class="tbw"><table class="tb"><thead><tr><th>Operador</th><th>Clientes</th><th class="num">Em andamento</th><th class="num">Críticos</th></tr></thead><tbody>
+   ${[...new Set(S.clientes.map(c=>c.operador||"Sem operador"))].sort().map(op=>{const cl=S.clientes.filter(c=>(c.operador||"Sem operador")===op),ids=cl.map(c=>c.id),at=S.cargas.filter(c=>ids.includes(c.cliente_id)&&ATIVAS.includes(c.status));return`<tr><td><b>${esc(op)}</b></td><td style="white-space:normal">${esc(cl.slice(0,4).map(c=>c.nome).join(", "))}${cl.length>4?` <small style="display:inline">+${cl.length-4}</small>`:""}</td><td class="num">${at.length}</td><td class="num">${at.filter(c=>["vencido","critico"].includes(nivel(c))).length||0}</td></tr>`}).join("")}</tbody></table></div>
+   <p class="muted" style="font-size:10.5px;margin:0;padding:8px 16px 12px">Defina o operador em Clientes → editar cliente. O alarme de 72h vai primeiro para ele.</p></section></div>`}
 
 /* ================= VIEW: INTEGRAÇÕES ================= */
 function vIntegracoes(){const n=S.clientes.filter(c=>c.ativo!==false).length;
-  const I=[["radar","Siscomex Carga (Siscarga)","Consulta automática diária de todos os CNPJs monitorados. Acaba com digitar CNPJ por CNPJ.",["warn","em configuração"],`${n} CNPJs · precisa e-CNPJ A1 + contrato Integra Comex (Serpro)`],
-   ["bell","E-mail automático de alarmes","Envia o alarme por e-mail para o responsável e para o cliente, registrando entregue e aberto.",["plan","fase 2"],"precisa servidor de envio (ex.: Resend/SendGrid)"],
+  const I=[["radar","Siscomex Carga (Siscarga)","Consulta automática diária de todos os CNPJs monitorados. Acaba com digitar CNPJ por CNPJ.",["warn","em configuração"],`${n} CNPJs · certificado <b>A1</b> da DLT (arquivo .pfx, guardado só no servidor, nunca no app) + contrato Integra Comex (Serpro)`],
+   ["bell","E-mail automático de alertas (D-5, D-2, D-1)","Envia os alertas por e-mail no calendário da DLT, repete enquanto não houver confirmação e grava cada envio no histórico do container.",["warn","pronto p/ ativar"],"conta no Resend + domínio da DLT verificado; código e passo a passo entregues"],
+   ["check","Confirmação da Ecoporto por e-mail","Hoje: colar o e-mail na Fila de Puxe e o sistema confirma os containers. Depois: caixa dedicada que recebe o e-mail da Ecoporto e confirma sozinha.",["ok","colar: disponível"],"para o automático: uma amostra real do e-mail de confirmação da Ecoporto"],
+   ["bell","SMS","Alarme crítico e plantão por SMS — chega mesmo sem internet no celular.",["plan","fase 2"],"provedor de SMS (ex.: Zenvia, Twilio)"],
    ["dots","WhatsApp Business","Alarme crítico no WhatsApp do operador; cliente confirma o armazém respondendo a mensagem.",["plan","fase 2"],"precisa conta WhatsApp Business API"],
    ["box","Caixa de pré-alertas (IA)","Uma caixa de e-mail recebe pré-alertas e arrival notices; a IA lê e cria a carga sozinha.",["plan","fase 2"],"precisa e-mail dedicado + leitura por IA"],
    ["ship","Rastreio dos armadores","ETA e atracação atualizados sozinhos (MSC, Maersk, CMA CGM, Hapag-Lloyd…).",["plan","fase 2"],"API dos armadores ou agregador"],
-   ["wh","Portais dos armazéns (robô)","Depois do seu OK, o robô entra no Ecoporto, Marimex, Santos Brasil… e lança o puxe.",["plan","fase 3"],"um robô por armazém · começar pelo de maior volume"],
+   ["wh","Portais dos armazéns (robô)","Depois do seu OK, o robô entra no portal do armazém e lança o puxe.",["plan","fase 3"],"<b>começa pelo Ecoporto</b> (maior volume da DLT); depois Marimex, Santos Brasil…"],
    ["home","Line-up dos terminais","Confirma janela e atracação no BTP, Santos Brasil e DP World.",["plan","fase 2"],"consulta aos sites dos terminais"],
    ["chart","Planilha / sistema da comissária","Exporta o rastreio completo com responsáveis, alarmes e avisos.",["ok","disponível"],"botão Exportar CSV em Cargas e Relatórios"]];
   return`<div class="ph"><div><span class="kick">INTEGRATIONS</span><h1>Integrações</h1></div></div>
@@ -1006,7 +1035,7 @@ function xpPanel(c,r,cli){return`<div class="xp"><div><h4>Container</h4><div cla
    <div><small>BL</small><b>${esc(c.bl||"—")}</b></div><div><small>CE-Mercante</small><b>${esc(c.ce||"—")}</b></div>
    <div><small>Tipo BL</small><b>${esc(c.tipo_bl||"—")}</b></div><div><small>Armazém destino</small><b>${esc(c.armazem||"—")}</b></div>
    <div><small>Porto · terminal</small><b>${esc(c.porto||"Santos")} · ${esc(c.terminal||"—")}</b></div><div><small>ETA</small><b>${fDT(c.eta)}</b></div>
-   <div><small>Contato cliente</small><b>${esc((cli&&(cli.contato||cli.email||cli.whatsapp))||"—")}</b></div><div><small>Protocolo</small><b>${esc(c.protocolo||"—")}</b></div></div>
+   <div><small>Contato cliente</small><b>${esc((cli&&(cli.contato||cli.email||cli.whatsapp))||"—")}</b></div><div><small>Operador responsável</small><b>${esc(opDe(c)||"—")}</b></div><div><small>Prazo oficial</small><b>${fH((new Date(c.eta)-new Date(c.prazo_limite))/36e5)} antes da atracação</b></div><div><small>Protocolo</small><b>${esc(c.protocolo||"—")}</b></div></div>
    <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn sm" data-act="openCarga" data-id="${c.id}">Abrir / ações</button><button class="btn ghost sm" data-act="openAviso" data-id="${c.id}">Registrar aviso</button></div></div>
   <div><h4>Linha do tempo</h4>${timeline(c)}</div>
   <div><h4>Responsabilidade</h4>${respList(c,r)}</div></div>`}
@@ -1015,10 +1044,10 @@ function evTxt(e){if(e.tipo==="alarme")return`Alarme ${e.nivel||""} · ${CANAL[e
 
 /* ================= VIEW: CARGAS ================= */
 function vCargas(){
-  const F={todas:()=>true,ativas:c=>ATIVAS.includes(c.status),pendentes:c=>PEND.includes(c.status),semacao:c=>c.status==="detectado"&&S.eventos.some(e=>e.carga_id===c.id&&(e.tipo==="alarme"||e.tipo==="aviso")),naoavisado:c=>PEND.includes(c.status)&&["vencido","critico"].includes(nivel(c))&&!S.eventos.some(e=>e.carga_id===c.id&&e.tipo==="aviso"),encerradas:c=>["armazenado","permanece"].includes(c.status),canceladas:c=>c.status==="cancelado"};
+  const F={todas:()=>true,ativas:c=>ATIVAS.includes(c.status),pendentes:c=>PEND.includes(c.status),minha:c=>opDe(c)&&opDe(c)===nomeUser(),semacao:c=>c.status==="detectado"&&S.eventos.some(e=>e.carga_id===c.id&&(e.tipo==="alarme"||e.tipo==="aviso")),naoavisado:c=>PEND.includes(c.status)&&["vencido","critico"].includes(nivel(c))&&!S.eventos.some(e=>e.carga_id===c.id&&e.tipo==="aviso"),encerradas:c=>["armazenado","permanece"].includes(c.status),canceladas:c=>c.status==="cancelado"};
   if(!F[S.filtroC])S.filtroC="todas";
   const L=S.cargas.filter(F[S.filtroC]).filter(c=>match(c,S.busca)).sort(byPrazo);
-  const chips=[["todas","Todas"],["ativas","Em andamento"],["pendentes","Sem puxe"],["semacao","Alarmados sem ação"],["naoavisado","Críticos sem aviso"],["encerradas","Encerradas"],["canceladas","Canceladas"]];
+  const chips=[["todas","Todas"],["minha","Minha carteira"],["ativas","Em andamento"],["pendentes","Sem puxe"],["semacao","Alarmados sem ação"],["naoavisado","Críticos sem aviso"],["encerradas","Encerradas"],["canceladas","Canceladas"]];
   return`<div class="ph"><div><span class="kick">SHIPMENTS</span><h1>Cargas</h1></div>${pode()?`<button class="btn" data-act="novaCarga">${ic("plus",18)} Nova carga</button>`:""}</div>
   <section class="card tblc"><div class="sec-h"><h2 style="font-size:18px">${L.length} container${L.length!==1?"s":""}</h2><label class="srch2">${ic("search",17)}<input data-in="busca" placeholder="Buscar…" value="${esc(S.busca)}"></label><button class="btn ghost sm" data-act="csv">Exportar CSV</button></div>
   <div class="chips">${chips.map(([f,l])=>`<button data-act="filtroC" data-f="${f}" class="${S.filtroC===f?"on":""}">${l} ${S.cargas.filter(F[f]).length}</button>`).join("")}</div>
@@ -1028,16 +1057,19 @@ function vCargas(){
 /* ================= VIEW: FILA DE PUXE ================= */
 function groupBy(L,k){const g={};L.forEach(c=>{(g[c[k]||"—"]=g[c[k]||"—"]||[]).push(c)});return Object.entries(g).sort((a,b)=>b[1].length-a[1].length)}
 function vFila(){
-  const det=S.cargas.filter(c=>c.status==="detectado").sort(byPrazo),apr=S.cargas.filter(c=>c.status==="aprovado").sort(byPrazo);const ed=pode();
+  const det=S.cargas.filter(c=>c.status==="detectado").sort(byPrazo),apr=S.cargas.filter(c=>c.status==="aprovado").sort(byPrazo),sol=S.cargas.filter(c=>c.status==="solicitado").sort((a,b)=>new Date(a.eta)-new Date(b.eta));const ed=pode();
   const line=(c,chk)=>`<div class="ln">${chk&&ed?`<input type="checkbox" ${["vencido","critico","alerta","atencao"].includes(nivel(c))?"checked":""} data-grp="${esc(c.armazem)}" data-id="${c.id}">`:""}<div class="x"><b>${esc(c.container)}</b> <span class="tag">${esc(c.tipo_container||"")}</span><small>${esc(cliName(c))} · ${esc(c.navio||"")} · prazo ${fDT(c.prazo_limite)}</small></div>${cdChip(c)}<button class="icb" style="width:38px;height:38px" data-act="openCarga" data-id="${c.id}">${ic("right",16)}</button></div>`;
   return`<div class="ph"><div><span class="kick">REDESTINATION</span><h1>Fila de Puxe</h1></div></div>
   <div class="two"><div>
-   <h3 style="margin:0 0 4px">1 · Aguardando seu OK</h3><p class="muted" style="margin:0 0 14px;font-size:13px">Agrupado por armazém de destino. Já vêm marcados os que vencem em até 72h — confira e aprove.</p>
+   <h3 style="margin:0 0 4px">1 · Aguardando seu OK</h3><p class="muted" style="margin:0 0 14px;font-size:13px">Agrupado por armazém de destino. Já vêm marcados os que estão em alerta (5 dias ou menos da chegada) — confira e aprove.</p>
    ${groupBy(det,"armazem").map(([a,L])=>`<section class="card grp"><div class="grp-h"><span class="n">${L.length}</span><h3>→ ${esc(a)}</h3>${ed?`<button class="btn acc sm" data-act="aprovarGrp" data-grp="${esc(a)}">${ic("check",16)} OK, aprovar</button>`:""}</div>${L.map(c=>line(c,true)).join("")}</section>`).join("")||`<div class="card empty">Nada aguardando aprovação. ✓</div>`}
   </div><div>
    <h3 style="margin:0 0 4px">2 · Solicitar no armazém</h3><p class="muted" style="margin:0 0 14px;font-size:13px">Lance a redestinação no portal de cada armazém e informe o protocolo.</p>
    ${groupBy(apr,"armazem").map(([a,L])=>`<section class="card grp"><div class="grp-h"><span class="n">${L.length}</span><h3>→ ${esc(a)}</h3><button class="btn ghost sm" data-act="copiarGrp" data-grp="${esc(a)}">Copiar lista</button></div>${L.map(c=>line(c,false)).join("")}
      ${ed?`<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><input class="inp" style="flex:1;min-width:150px" placeholder="Protocolo do armazém (opcional)" data-prot="${esc(a)}"><button class="btn sm" data-act="solicitarGrp" data-grp="${esc(a)}">Marquei como solicitado</button></div>`:""}</section>`).join("")||`<div class="card empty">Nenhum container na fila.</div>`}
+   <h3 style="margin:18px 0 4px">3 · Aguardando confirmação do armazém</h3><p class="muted" style="margin:0 0 10px;font-size:12px">Solicitado não encerra o processo: os alertas continuam até a confirmação. Cole o e-mail de confirmação da Ecoporto e o sistema acha os containers.</p>
+   ${ed?`<button class="btn acc sm" data-act="confEmail" style="margin-bottom:10px">${ic("check",15)} Colar e-mail de confirmação</button>`:""}
+   ${groupBy(sol,"armazem").map(([a,L])=>`<section class="card grp"><div class="grp-h"><span class="n">${L.length}</span><h3>→ ${esc(a)}</h3><span class="sp warn">aguardando confirmação</span></div>${L.map(c=>{const r=resp(c);return`<div class="ln"><div class="x"><b>${esc(c.container)}</b> <span class="tag">${esc(c.protocolo||"sem protocolo")}</span><small>${esc(cliName(c))} · solicitado ${r.solicitado?fS(r.solicitado.at)+" por "+esc(r.solicitado.by):""} · ETA ${fS(c.eta)}</small></div>${cdChip(c)}${ed?`<button class="btn ghost sm" data-act="confUm" data-id="${c.id}">Confirmada</button>`:""}</div>`}).join("")}</section>`).join("")||`<div class="card empty">Nada aguardando confirmação.</div>`}
    <div class="note" style="margin-top:14px"><b>Fase 2 — robô de solicitação:</b> depois do seu OK, o sistema entra no portal de cada armazém (Ecoporto, Marimex, Santos Brasil…) e lança o puxe sozinho. Hoje ele prepara a lista; o lançamento ainda é manual.</div>
   </div></div>`}
 
@@ -1086,7 +1118,7 @@ function vClientes(){const q=S.busca.toLowerCase();const L=S.clientes.filter(c=>
   return`<div class="ph"><div><span class="kick">CNPJS MONITORADOS</span><h1>Clientes</h1></div>${pode()?`<button class="btn ghost" data-act="loteCli">Importar lista</button><button class="btn" data-act="novoCli">${ic("plus",18)} Novo cliente</button>`:""}</div>
   <section class="card" style="padding:8px 18px 14px">${L.map(c=>{const n=S.cargas.filter(x=>x.cliente_id===c.id&&ATIVAS.includes(x.status)).length;
     return`<button class="cli" data-act="editCli" data-id="${c.id}"><div class="who"><span class="av">${esc(c.nome.slice(0,1))}</span><div style="min-width:0"><b>${esc(c.nome)}</b><small>${esc(fmtCNPJ(c.cnpj))}${c.ativo===false?" · inativo":""}</small></div></div>
-    <div class="cell c2"><b>${esc(c.armazem_padrao||"—")}</b><small>armazém padrão</small></div><div class="cell c3">${c.excecao?`<span class="st permanece">Permanece no terminal</span>`:`<small>${esc(c.contato||"")}</small>`}</div><div class="cell" style="text-align:right"><b>${n}</b><small>ativos</small></div></button>`}).join("")||`<div class="empty">Nenhum cliente ainda. Cadastre um por um ou use <b>Importar lista</b> para colar todos de uma vez.</div>`}</section>`}
+    <div class="cell c2"><b>${esc(c.armazem_padrao||"—")}</b><small>armazém padrão</small></div><div class="cell c3">${c.excecao?`<span class="st permanece">Permanece no terminal</span>`:`<b>${esc(c.operador||"—")}</b><small>operador · ${esc(c.contato||"")}</small>`}</div><div class="cell" style="text-align:right"><b>${n}</b><small>ativos</small></div></button>`}).join("")||`<div class="empty">Nenhum cliente ainda. Cadastre um por um ou use <b>Importar lista</b> para colar todos de uma vez.</div>`}</section>`}
 
 /* ================= VIEW: HISTÓRICO ================= */
 function vHistorico(){const tab=S.histTab;
@@ -1103,17 +1135,27 @@ function vConfig(){const o=S.org,adm=isAdmin();const dis=adm?"":"disabled";
   <div class="two"><section class="card p"><h3 style="margin:0 0 12px">Regras de prazo</h3><div class="form" id="fo">
     <label>Empresa<input name="nome" value="${esc(o.nome)}" ${dis}></label>
     <label>CNPJ da própria comissária (regra master)<input name="cnpj_proprio" value="${esc(fmtCNPJ(o.cnpj_proprio||""))}" ${dis}></label>
-    <label>Prazo padrão para pedir o puxe (horas antes da atracação)<input name="prazo_horas" type="number" min="1" value="${o.prazo_horas}" ${dis}></label>
-    <label>Alertas (horas antes do prazo, separados por vírgula)<input name="alerta_horas" value="${(o.alerta_horas||[]).join(", ")}" ${dis}></label>
+    <label>Prazo para pedir o puxe (horas antes da atracação) · oficial: 24h<input name="prazo_horas" type="number" min="1" value="${o.prazo_horas}" ${dis}></label>
+    <label>Alertas (horas antes da chegada/ETA) · DLT: 120 (5 dias), 48 (2 dias), 24 (1 dia)<input name="alerta_horas" value="${(o.alerta_horas||[]).join(", ")}" ${dis}></label>
     <label>Armazéns de destino<input name="armazens" value="${esc((o.armazens||[]).join(", "))}" ${dis}></label>
     <label>Terminais de atracação<input name="terminais" value="${esc((o.terminais||[]).join(", "))}" ${dis}></label>
     ${adm?`<button class="btn" data-act="saveOrg">Salvar regras</button>`:`<p class="hint">Só o administrador altera estas regras.</p>`}</div></section>
   <div class="col" style="gap:18px">
   <section class="card p"><h3 style="margin:0 0 6px">Alarme</h3><p class="muted" style="font-size:13px;line-height:1.6;margin:0 0 12px">O alarme toca com o app aberto e repete a cada minuto enquanto houver container vencido ou a menos de ${Math.min(...(o.alerta_horas||[24]))}h do prazo sem puxe. Avisos com o app fechado (WhatsApp/push) entram na fase 2.</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn acc sm" data-act="testAlarm">Testar alarme</button><button class="btn ghost sm" data-act="notif">Ativar notificações</button></div></section>
+  <section class="card p"><h3 style="margin:0 0 10px">Regras de alarme e avisos</h3><div class="form" id="frg">
+    <label>Custo médio de um container que fica no terminal (R$)<input name="custo" type="number" min="0" step="100" value="${CUSTO()}" ${dis}></label>
+    <label>Escalar para gerentes se ninguém reagir em (minutos)<input name="escala" type="number" min="5" step="5" value="${REG().escala_min}" ${dis}></label>
+    <label>Aviso automático ao cliente<select name="avc" ${dis}>${Object.entries(AVC).map(([k,v])=>`<option value="${k}" ${REG().aviso_cliente===k?"selected":""}>${v}</option>`).join("")}</select></label>
+    <div class="lbl">Canais para a equipe (fase 2)</div>
+    ${["email","sms","whatsapp"].map(k=>`<label class="chk"><input type="checkbox" name="cn_${k}" ${REG().canais[k]?"checked":""} ${dis}> ${{email:"E-mail",sms:"SMS",whatsapp:"WhatsApp"}[k]}</label>`).join("")}
+    ${adm?`<button class="btn sm" data-act="saveRegras" style="align-self:flex-start">Salvar regras</button>`:""}</div></section>
   <section class="card p"><h3 style="margin:0 0 6px">Usuários e acessos</h3><p class="muted" style="font-size:13px;margin:0 0 10px">Consulta: só vê · Operador: vê e altera · Admin: também libera acessos.</p>
-   ${S.mode==="demo"?`<div class="note">Na demonstração, use o botão laranja no topo para alternar entre Operador e Consulta.</div>`:
-   (papel()==="admin"?(S.perfis.map(p=>`<div class="ln"><span class="av s">${esc((p.nome||p.email||"?").slice(0,1).toUpperCase())}</span><div class="x"><b>${esc(p.nome||"")}</b><small>${esc(p.email||"")}</small></div><select class="inp" style="width:auto;min-height:40px" data-perfil="${p.user_id}" ${p.user_id===S.user.id?"disabled":""}>${["pendente","consulta","operador","admin"].map(r=>`<option ${p.papel===r?"selected":""}>${r}</option>`).join("")}</select></div>`).join("")||`<div class="empty">Ninguém ainda.</div>`):`<p class="hint">Peça ao administrador para mudar seu acesso.</p>`)}
+   ${S.mode==="demo"?`<div class="note" style="margin-bottom:8px">Na demonstração, use o botão laranja no topo para alternar entre Operador e Consulta.</div>`:""}
+   ${(papel()==="admin"||S.mode==="demo")?((S.perfis||[]).map(p=>`<div class="ln" style="flex-wrap:wrap"><span class="av s">${esc((p.nome||p.email||"?").slice(0,1).toUpperCase())}</span><div class="x" style="min-width:120px"><b>${esc(p.nome||"")}</b><small>${esc(p.email||"")}</small></div>
+     <select class="inp" style="width:auto;min-height:30px;padding:2px 6px" data-pcargo="${p.user_id}" title="Cargo (define quem recebe cada nível)">${["Operador","Gerente","Diretor"].map(r=>`<option ${(p.cargo||"Operador")===r?"selected":""}>${r}</option>`).join("")}</select>
+     <input class="inp" style="width:130px;min-height:30px;padding:2px 8px" data-ptel="${p.user_id}" value="${esc(p.telefone||"")}" placeholder="celular (SMS/WhatsApp)">
+     <select class="inp" style="width:auto;min-height:30px;padding:2px 6px" data-perfil="${p.user_id}" ${S.user&&p.user_id===S.user.id?"disabled":""} title="Acesso">${["pendente","consulta","operador","admin"].map(r=>`<option ${p.papel===r?"selected":""}>${r}</option>`).join("")}</select></div>`).join("")||`<div class="empty">Ninguém ainda.</div>`):`<p class="hint">Peça ao administrador para mudar seu acesso.</p>`}
   </section></div></div>`}
 
 /* ================= DRAWER ================= */
@@ -1227,10 +1269,10 @@ function logAlarmes(L){const day=new Date().toISOString().slice(0,10),me=(S.user
 function logAck(txt){const L=S.alarmL||[];if(!L.length)return;DB.logEventos(L.map(c=>({carga_id:c.id,container:c.container,tipo:"alarme_ack",canal:"app",detalhe:txt}))).catch(()=>{});S.alarmL=[]}
 function openAlarm(L,teste){const ed=pode();S.alarmL=teste?[]:L;if(!teste)logAlarmes(L);
   $("#alarm").innerHTML=`<div class="box"><div class="ring">${ic("bell",34)}</div><h2>${teste?"Teste de alarme":"Prazo de redestinação!"}</h2>
-  <p class="muted" style="text-align:center;margin:0">${teste?"É assim que o alarme toca.":`${L.length} container${L.length>1?"s":""} vencido${L.length>1?"s":""} ou a menos de 24h, ainda sem puxe solicitado.`}</p>
-  <div class="lst">${L.map(c=>`<div class="ln"><div class="x"><b>${esc(c.container)}</b><small>${esc(cliName(c))} → ${esc(c.armazem||"")} · ${fDT(c.prazo_limite)}</small></div>${cdChip(c)}</div>`).join("")}</div>
+  <p class="muted" style="text-align:center;margin:0">${teste?"É assim que o alarme toca.":`${L.length} container${L.length>1?"s":""} em D-1 ou além, ainda sem redestinação confirmada.`}</p>
+  <div class="lst">${L.map(c=>`<div class="ln"><div class="x"><b>${esc(c.container)}</b><small>${esc(cliName(c))} → ${esc(c.armazem||"")} · ${STL[c.status]} · ETA ${fDT(c.eta)}</small></div>${cdChip(c)}</div>`).join("")}</div>
   <div style="display:flex;flex-direction:column;gap:8px">${ed?`<button class="btn acc" data-act="alarmGo">Abrir fila de puxe</button>`:`<button class="btn acc" data-act="alarmWA">Avisar operador (copiar)</button>`}<button class="btn ghost" data-act="snooze">Soneca 30 min</button></div>
-  <p class="muted" style="font-size:12px;text-align:center;margin:12px 0 0">O alarme volta enquanto o puxe não for solicitado.</p></div>`;
+  <p class="muted" style="font-size:12px;text-align:center;margin:12px 0 0">Os alertas só param quando a redestinação estiver <b>confirmada</b> — solicitar não basta.</p></div>`;
   $("#alarm").hidden=false;beep();clearInterval(ringT);ringT=setInterval(beep,2200)}
 function stopAlarm(){clearInterval(ringT);$("#alarm").hidden=true;if(navigator.vibrate)navigator.vibrate(0)}
 function resumoTxt(){const pend=S.cargas.filter(c=>PEND.includes(c.status)).sort(byPrazo);const t=new Date();const L=pend.filter(c=>hLeft(c)<=72);
@@ -1264,6 +1306,29 @@ const ACT={
   demoRole(){S.demoPapel=S.demoPapel==="operador"?"consulta":"operador";renderAll();toast(S.demoPapel==="operador"?"Agora: Operador (vê e altera)":"Agora: Consulta (só vê)")},
   openCarga(t){const c=S.cargas.find(x=>x.id===t.dataset.id);if(c){stopAlarm();openDrawer(detalhe(c))}},
   closeAll(){closeAll()},
+  async saveRegras(){const f=$("#frg"),g=n=>f.querySelector(`[name="${n}"]`);
+    await run(()=>DB.updOrg({custo_container:Math.max(0,+g("custo").value||0),regras:{aviso_cliente:g("avc").value,escala_min:Math.max(5,+g("escala").value||30),canais:{email:g("cn_email").checked,sms:g("cn_sms").checked,whatsapp:g("cn_whatsapp").checked}}}),"Regras salvas ✓");renderAll()},
+  plAdd(){S.org.plantao=plRead();S.org.plantao.push({periodo:"Feriados",pessoa:"",telefone:""});renderAll()},
+  plDel(t){S.org.plantao=plRead();S.org.plantao.splice(+t.dataset.i,1);renderAll()},
+  async plSave(){const P=plRead().filter(x=>x.pessoa);await run(()=>DB.updOrg({plantao:P}),"Plantão salvo ✓");renderAll()},
+  etaNavio(t){const cs=S.cargas.filter(c=>((c.navio||"—")+"|"+(c.viagem||""))===t.dataset.k&&!["cancelado","armazenado"].includes(c.status));if(!cs.length)return;const e=new Date(cs[0].eta);
+    openDrawer(`<div class="dhead"><h3>Alterar ETA · ${esc(cs[0].navio||"")} ${esc(cs[0].viagem||"")}</h3><button data-act="closeAll" class="icb">${ic("x")}</button></div>
+    <div class="form" id="fen" data-k="${esc(t.dataset.k)}"><p class="muted" style="margin:0;font-size:12px">ETA atual: <b>${fDT(e)}</b> · ${cs.length} container${cs.length>1?"s":""} serão atualizados e o prazo do puxe de cada um é recalculado.</p>
+    <div class="row3"><label>Nova data<input type="date" name="d" value="${e.getFullYear()}-${pad(e.getMonth()+1)}-${pad(e.getDate())}"></label><label>Hora<select name="h">${Array.from({length:24},(_,i)=>`<option ${i===e.getHours()?"selected":""}>${pad(i)}</option>`).join("")}</select></label><label>Min<select name="m">${["00","15","30","45"].map(x=>`<option ${+x===Math.floor(e.getMinutes()/15)*15?"selected":""}>${x}</option>`).join("")}</select></label></div>
+    <label>Motivo / fonte<input name="mot" placeholder="ex.: line-up BTP, aviso do armador"></label>
+    <div class="hint" id="enMsg"></div><button class="btn" data-act="etaSave">Atualizar ${cs.length} container${cs.length>1?"s":""}</button></div>`)},
+  async etaSave(){const f=$("#fen"),g=n=>f.querySelector(`[name="${n}"]`);const [y,mo,d]=g("d").value.split("-").map(Number);const ne=new Date(y,mo-1,d,+g("h").value,+g("m").value);
+    const cs=S.cargas.filter(c=>((c.navio||"—")+"|"+(c.viagem||""))===f.dataset.k&&!["cancelado","armazenado"].includes(c.status));const mot=g("mot").value.trim();
+    if(await run(async()=>{for(const c of cs){const off=new Date(c.eta)-new Date(c.prazo_limite);await DB.updCarga(c.id,{eta:ne.toISOString(),prazo_limite:new Date(ne-off).toISOString()})}
+      if(mot&&S.mode!=="demo")await DB.logEventos(cs.map(c=>({carga_id:c.id,container:c.container,tipo:"nota",detalhe:"ETA: "+mot}))).catch(()=>{});if(mot&&S.mode==="demo")cs.forEach(c=>demoLog(c,"nota","ETA: "+mot))},`ETA atualizado em ${cs.length} container${cs.length>1?"s":""} ✓`)){closeAll();renderAll();checkAlarm()}},
+  confEmail(){openDrawer(`<div class="dhead"><h3>Confirmação por e-mail</h3><button data-act="closeAll" class="icb">${ic("x")}</button></div>
+    <div class="form"><p class="muted" style="margin:0;font-size:12px;line-height:1.6">Cole aqui o e-mail da Ecoporto (ou de outro armazém) confirmando a redestinação — assunto e corpo. O sistema encontra os números de container e marca como <b>Redestinação confirmada</b>, guardando o trecho do e-mail como prova.</p>
+    <label>E-mail<textarea id="cfTxt" rows="9" placeholder="De: redestinacao@ecoporto.com.br&#10;Assunto: Confirmação de redestinação – Protocolo 123456&#10;Informamos que os containers MSCU1234565, HLXU…"></textarea></label>
+    <div id="cfRes" class="hint">Cole o e-mail acima.</div><button class="btn" data-act="confGo" id="cfBtn" disabled>Confirmar</button></div>`);setTimeout(()=>$("#cfTxt").focus(),50)},
+  async confGo(){const t=$("#cfTxt").value,ids=[...document.querySelectorAll("#cfRes input:checked")].map(i=>i.dataset.id);if(!ids.length)return;
+    const de=(t.match(/^\s*(de|from)\s*:\s*(.+)$/im)||[])[2]||"",as=(t.match(/^\s*(assunto|subject)\s*:\s*(.+)$/im)||[])[2]||"",trecho=(as||t.replace(/\s+/g," ").slice(0,140)).trim();
+    if(await run(async()=>{for(const id of ids){const c=S.cargas.find(x=>x.id===id);await DB.updCarga(id,{status:"confirmado"});const n=`Confirmação do armazém por e-mail${de?" · de "+de.trim():""} · ${trecho}`;if(S.mode==="demo")demoLog(c,"nota",n);else await DB.logEventos([{carga_id:id,container:c.container,tipo:"nota",detalhe:n}]).catch(()=>{})}},`${ids.length} redestinaç${ids.length>1?"ões confirmadas":"ão confirmada"} ✓`)){closeAll();renderAll()}},
+  async confUm(t){const c=S.cargas.find(x=>x.id===t.dataset.id);if(await run(()=>DB.updCarga(c.id,{status:"confirmado"}),"Redestinação confirmada ✓"))renderAll()},
   alTipo(t){S.alTipo=t.dataset.v;renderAll()},
   rper(t){S.rper=t.dataset.v==="tudo"?"tudo":+t.dataset.v;renderAll()},
   navioGo(t){S.busca=t.dataset.n;S.filtroC="todas";S.view="cargas";renderAll();window.scrollTo(0,0)},
@@ -1324,14 +1389,14 @@ const ACT={
     if(await run(()=>DB.addClientes(rows),`${rows.length} cliente${rows.length>1?"s":""} cadastrado${rows.length>1?"s":""} ✓`)){S.importRows=buildImport(S.importText||"");renderAll()}},
   editCli(t){const c=S.clientes.find(x=>x.id===t.dataset.id);if(c)openDrawer(formCli(c))},
   async saveCli(){const f=$("#fcl"),g=n=>f.querySelector(`[name="${n}"]`);const sv=f.querySelector('.seg[data-name="armazem_padrao"] .on');
-    const o={id:f.dataset.id||undefined,nome:g("nome").value.trim(),cnpj:normC(g("cnpj").value),contato:g("contato").value.trim(),whatsapp:g("whatsapp").value.trim(),email:g("email").value.trim(),armazem_padrao:sv?sv.dataset.v:"Ecoporto",excecao:g("excecao").checked,ativo:g("ativo").checked,obs:g("obs").value.trim()};
+    const o={id:f.dataset.id||undefined,nome:g("nome").value.trim(),cnpj:normC(g("cnpj").value),contato:g("contato").value.trim(),whatsapp:g("whatsapp").value.trim(),email:g("email").value.trim(),operador:g("operador").value.trim(),armazem_padrao:sv?sv.dataset.v:"Ecoporto",excecao:g("excecao").checked,ativo:g("ativo").checked,obs:g("obs").value.trim()};
     if(!o.nome){$("#fclErr").textContent="Falta o nome do cliente.";g("nome").focus();return}
     if(o.cnpj.length!==14){$("#fclErr").textContent=`O CNPJ precisa ter 14 dígitos (tem ${o.cnpj.length}).`;g("cnpj").focus();return}
     if(S.clientes.some(c=>normC(c.cnpj)===o.cnpj&&c.id!==o.id)){$("#fclErr").textContent="Esse CNPJ já está cadastrado.";return}
     if(!o.id)delete o.id;if(await run(()=>DB.saveCliente(o),"Cliente salvo ✓")){closeAll();renderAll()}},
   async saveOrg(){const f=$("#fo"),g=n=>f.querySelector(`[name="${n}"]`).value;const arr=s=>s.split(",").map(x=>x.trim()).filter(Boolean);
     const a=arr(g("alerta_horas")).map(Number).filter(n=>n>0);
-    await run(()=>DB.updOrg({nome:g("nome").trim(),cnpj_proprio:normC(g("cnpj_proprio")),prazo_horas:Math.max(1,+g("prazo_horas")||48),alerta_horas:a.length>=3?a.slice(0,3):[72,48,24],armazens:arr(g("armazens")),terminais:arr(g("terminais"))}),"Regras salvas ✓");renderAll()},
+    await run(()=>DB.updOrg({nome:g("nome").trim(),cnpj_proprio:normC(g("cnpj_proprio")),prazo_horas:Math.max(1,+g("prazo_horas")||48),alerta_horas:a.length>=3?a.slice(0,3):[120,48,24],armazens:arr(g("armazens")),terminais:arr(g("terminais"))}),"Regras salvas ✓");renderAll()},
   csv(){const q=v=>{v=v==null?"":String(v);return/[;"\n]/.test(v)?`"${v.replace(/"/g,'""')}"`:v};
     const H=["container","tipo","armador","cliente","cnpj","porto","terminal","navio","viagem","eta","prazo_puxe","armazem","status","captado_em","captado_por","fonte","detalhe_captacao","qtd_alarmes","primeiro_alarme","ultimo_alarme","alarme_para","quem_viu","avisos","aprovado_em","aprovado_por","solicitado_em","solicitado_por","protocolo","confirmado_em","armazenado_em"];
     const rows=S.cargas.slice().sort(byPrazo).map(c=>{const r=resp(c),a=r.alarmes;return[c.container,c.tipo_container,c.armador,cliName(c),fmtCNPJ(c.cnpj),c.porto||"Santos",c.terminal,c.navio,c.viagem,fS(c.eta),fS(c.prazo_limite),c.armazem,STL[c.status],fS(r.captado.at),r.captado.by,r.captado.como,r.captado.det,a.length,a[0]?fS(a[0].created_at):"",a.length?fS(a[a.length-1].created_at):"",[...new Set(a.map(x=>x.destinatario||x.user_nome))].join(", "),r.acks.map(x=>x.user_nome+" ("+x.detalhe+")").join(", "),r.avisos.map(x=>`${CANAL[x.canal]||x.canal} → ${x.destinatario} por ${x.user_nome} em ${fS(x.created_at)}`).join(" | "),r.aprovado?fS(r.aprovado.at):"",r.aprovado?r.aprovado.by:"",r.solicitado?fS(r.solicitado.at):"",r.solicitado?r.solicitado.by:"",c.protocolo,r.confirmado?fS(r.confirmado.at):"",r.armazenado?fS(r.armazenado.at):""].map(q).join(";")});
@@ -1348,6 +1413,7 @@ function formCli(c){const isNew=!c;c=c||{armazem_padrao:"Ecoporto",ativo:true};
    <label>CNPJ<input name="cnpj" value="${esc(fmtCNPJ(c.cnpj||""))}" placeholder="00.000.000/0000-00" ${pode()?"":"disabled"}></label><span class="hint" id="cnpjMsg"></span>
    <div class="row"><label>Contato<input name="contato" value="${esc(c.contato||"")}"></label><label>WhatsApp<input name="whatsapp" inputmode="tel" value="${esc(c.whatsapp||"")}"></label></div>
    <label>E-mail<input name="email" type="email" value="${esc(c.email||"")}"></label>
+   <label>Operador responsável (carteira)<input name="operador" list="opL" value="${esc(c.operador||"")}" placeholder="quem cuida deste cliente"><datalist id="opL">${[...new Set([...(S.perfis||[]).map(p=>p.nome),...S.clientes.map(x=>x.operador)])].filter(Boolean).map(n=>`<option>${esc(n)}</option>`).join("")}</datalist></label>
    <div class="lbl">Armazém padrão de redestinação</div>${seg("armazem_padrao",S.org.armazens,c.armazem_padrao)}
    <label class="chk"><input type="checkbox" name="excecao" ${c.excecao?"checked":""}> Exceção: costuma permanecer no terminal de atracação</label>
    <label class="chk"><input type="checkbox" name="ativo" ${c.ativo!==false?"checked":""}> Monitorar este CNPJ</label>
@@ -1358,6 +1424,9 @@ function formCli(c){const isNew=!c;c=c||{armazem_padrao:"Ecoporto",ativo:true};
 document.addEventListener("click",e=>{const t=e.target.closest("[data-act]");if(!t)return;if(t.id==="ovl"&&e.target!==t)return;const f=ACT[t.dataset.act];if(f){e.preventDefault();f(t,e)}});
 document.addEventListener("input",e=>{const t=e.target;
   if(t.id==="q"||t.dataset.in==="busca"){S.busca=t.value;const pos=t.selectionStart,isQ=t.id==="q";if(isQ&&!["painel","cargas","clientes"].includes(S.view))S.view="cargas";renderAll();const n=isQ?$("#q"):document.querySelector('[data-in="busca"]');if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(_){}}return}
+  if(t.id==="cfTxt"){const cs=[...new Set((t.value.toUpperCase().match(/[A-Z]{4}\s?-?\d{6}\s?-?\d/g)||[]).map(normC))];const m=cs.map(x=>({x,c:S.cargas.find(c=>c.container===x&&c.status!=="cancelado")}));
+    $("#cfRes").innerHTML=cs.length?m.map(({x,c})=>c?`<label class="chk"><input type="checkbox" data-id="${c.id}" ${["solicitado","aprovado","detectado"].includes(c.status)?"checked":""}><span style="flex:1;min-width:0"><b>${x}</b> <small style="display:block;color:var(--muted)">${esc(cliName(c))} · ${esc(c.armazem||"")}</small></span><span class="st ${c.status}">${STL[c.status]}</span></label>`:`<div class="hint w">${x} · não está no sistema</div>`).join(""):"Nenhum número de container encontrado no texto.";
+    const n=m.filter(z=>z.c).length;$("#cfBtn").disabled=!n;$("#cfBtn").textContent=n?`Confirmar ${n} container${n>1?"s":""}`:"Confirmar";return}
   if(t.id==="lote"){const r=parseLoteCli(t.value);$("#loteMsg").className="hint"+(r.bad.length?" w":"");$("#loteMsg").innerHTML=`<b>${r.ok.length}</b> pronto${r.ok.length!==1?"s":""} para cadastrar`+(r.dup.length?` · ${r.dup.length} já cadastrado${r.dup.length>1?"s":""}`:"")+(r.bad.length?`<br>${r.bad.slice(0,5).map(esc).join("<br>")}`:"");$("#loteBtn").disabled=!r.ok.length;$("#loteBtn").textContent=r.ok.length?`Cadastrar ${r.ok.length}`:"Cadastrar";return}
   if(t.closest&&t.closest("#fc")){const f=$("#fc");
     if(t.name==="cnpj"){const v=normC(t.value),hn=$("#cnpjHint");hn.className="hint";hn.innerHTML="";
@@ -1383,6 +1452,9 @@ document.addEventListener("change",async e=>{const t=e.target;
     fcRefresh()}
   if(t.dataset.sel==="alUser"){S.alUser=t.value;renderAll();return}
   if(t.dataset.sel==="custo"){LS.set("puxe-custo",Math.max(0,+t.value||0));renderAll();return}
+  if(t.closest&&t.closest("#cfRes")){const n=document.querySelectorAll("#cfRes input:checked").length;$("#cfBtn").disabled=!n;$("#cfBtn").textContent=n?`Confirmar ${n} container${n>1?"s":""}`:"Confirmar";return}
+  if(t.dataset.pcargo){await run(()=>DB.updPerfil(t.dataset.pcargo,{cargo:t.value}),"Cargo salvo ✓");renderAll();return}
+  if(t.dataset.ptel){await run(()=>DB.updPerfil(t.dataset.ptel,{telefone:t.value.trim()}),"Telefone salvo ✓");return}
   if(t.dataset.perfil){await run(()=>DB.updPerfil(t.dataset.perfil,{papel:t.value,org_id:S.org.id}),"Acesso atualizado ✓");renderAll()}});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeAll()}if(e.key==="Enter"&&(e.target.id==="lgPass"||e.target.id==="lgEmail"))ACT.login()});
 boot();
