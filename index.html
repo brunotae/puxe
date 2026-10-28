@@ -27,14 +27,21 @@
   --s-con:#E7F0E2;--s-con-i:#3E6B2A;--s-arm:#ECEAE4;--s-arm-i:#5C5A54;--s-per:#F1E8F6;--s-per-i:#6E3F86;--s-can:#F5E4E2;--s-can-i:#9A3328;
   color-scheme:light;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+@media (prefers-color-scheme:dark){:root:not([data-theme]){
   --bg:#0A111B;--side:#0D1622;--card:#111C2B;--card2:#152234;--ink:#EAF0F6;--muted:#93A0B2;--line:#223247;
   --pri:#2E6E99;--pri2:#3A84B5;--acc:#E9874F;--ok:#4FB59E;--warn:#E0A93C;--bad:#E46A5D;--chip:#1A2A3E;--hero-fade:#0E1826;--shadow:0 12px 34px rgba(0,0,0,.35);
   --s-det:#1B2B44;--s-det-i:#9DBCE8;--s-apr:#3A2416;--s-apr-i:#F2A878;--s-sol:#123029;--s-sol-i:#7FD3BE;--s-con:#1B2E17;--s-con-i:#A5D38D;--s-arm:#222833;--s-arm-i:#B5BCC8;--s-per:#2C1F36;--s-per-i:#D3A8EA;--s-can:#3A1A17;--s-can-i:#F09A8F;color-scheme:dark}}
-:root[data-theme="dark"]{
+:root.dk{
   --bg:#0A111B;--side:#0D1622;--card:#111C2B;--card2:#152234;--ink:#EAF0F6;--muted:#93A0B2;--line:#223247;
   --pri:#2E6E99;--pri2:#3A84B5;--acc:#E9874F;--ok:#4FB59E;--warn:#E0A93C;--bad:#E46A5D;--chip:#1A2A3E;--hero-fade:#0E1826;--shadow:0 12px 34px rgba(0,0,0,.35);
   --s-det:#1B2B44;--s-det-i:#9DBCE8;--s-apr:#3A2416;--s-apr-i:#F2A878;--s-sol:#123029;--s-sol-i:#7FD3BE;--s-con:#1B2E17;--s-con-i:#A5D38D;--s-arm:#222833;--s-arm-i:#B5BCC8;--s-per:#2C1F36;--s-per-i:#D3A8EA;--s-can:#3A1A17;--s-can-i:#F09A8F;color-scheme:dark}
+/* temas de cor (regra 5) */
+:root[data-theme="oceano"]{--bg:#06141F;--side:#081B29;--card:#0C2233;--card2:#0F2A3F;--ink:#E6F4F8;--muted:#8FAABA;--line:#16364D;--pri:#0E7C9B;--pri2:#13A3C7;--acc:#2FD3E6;--acc-ink:#05222B;--chip:#12304A;--hero-fade:#0A1D2B}
+:root[data-theme="floresta"]{--bg:#0B1510;--side:#0E1A14;--card:#12221A;--card2:#162A20;--ink:#E8F3EC;--muted:#93AE9F;--line:#21392C;--pri:#2E7D57;--pri2:#3A9A6C;--acc:#7FE0B0;--acc-ink:#0B2618;--chip:#1A3226;--hero-fade:#0F1C15}
+:root[data-theme="ameixa"]{--bg:#170C12;--side:#1C0F16;--card:#24131C;--card2:#2B1722;--ink:#F6EAF0;--muted:#B897A8;--line:#3C2230;--pri:#8E2E52;--pri2:#A83C64;--acc:#F0A93B;--acc-ink:#2A1606;--chip:#341C29;--hero-fade:#1C0F16}
+:root[data-theme="areia"]{--bg:#F4ECDF;--side:#EDE2D0;--card:#FFFBF4;--card2:#F7EFE2;--ink:#3A2A1E;--muted:#85715F;--line:#E3D5BF;--pri:#9C4A2A;--pri2:#B85A35;--acc:#C8692F;--chip:#EFE3D0;--hero-fade:#F4ECDF}
+:root[data-theme="papel"]{--bg:#F6F7F9;--side:#FFFFFF;--card:#FFFFFF;--card2:#F3F5F8;--ink:#161B22;--muted:#69727F;--line:#E3E7EC;--pri:#1F2933;--pri2:#364452;--acc:#2F6FEB;--chip:#EEF1F5;--hero-fade:#F6F7F9}
+:root[data-theme="lavanda"]{--bg:#F3F0FA;--side:#ECE6F8;--card:#FFFFFF;--card2:#F7F4FD;--ink:#26193F;--muted:#776B8F;--line:#E2DAF2;--pri:#5B3BA8;--pri2:#7050C2;--acc:#B04FD6;--chip:#ECE5F8;--hero-fade:#F3F0FA}
 *{box-sizing:border-box}
 html,body{margin:0;overflow-x:hidden;background:var(--bg);color:var(--ink);font-family:Poppins,system-ui,sans-serif;font-size:14px;-webkit-text-size-adjust:100%}
 [hidden]{display:none!important}
@@ -56,7 +63,7 @@ button{cursor:pointer;border:0;background:none}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:999px;background:var(--pri);color:var(--pri-ink);font-weight:600;white-space:nowrap}
 .btn:hover{background:var(--pri2)}
 .btn.ghost{background:var(--chip);color:var(--ink)}
-.btn.acc{background:var(--acc);color:#fff}
+.btn.acc{background:var(--acc);color:var(--acc-ink,#fff)}
 .btn.bad{background:var(--s-can);color:var(--s-can-i)}
 .btn.sm{min-height:36px;padding:0 14px;font-size:13px}
 .btn:disabled{opacity:.45;cursor:not-allowed}
@@ -70,7 +77,7 @@ button{cursor:pointer;border:0;background:none}
 .nav button{display:flex;align-items:center;gap:14px;padding:11px 14px;border-radius:16px;text-align:left;color:var(--ink)}
 .nav button b{display:block;font-weight:600;font-size:15px;line-height:1.25}
 .nav button small{display:block;color:var(--muted);font-size:12px}
-.nav button .cnt{margin-left:auto;background:var(--acc);color:#fff;font-size:11px;font-weight:700;border-radius:999px;padding:2px 8px}
+.nav button .cnt{margin-left:auto;background:var(--acc);color:var(--acc-ink,#fff);font-size:11px;font-weight:700;border-radius:999px;padding:2px 8px}
 .nav button:hover{background:color-mix(in srgb,var(--pri) 7%,transparent)}
 .nav button.on{background:var(--pri);color:#fff;box-shadow:0 8px 20px color-mix(in srgb,var(--pri) 35%,transparent)}
 .nav button.on small{color:rgba(255,255,255,.75)}
@@ -144,8 +151,8 @@ button{cursor:pointer;border:0;background:none}
 .cd i{width:7px;height:7px;border-radius:50%;background:currentColor}
 .cd.vencido{background:var(--bad);color:#fff}.cd.critico{background:var(--s-can);color:var(--s-can-i)}
 .cd.alerta{background:var(--s-apr);color:var(--s-apr-i)}.cd.atencao{background:#FFF4D6;color:#8A6200}.cd.normal,.cd.ok{background:var(--chip);color:var(--muted)}
-:root[data-theme="dark"] .cd.atencao{background:#3A2F12;color:#F1CF7A}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cd.atencao{background:#3A2F12;color:#F1CF7A}}
+:root.dk .cd.atencao{background:#3A2F12;color:#F1CF7A}
+@media (prefers-color-scheme:dark){:root:not([data-theme]) .cd.atencao{background:#3A2F12;color:#F1CF7A}}
 .steps{display:flex;align-items:flex-start;min-width:0}
 .stp{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;min-width:0}
 .stp::before{content:"";position:absolute;top:7px;left:-50%;right:50%;height:2px;background:var(--line)}
@@ -257,7 +264,7 @@ textarea.inp{min-height:130px;resize:vertical;font-family:ui-monospace,Menlo,mon
 .sheet button{display:flex;align-items:center;gap:14px;padding:14px;border-radius:14px;font-size:15px;font-weight:600;text-align:left}
 .sheet button:hover{background:var(--card2)}
 .demo-b{background:var(--s-apr);color:var(--s-apr-i);border:0}
-.demobar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--acc);color:#fff;border-radius:10px;padding:8px 12px;margin:0 0 12px;font-size:11.5px;font-weight:600;letter-spacing:.02em;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.demobar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--acc);color:var(--acc-ink,#fff);border-radius:10px;padding:8px 12px;margin:0 0 12px;font-size:11.5px;font-weight:600;letter-spacing:.02em;box-shadow:0 4px 14px rgba(0,0,0,.12)}
 .demobar span{flex:1;min-width:180px}.demobar button{background:#fff;color:var(--acc);border-radius:999px;padding:4px 12px;font-weight:700;font-size:11.5px;min-height:28px}
 .side-demo{padding:10px 12px 0}.side-demo button{width:100%;justify-content:center}
 /* ---------- responsive ---------- */
@@ -272,7 +279,7 @@ textarea.inp{min-height:130px;resize:vertical;font-family:ui-monospace,Menlo,mon
  .bnav{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--card);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
  .bnav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;font-size:11px;font-weight:600;color:var(--muted);border-radius:12px;position:relative;min-width:0}
  .bnav button.on{color:var(--pri)}
- :root[data-theme="dark"] .bnav button.on{color:var(--acc)}
+ :root.dk .bnav button.on{color:var(--acc)}
  .bnav .cnt{position:absolute;top:2px;left:calc(50% + 6px);background:var(--bad);color:#fff;border-radius:9px;font-size:10px;min-width:17px;height:17px;display:grid;place-items:center;padding:0 4px}
  .top .srch{order:3;flex-basis:100%;max-width:none}
  .top .me div{display:none}
@@ -393,7 +400,7 @@ textarea.inp{font-size:12px}
 }
 /* módulos */
 .side{overflow-y:auto}.navh{font-size:9px;letter-spacing:.16em;color:var(--muted);font-weight:700;padding:10px 12px 3px}
-@media (max-height:860px){.side-art{display:none}}
+@media (max-height:960px){.side-art{display:none}}
 .kp4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
 .tile{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 14px;min-width:0}
 .tile small{display:block;font-size:10.5px;color:var(--muted);font-weight:600}.tile b{display:block;font-family:"Cormorant Garamond",serif;font-size:28px;line-height:1.1;font-weight:600;font-variant-numeric:tabular-nums}.tile i{display:block;font-style:normal;font-size:10.5px;color:var(--muted)}
@@ -470,6 +477,29 @@ textarea.inp{font-size:12px}
  .bnav button{font-size:10.5px}
  html{scroll-padding-bottom:calc(90px + env(safe-area-inset-bottom))}
 }
+/* ---------- v5: logo, versão, aviso de atualização, cores, arrastar arquivo ---------- */
+.side .logo,.mlogo{cursor:pointer}
+.side-ver{padding:8px 14px 12px;font-size:10.5px;color:var(--muted);display:flex;gap:8px;align-items:center;border-top:1px solid var(--line)}
+.side-ver button{color:var(--muted);text-decoration:underline;font-size:10.5px;padding:0}
+.foot-ver{display:none;text-align:center;font-size:10.5px;color:var(--muted);padding:18px 0 6px}
+.foot-ver button{color:var(--muted);text-decoration:underline;font-size:10.5px}
+@media (max-width:860px){.foot-ver{display:block}}
+#upd{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:90;background:var(--pri);color:var(--pri-ink);border-radius:999px;padding:9px 16px;font-size:12.5px;font-weight:600;box-shadow:var(--shadow);display:flex;gap:10px;align-items:center;white-space:nowrap}
+#upd b{background:var(--acc);color:var(--acc-ink,#fff);border-radius:999px;padding:3px 10px}
+@media (min-width:861px){#upd{left:auto;right:22px;transform:none;bottom:22px}}
+.thg{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:6px}
+.thc{border:2px solid var(--line);border-radius:14px;padding:10px;text-align:left;background:var(--card)}
+.thc.on{border-color:var(--acc)}
+.thc .sw{display:flex;height:34px;border-radius:9px;overflow:hidden;margin-bottom:8px}
+.thc .sw i{flex:1}
+.thc b{display:block;font-size:12.5px}.thc small{color:var(--muted);font-size:10.5px}
+.dz{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:2px dashed var(--line);border-radius:14px;padding:18px 12px;text-align:center;cursor:pointer;background:var(--card2);color:var(--muted);font-size:12.5px;transition:.15s}
+.dz b{color:var(--ink);font-size:13px}
+.dz.over{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 10%,var(--card2));color:var(--ink)}
+.dz input[type=file]{display:none}
+.novs h4{margin:14px 0 4px;font-size:13px}.novs ul{margin:0;padding-left:18px;font-size:12.5px;line-height:1.6}
+.xlsb{display:inline-flex;align-items:center;gap:6px}
+.ctlist{font-size:10.5px;color:var(--muted);word-break:break-all}
 </style>
 </head>
 <body>
@@ -510,18 +540,19 @@ textarea.inp{font-size:12px}
 <!-- ============ APP ============ -->
 <div id="app" hidden>
   <aside class="side">
-    <div class="logo"><div class="brand">PUXE</div><div class="brand-sub">REDESTINAÇÃO</div></div>
+    <div class="logo" data-act="nav" data-v="painel" title="Voltar ao Painel"><div class="brand">PUXE</div><div class="brand-sub">REDESTINAÇÃO</div></div>
     <div class="tag" id="orgTag"></div>
     <nav class="nav" id="nav"></nav>
     <div class="side-demo" id="sideDemo"></div>
     <div class="side-art" id="sideArt"></div>
+    <div class="side-ver" id="sideVer"></div>
   </aside>
   <div class="wrap">
     <header class="top">
-      <div class="mlogo"><div class="brand" style="font-size:24px">PUXE</div></div>
+      <div class="mlogo" data-act="nav" data-v="painel" title="Voltar ao Painel"><div class="brand" style="font-size:24px">PUXE</div></div>
       <label class="srch"></label>
       <span id="modePill"></span>
-      <button class="icb" data-act="theme" title="Tema claro/escuro" id="themeBtn"></button>
+      <button class="icb" data-act="cores" title="🎨 Cores" id="themeBtn"></button>
       <button class="icb" data-act="openAlarm" title="Alarmes" id="bell"></button>
       <div class="me" id="me"></div>
     </header>
@@ -530,11 +561,12 @@ textarea.inp{font-size:12px}
   <nav class="bnav" id="bnav"></nav>
 </div>
 
-<div id="ovl" class="ovl" hidden data-act="closeAll"></div>
+<div id="ovl" class="ovl" hidden data-act="ovlClick"></div>
 <div id="drawer" class="drawer" hidden></div>
 <div id="sheet" class="sheet" hidden></div>
 <div id="alarm" class="alarm" hidden></div>
 <div id="toast"></div>
+<div id="upd" hidden data-act="atualizar"></div>
 
 <script>
 "use strict";
@@ -571,14 +603,15 @@ function contDV(c10){let t=0;for(let i=0;i<10;i++)t+=(i<4?CMAP[c10[i]]:+c10[i])*
 function contOk(c){return /^[A-Z]{3}[UJZ]\d{7}$/.test(c)&&contDV(c.slice(0,10))===+c[10]}
 const PEND=["detectado","aprovado"],ALERT_ST=["detectado","aprovado","solicitado"],ATIVAS=["detectado","aprovado","solicitado","confirmado"];
 const STL={detectado:"Detectado",aprovado:"Na fila de puxe",solicitado:"Solicitado · acompanhando",confirmado:"Redestinação confirmada",armazenado:"Armazenado",permanece:"Permanece no terminal",cancelado:"Cancelado"};
-const FONTE={siscarga:"Siscarga",email:"E-mail",manual:"Manual"};
+const FONTE={siscarga:"Siscarga",email:"E-mail",manual:"Manual",planilha:"Planilha"};
+const SOLTA="CARGA SOLTA",TBL={Direto:"Comum (BL)",Master:"Master (MBL)",House:"Filhote (HBL)"};
 const hEta=c=>(new Date(c.eta)-Date.now())/36e5;
 const ALH=()=>{const a=[...((S.org&&S.org.alerta_horas)||[120,48,24])].map(Number).filter(x=>x>0).sort((x,y)=>x-y);return a.length>=3?a:[24,48,120]};
 function nivel(c){if(!ALERT_ST.includes(c.status)||!c.eta)return"ok";const h=hEta(c),a=ALH();
   const pzPassou=c.status!=="solicitado"&&c.prazo_limite&&hLeft(c)<0;
   if(h<0||pzPassou)return"vencido";if(h<=a[0])return"critico";if(h<=a[1])return"alerta";if(h<=a[2])return"atencao";return"normal"}
 const NCOL={vencido:"var(--bad)",critico:"var(--bad)",alerta:"var(--acc)",atencao:"var(--warn)",normal:"var(--muted)",ok:"var(--ok)"};
-const TCOL={"20DC":"#2F7D6D","40DC":"#1E4D6E","40HC":"#D2642C","Reefer":"#5E7FA3"};
+const TCOL={"20DC":"#2F7D6D","40DC":"#1E4D6E","40HC":"#D2642C","Reefer":"#5E7FA3","Solta":"#8C6A3B"};
 const papel=()=>S.mode==="demo"?S.demoPapel:(S.perfil?S.perfil.papel:"consulta");
 const pode=()=>["operador","admin"].includes(papel());
 const isAdmin=()=>papel()==="admin"||(S.mode==="demo"&&S.demoPapel==="operador");
@@ -670,6 +703,12 @@ function demoSeed(){
     ts.forEach((t,j)=>{const i=j+1;S.eventos.push({id:ev++,carga_id:c.id,container:cont,tipo:"status",detalhe:seq[i-1]+" → "+seq[i]+(seq[i]==="solicitado"?" · protocolo "+c.protocolo:""),user_nome:pick(users),created_at:new Date(t).toISOString()})});
     if(st==="permanece")S.eventos.push({id:ev++,carga_id:c.id,container:cont,tipo:"status",detalhe:"detectado → permanece",user_nome:"Luis",created_at:new Date(now-5*H).toISOString()});
   })});
+  const DESC=["Plus Cargo Internacional","Ics Logistica","Craft Multimodal","Glovis Brasil Logistica",null,null];
+  S.cargas.forEach(c=>{c.peso_kg=Math.round(2000+r()*24000);c.desconsolidador=pick(DESC);if(c.desconsolidador&&c.tipo_bl==="Direto")c.tipo_bl="House"});
+  V.forEach(v=>{const L=S.cargas.filter(c=>c.navio===v[0]&&!c.cliente_pendente);if(L.length>=3&&L[0].status===L[1].status){L[1].ce=L[0].ce;L[1].bl=L[0].bl;L[1].cliente_id=L[0].cliente_id;L[1].cliente_nome=L[0].cliente_nome;L[1].cnpj=L[0].cnpj;L[1].armazem=L[0].armazem;L[1].peso_kg=L[0].peso_kg;L[1].desconsolidador=L[0].desconsolidador;L[1].tipo_bl=L[0].tipo_bl}});
+  [[3.3,"132605300011101"],[3.3,"132605300011202"]].forEach(([d,ce],i)=>{const cli=S.clientes[8],eta=new Date(Math.round((now+d*D)/(H/4))*(H/4)),created=new Date(now-2*D).toISOString();
+    const c={id:uid(),cliente_id:cli.id,cliente_nome:cli.nome,cnpj:cli.cnpj,container:SOLTA,tipo_container:"Solta",bl:"YX2601DKQC00"+(i+1),ce,tipo_bl:"Direto",navio:"Green Coast",viagem:"2610",armador:"",terminal:"Tecon Sepetiba",porto:"Sepetiba (RJ)",eta:eta.toISOString(),prazo_limite:new Date(eta-24*H).toISOString(),armazem:null,fonte:"planilha",fonte_detalhe:"Planilha de redestinação (aba Sepetiba RJ)",status:"detectado",cliente_pendente:false,protocolo:"",obs:"",peso_kg:[31163,390054][i],desconsolidador:null,created_at:created,updated_at:created};
+    S.cargas.push(c);S.eventos.push({id:ev++,carga_id:c.id,container:SOLTA,tipo:"criado",detalhe:"Detectado via Planilha · "+c.fonte_detalhe,user_nome:"Carla",created_at:created})});
   S.cargas.filter(c=>c.navio==="Sea Pioneer").forEach(c=>S.eventos.push({id:ev++,carga_id:c.id,container:c.container,tipo:"eta",detalhe:`ETA ${fS(new Date(c.eta).getTime()+10*H)} → ${fS(c.eta)} (antecipou 10h)`,user_nome:"Carla",created_at:new Date(now-20*H).toISOString()}));
   S.perfis=[{user_id:"d1",nome:"Luis",email:"luis@dlt.com.br",papel:"admin",cargo:"Diretor",telefone:"(13) 99701-2200"},{user_id:"d2",nome:"Carla",email:"carla@dlt.com.br",papel:"operador",cargo:"Operador",telefone:"(13) 99701-2202"},{user_id:"d3",nome:"Pedro",email:"pedro@dlt.com.br",papel:"operador",cargo:"Operador",telefone:"(13) 99701-2201"},{user_id:"d4",nome:"Marcos",email:"marcos@dlt.com.br",papel:"operador",cargo:"Gerente",telefone:"(13) 99701-2204"}];
   S.eventos.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
@@ -678,7 +717,7 @@ function demoSeed(){
 /* ================= DATA LAYER ================= */
 function demoLog(c,tipo,det){S.eventos.unshift({id:Date.now()+Math.random(),carga_id:c.id,container:c.container,tipo,detalhe:det,user_nome:nomeUser(),created_at:new Date().toISOString()})}
 async function pageAll(mk){let out=[],from=0;for(;;){const {data,error}=await mk().range(from,from+999);if(error)throw error;out=out.concat(data||[]);if(!data||data.length<1000||from>30000)break;from+=1000}return out}
-const NEWCOLS=["porto","fonte_detalhe","custo_container","regras","plantao","operador","cargo","telefone"];
+const NEWCOLS=["peso_kg","desconsolidador","porto","fonte_detalhe","custo_container","regras","plantao","operador","cargo","telefone"];
 function semCols(o){const x=Object.assign({},o);NEWCOLS.forEach(k=>delete x[k]);return x}
 const colErr=e=>/column|schema cache/i.test((e&&e.message)||"");
 function avisaSQL(){if(!S.avisouSQL){S.avisouSQL=1;setTimeout(()=>toast("Falta rodar o SQL mais recente (v2/v3) no Supabase"),2800)}}
@@ -733,7 +772,7 @@ function errMsg(e){const m=(e&&(e.message||e.error_description))||String(e);if(/
 function show(id){["login","pend","app"].forEach(x=>$("#"+x).hidden=x!==id)}
 async function boot(){
   $("#lgScene").innerHTML=heroSVG();$("#pdScene").innerHTML=heroSVG();$("#sideArt").innerHTML=sideArtSVG();
-  applyTheme();
+  applyTheme();setTimeout(checaVersao,4000);
   if(window.PUXE_PREVIEW){ACT.demo();return}
   if(!sb){show("login");$("#lgErr").textContent="Sem conexão com o banco — use a demonstração.";return}
   let s=null;try{const r=await sb.auth.getSession();s=r.data&&r.data.session}catch(e){}
@@ -775,7 +814,7 @@ function renderChrome(){
   $("#bnav").innerHTML=bn.map(([v,i,t])=>`<button data-act="${v==="mais"?"mais":"nav"}" data-v="${v}" class="${S.view===v||(v==="mais"&&MAIS.includes(S.view))?"on":""}">${ic(i,22)}${t}${v==="fila"&&k.fila?`<span class="cnt">${k.fila}</span>`:v==="painel"&&k.crit?`<span class="cnt">${k.crit}</span>`:""}</button>`).join("");
   document.querySelector(".srch").innerHTML=`${ic("search",18)}<input id="q" placeholder="Container, cliente, BL, CE, navio…" autocomplete="off" value="${esc(S.busca)}">`;
   $("#bell").innerHTML=ic("bell")+(k.alarm?`<span class="dot">${k.alarm}</span>`:"");
-  $("#themeBtn").innerHTML=ic(isDark()?"sun":"moon");
+  $("#themeBtn").innerHTML=`<span style="font-size:17px;line-height:1">🎨</span>`;$("#sideVer").innerHTML=verHTML();
   const p=papel();
   $("#modePill").innerHTML=S.mode==="demo"?`<button class="pill demo-b" data-act="demoRole">Demo · ${p==="operador"?"Operador":"Consulta"} ⇄</button>`:(p==="consulta"?`<span class="pill ro">Somente consulta</span>`:"");
   const nm=nomeUser();
@@ -783,7 +822,7 @@ function renderChrome(){
 }
 function renderAll(){renderChrome();const f={painel:vPainel,cargas:vCargas,fila:vFila,captacao:vCaptacao,clientes:vClientes,historico:vHistorico,config:vConfig,navios:vNavios,alarmes:vAlarmes,armazens:vArmazens,relatorios:vRelatorios,equipe:vEquipe,integracoes:vIntegracoes}[S.view]||vPainel;
   const sd=$("#sideDemo");if(sd)sd.innerHTML=S.mode==="supa"&&!S.demoFrom?`<button class="btn ghost sm" data-act="demoToggle" title="Mostra o sistema com dados fictícios. Nada é salvo.">▶ Modo demonstração</button>`:"";
-  $("#main").innerHTML=(S.mode==="demo"?`<div class="demobar"><span>MODO DEMONSTRAÇÃO · dados fictícios para apresentação · nada é salvo</span><button data-act="${S.demoFrom?"demoToggle":"logout"}">${S.demoFrom?"Voltar aos dados reais":"Entrar no sistema"}</button></div>`:"")+f()}
+  $("#main").innerHTML=(S.mode==="demo"?`<div class="demobar"><span>MODO DEMONSTRAÇÃO · dados fictícios para apresentação · nada é salvo</span><button data-act="${S.demoFrom?"demoToggle":"logout"}">${S.demoFrom?"Voltar aos dados reais":"Entrar no sistema"}</button></div>`:"")+f()+`<div class="foot-ver">${verHTML()}</div>`}
 
 /* ================= COMPONENTS ================= */
 const SEQ=["detectado","aprovado","solicitado","confirmado","armazenado"],SEQL=["Detectado","Aprovado","Solicitado","Confirmado","Armazenado"];
@@ -793,6 +832,8 @@ function cdChip(c){const n=nivel(c);if(n==="ok")return"";
   if(c.status==="solicitado")return`<span class="cd ${n}" title="Solicitado, aguardando confirmação do armazém"><i></i>${hEta(c)<0?"ETA passou · sem confirmação":"sem confirmação · ETA "+leftTxt(hEta(c)).replace("vence em ","em ")}</span>`;
   return`<span class="cd ${n}"><i></i>${leftTxt(hLeft(c))}</span>`}
 function ctype(c){return`<span class="ctype" style="background:${TCOL[c.tipo_container]||"#5C6B7A"}"><span>${esc((c.tipo_container||"CTR").replace("Reefer","RF"))}</span></span>`}
+function ceConts(ce){return ce?S.cargas.filter(x=>x.ce===ce&&x.status!=="cancelado"):[]}
+function ceIrmaos(c){const L=ceConts(c.ce);if(L.length<2)return"";return`<div style="grid-column:1/-1"><small>Este CE tem ${L.length} containers</small><b class="ctlist" style="font-size:12px;color:var(--ink)">${L.map(x=>esc(x.container)).join(" · ")}</b></div>`}
 function cliName(c){return c.cliente_pendente&&!c.cliente_nome?"Cliente final pendente":(c.cliente_nome||"—")}
 function row(c){return`<button class="tr" data-act="openCarga" data-id="${c.id}">
   <div class="who c1">${ctype(c)}<div style="min-width:0"><b>${esc(c.container)}</b><small>${esc(cliName(c))}</small>${c.cliente_pendente?`<span class="tag warn">House pendente</span>`:(c.tipo_bl&&c.tipo_bl!=="Direto"?`<span class="tag">${esc(c.tipo_bl)}</span>`:"")}</div></div>
@@ -990,7 +1031,7 @@ function vRelatorios(){const P=S.rper||30,now=Date.now(),since=P==="tudo"?0:now-
   const cnt=(arr,f)=>{const m={};arr.forEach(c=>{const k=f(c);m[k]=(m[k]||0)+1});return Object.entries(m).sort((a,b)=>b[1]-a[1])};
   const porCli=cnt(L,cliName).slice(0,8),porArm=cnt(L,c=>c.armazem||"—"),porFonte=cnt(L,c=>FONTE[c.fonte]||c.fonte);
   const cliRows=[...new Set(L.map(cliName))].map(n=>{const X=L.filter(c=>cliName(c)===n),s=X.map(situacao);return[n,X.length,s.filter(x=>x==="ok").length,s.filter(x=>x==="tarde"||x==="perdido").length,X.reduce((t,c)=>t+S.eventos.filter(e=>e.carga_id===c.id&&e.tipo==="aviso").length,0)]}).sort((a,b)=>b[1]-a[1]);
-  return`<div class="ph"><div><span class="kick">REPORTS</span><h1>Relatórios</h1></div>${[[30,"30 dias"],[90,"90 dias"],["tudo","Tudo"]].map(([v,l])=>`<button class="btn ${P===v?"":"ghost"} sm" data-act="rper" data-v="${v}">${l}</button>`).join("")}<button class="btn ghost sm" data-act="csv">Exportar CSV</button></div>
+  return`<div class="ph"><div><span class="kick">REPORTS</span><h1>Relatórios</h1></div>${[[30,"30 dias"],[90,"90 dias"],["tudo","Tudo"]].map(([v,l])=>`<button class="btn ${P===v?"":"ghost"} sm" data-act="rper" data-v="${v}">${l}</button>`).join("")}<button class="btn sm" data-act="xlsx" title="Planilha no modelo da DLT: 1 linha por CE, uma aba por porto">Exportar Excel</button><button class="btn ghost sm" data-act="csv">CSV</button></div>
   ${tiles([["Containers captados",L.length,P==="tudo"?"desde o início":`últimos ${P} dias`],["Puxe no prazo",dec?Math.round(ok/dec*100)+"%":"—",`${ok} de ${dec} com prazo vencido`,"ok"],["Perdidos / atrasados",perd+tarde,`${perd} sem puxe · ${tarde} pedidos depois`,perd+tarde?"bad":""],["Economia estimada",(ok*custo).toLocaleString("pt-BR",{style:"currency",currency:"BRL",maximumFractionDigits:0}),`${ok} puxes × R$ ${custo.toLocaleString("pt-BR")} por container`]])}
   ${tiles([["Antecedência média",fH(ant),"captação → prazo do puxe"],["Reação média ao alarme",fMin(avg(R.map(x=>x.min))),`${R.length} alarmes com reação`],["Avisos enviados",S.eventos.filter(e=>e.tipo==="aviso"&&new Date(e.created_at)>=since).length,"e-mail, WhatsApp, telefone"],["Em andamento agora",S.cargas.filter(c=>ATIVAS.includes(c.status)).length,`${S.cargas.filter(c=>PEND.includes(c.status)).length} ainda sem puxe`]])}
   <div class="two">
@@ -1034,12 +1075,12 @@ function vIntegracoes(){const n=S.clientes.filter(c=>c.ativo!==false).length;
    ["ship","Rastreio dos armadores","ETA e atracação atualizados sozinhos (MSC, Maersk, CMA CGM, Hapag-Lloyd…).",["plan","fase 2"],"API dos armadores ou agregador"],
    ["wh","Portais dos armazéns (robô)","Depois do seu OK, o robô entra no portal do armazém e lança o puxe.",["plan","fase 3"],"<b>começa pelo Ecoporto</b> (maior volume da DLT); depois Marimex, Santos Brasil…"],
    ["home","Line-up dos terminais","Confirma janela e atracação no BTP, Santos Brasil e DP World.",["plan","fase 2"],"consulta aos sites dos terminais"],
-   ["chart","Planilha / sistema da comissária","Exporta o rastreio completo com responsáveis, alarmes e avisos.",["ok","disponível"],"botão Exportar CSV em Cargas e Relatórios"]];
+   ["chart","Planilha de redestinação (Excel)","Importa a planilha diária da DLT (arrastar o .xlsx na Captação) e exporta no mesmo modelo: 1 linha por CE, quantidade e numeração dos containers, status e confirmação.",["ok","disponível"],"botão Exportar Excel em Cargas, Relatórios e Captação"]];
   return`<div class="ph"><div><span class="kick">INTEGRATIONS</span><h1>Integrações</h1></div></div>
   <div class="cgrid">${I.map(([i,t,d,[s,sl],need])=>`<div class="icard"><h3>${ic(i,16)} ${t}</h3><p>${d}</p><p style="font-size:10.5px"><b>Precisa:</b> ${need}</p><span class="sp ${s}" style="align-self:flex-start">${sl}</span></div>`).join("")}</div>`}
 function xpPanel(c,r,cli){return`<div class="xp"><div><h4>Container</h4><div class="kv">
    <div><small>BL</small><b>${esc(c.bl||"—")}</b></div><div><small>CE-Mercante</small><b>${esc(c.ce||"—")}</b></div>
-   <div><small>Tipo BL</small><b>${esc(c.tipo_bl||"—")}</b></div><div><small>Armazém destino</small><b>${esc(c.armazem||"—")}</b></div>
+   <div><small>Tipo BL</small><b>${esc(TBL[c.tipo_bl]||c.tipo_bl||"—")}</b></div><div><small>Armazém destino</small><b>${esc(c.armazem||"—")}</b></div><div><small>Peso bruto · desconsolidador</small><b>${c.peso_kg!=null&&c.peso_kg!==""?esc((+c.peso_kg).toLocaleString("pt-BR"))+" kg":"—"} · ${esc(c.desconsolidador||"—")}</b></div>${ceIrmaos(c)}
    <div><small>Porto · terminal</small><b>${esc(c.porto||"Santos")} · ${esc(c.terminal||"—")}</b></div><div><small>ETA</small><b>${fDT(c.eta)}</b></div>
    <div><small>Contato cliente</small><b>${esc((cli&&(cli.contato||cli.email||cli.whatsapp))||"—")}</b></div><div><small>Operador responsável</small><b>${esc(opDe(c)||"—")}</b></div><div><small>Prazo oficial</small><b>${fH((new Date(c.eta)-new Date(c.prazo_limite))/36e5)} antes da atracação</b></div><div><small>Protocolo</small><b>${esc(c.protocolo||"—")}</b></div></div>
    <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn sm" data-act="openCarga" data-id="${c.id}">Abrir / ações</button><button class="btn ghost sm" data-act="openAviso" data-id="${c.id}">Registrar aviso</button></div></div>
@@ -1055,7 +1096,7 @@ function vCargas(){
   const L=S.cargas.filter(F[S.filtroC]).filter(c=>match(c,S.busca)).sort(byPrazo);
   const chips=[["todas","Todas"],["minha","Minha carteira"],["ativas","Em andamento"],["pendentes","Sem puxe"],["semacao","Alarmados sem ação"],["naoavisado","Críticos sem aviso"],["encerradas","Encerradas"],["canceladas","Canceladas"]];
   return`<div class="ph"><div><span class="kick">SHIPMENTS</span><h1>Cargas</h1></div>${pode()?`<button class="btn" data-act="novaCarga">${ic("plus",18)} Nova carga</button>`:""}</div>
-  <section class="card tblc"><div class="sec-h"><h2 style="font-size:18px">${L.length} container${L.length!==1?"s":""}</h2><label class="srch2">${ic("search",17)}<input data-in="busca" placeholder="Buscar…" value="${esc(S.busca)}"></label><button class="btn ghost sm" data-act="csv">Exportar CSV</button></div>
+  <section class="card tblc"><div class="sec-h"><h2 style="font-size:18px">${L.length} container${L.length!==1?"s":""}</h2><label class="srch2">${ic("search",17)}<input data-in="busca" placeholder="Buscar…" value="${esc(S.busca)}"></label><button class="btn sm" data-act="xlsx" title="Planilha no modelo da DLT: 1 linha por CE, uma aba por porto">Exportar Excel</button><button class="btn ghost sm" data-act="csv">CSV</button></div>
   <div class="chips">${chips.map(([f,l])=>`<button data-act="filtroC" data-f="${f}" class="${S.filtroC===f?"on":""}">${l} ${S.cargas.filter(F[f]).length}</button>`).join("")}</div>
   <div class="tbl"><div class="cth"><span>Container</span><span>Cliente</span><span>Captação</span><span>Navio · porto · ETA</span><span>Prazo puxe</span><span>Alarmes / avisos</span><span>Etapa</span><span>Status</span></div>${L.map(ctRow).join("")||`<div class="empty">Nada encontrado.</div>`}</div>
   <p class="muted" style="font-size:10.5px;margin:0;padding:0 16px 12px">Toque numa linha para ver a linha do tempo e quem fez cada etapa. Alarmes são registrados automaticamente quando aparecem para alguém.</p></section>`}
@@ -1064,7 +1105,7 @@ function vCargas(){
 function groupBy(L,k){const g={};L.forEach(c=>{(g[c[k]||"—"]=g[c[k]||"—"]||[]).push(c)});return Object.entries(g).sort((a,b)=>b[1].length-a[1].length)}
 function vFila(){
   const det=S.cargas.filter(c=>c.status==="detectado").sort(byPrazo),apr=S.cargas.filter(c=>c.status==="aprovado").sort(byPrazo),sol=S.cargas.filter(c=>c.status==="solicitado").sort((a,b)=>new Date(a.eta)-new Date(b.eta));const ed=pode();
-  const line=(c,chk)=>`<div class="ln">${chk&&ed?`<input type="checkbox" ${["vencido","critico","alerta","atencao"].includes(nivel(c))?"checked":""} data-grp="${esc(c.armazem)}" data-id="${c.id}">`:""}<div class="x"><b>${esc(c.container)}</b> <span class="tag">${esc(c.tipo_container||"")}</span><small>${esc(cliName(c))} · ${esc(c.navio||"")} · prazo ${fDT(c.prazo_limite)}</small></div>${cdChip(c)}<button class="icb" style="width:38px;height:38px" data-act="openCarga" data-id="${c.id}">${ic("right",16)}</button></div>`;
+  const line=(c,chk)=>`<div class="ln">${chk&&ed?`<input type="checkbox" ${["vencido","critico","alerta","atencao"].includes(nivel(c))?"checked":""} data-grp="${esc(c.armazem||"—")}" data-id="${c.id}">`:""}<div class="x"><b>${esc(c.container)}</b> <span class="tag">${esc(c.tipo_container||"")}</span><small>${esc(cliName(c))} · ${esc(c.navio||"")} · prazo ${fDT(c.prazo_limite)}</small></div>${cdChip(c)}<button class="icb" style="width:38px;height:38px" data-act="openCarga" data-id="${c.id}">${ic("right",16)}</button></div>`;
   return`<div class="ph"><div><span class="kick">REDESTINATION</span><h1>Fila de Puxe</h1></div></div>
   <div class="two"><div>
    <h3 style="margin:0 0 4px">1 · Aguardando seu OK</h3><p class="muted" style="margin:0 0 14px;font-size:13px">Agrupado por armazém de destino. Já vêm marcados os que estão em alerta (5 dias ou menos da chegada) — confira e aprove.</p>
@@ -1085,6 +1126,12 @@ function vCaptacao(){
   const brl=v=>v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
   const R=S.importRows;
   return`<div class="ph"><div><span class="kick">DATA INTAKE</span><h1>Captação</h1></div></div>
+  <section class="card p" style="margin-bottom:14px"><h3 style="margin:0 0 6px;display:flex;gap:10px;align-items:center">${ic("chart")} Planilha de redestinação (Excel)</h3>
+    <p class="muted" style="margin:0 0 10px;font-size:12.5px;line-height:1.6">Solte aqui a planilha da DLT (modelo <b>Redestinacao_dd-mm-aaaa.xlsx</b>, abas Santos e Sepetiba). O PUXE lê <b>Chegada, Navio, Terminal, Cliente, CNPJ, CE, BL, Tipo, Container(s), Peso e Desconsolidador</b>, cria uma carga por container (carga solta também), cadastra os clientes novos e, se a data de chegada mudou, <b>atualiza o ETA e recalcula os alertas</b>. Pode soltar a planilha nova todo dia: o que já existe não duplica.</p>
+    ${pode()?`<input type="file" id="impFile" accept=".xlsx">`:`<p class="hint">Perfil Consulta: somente leitura.</p>`}
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center"><button class="btn ghost sm" data-act="xlsx">${ic("chart",15)} Exportar Excel (modelo DLT)</button><span class="hint">Também dá para copiar as linhas no Excel (com o cabeçalho) e colar na caixa abaixo.</span></div>
+    ${S.importSrc&&S.importSrc.arquivo&&R?`<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">${R.filter(x=>x.ok).length?`<button class="btn acc" data-act="impGo">Importar ${R.filter(x=>x.ok).length}</button>`:""}<button class="btn ghost sm" data-act="impLimpa">Limpar</button></div>${impPrevHTML(R)}`:""}
+  </section>
   <div class="two">
   <section class="card p"><h3 style="margin:0 0 6px;display:flex;gap:10px;align-items:center">${ic("radar")} Siscomex Carga (Siscarga)</h3>
     <p class="muted" style="margin:0 0 12px;font-size:13px;line-height:1.6">Consulta automática diária de todos os CNPJs monitorados — substitui digitar CNPJ por CNPJ.</p>
@@ -1094,17 +1141,112 @@ function vCaptacao(){
     <div class="stat"><span>Custo estimado API Serpro</span><b>${brl(q*0.36)} – ${brl(q*1.01)}</b></div>
     <div class="stat" style="border:0"><span>Última consulta</span><b>—</b></div>
     <button class="btn" disabled style="width:100%;margin-top:10px">Consultar agora (aguardando API)</button>
-    <div class="note" style="margin-top:12px">Precisa: certificado digital e-CNPJ da DLT e contrato Integra Comex (Serpro), ou robô de consulta. Pendente confirmar se a API busca por CNPJ do consignatário.</div>
+    <div class="note" style="margin-top:12px">Caminho: API Serpro Integra Comex com o certificado A1 da DLT (consulta por CE, manifesto, escala e container). Enquanto isso, a planilha acima faz a captação.</div>
   </section>
-  <section class="card p"><h3 style="margin:0 0 6px">Importar lista (colar)</h3>
+  <section class="card p" id="impBox"><h3 style="margin:0 0 6px">Importar lista (colar)</h3>
     <p class="muted" style="margin:0 0 10px;font-size:13px;line-height:1.6">Cole linhas do Siscarga, de uma planilha ou de um e-mail. Uma carga por linha, colunas separadas por <b>;</b> ou tab:<br><code>CNPJ ; Container ; BL/CE ; Navio ; ETA (dd/mm/aaaa hh:mm) ; Terminal</code></p>
     <textarea class="inp" id="imp" placeholder="12.345.678/0001-90;MSCU1234565;152605123456789;Sea Pioneer;15/10/2026 06:00;BTP" ${pode()?"":"disabled"}>${esc(S.importText||"")}</textarea>
-    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="btn ghost" data-act="impPrev" ${pode()?"":"disabled"}>Pré-visualizar</button>${R&&R.filter(x=>x.ok).length?`<button class="btn acc" data-act="impGo">Importar ${R.filter(x=>x.ok).length}</button>`:""}<button class="btn ghost sm" data-act="impEx" ${pode()?"":"disabled"}>Exemplo</button></div>
-    ${R?`<div class="prev"><table><tr><th></th><th>Container</th><th>Cliente</th><th>Navio</th><th>ETA</th><th>Prazo</th><th>Armazém</th></tr>${R.map(x=>`<tr><td class="${x.ok?"ok-t":"bad-t"}">${x.ok?"✓":"✕"} ${esc(x.msg)}</td><td>${esc(x.container)}</td><td>${esc(x.cliente)}</td><td>${esc(x.navio)}</td><td>${x.eta?fDT(x.eta):"—"}</td><td>${x.prazo?fDT(x.prazo):"—"}</td><td>${esc(x.armazem)}</td></tr>`).join("")}</table></div>${(()=>{const nv=[...new Set(R.filter(x=>x.novo).map(x=>x.novo))];return nv.length&&pode()?`<div class="qc" style="margin-top:12px"><b style="font-size:14px">${nv.length} CNPJ${nv.length>1?"s":""} ainda não cadastrado${nv.length>1?"s":""} — digite o nome para cadastrar agora:</b>${nv.map(c=>`<div class="ln"><div class="x" style="flex:0 0 auto"><b>${esc(fmtCNPJ(c))}</b>${cnpjOk(c)?"":`<small class="bad-t">dígito não confere</small>`}</div><input class="inp" style="flex:1;min-width:140px" placeholder="Nome do cliente" data-novocnpj="${esc(c)}"></div>`).join("")}<button class="btn sm" data-act="impCli" style="align-self:flex-start">Cadastrar e revalidar</button></div>`:""})()}`:""}
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="btn ghost" data-act="impPrev" ${pode()?"":"disabled"}>Pré-visualizar</button>${R&&!(S.importSrc&&S.importSrc.arquivo)&&R.filter(x=>x.ok).length?`<button class="btn acc" data-act="impGo">Importar ${R.filter(x=>x.ok).length}</button><button class="btn ghost sm" data-act="impLimpa">Limpar</button>`:""}<button class="btn ghost sm" data-act="impEx" ${pode()?"":"disabled"}>Exemplo</button></div>
+    ${!(S.importSrc&&S.importSrc.arquivo)?impPrevHTML(R):""}
   </section>
   <section class="card p"><h3 style="margin:0 0 6px">E-mails de pré-alerta (IA)</h3><p class="muted" style="font-size:13px;line-height:1.6;margin:0">Fase 2: uma caixa de e-mail dedicada recebe pré-alertas e arrival notices; a IA extrai BL, container, navio, ETA e CNPJ e cria a carga aqui com fonte "E-mail". O cruzamento com o Siscarga gera o alerta <b>“carga não pré-alertada”</b>.</p></section>
   <section class="card p"><h3 style="margin:0 0 6px">Regra DLT (master)</h3><p class="muted" style="font-size:13px;line-height:1.6;margin:0">Quando o CNPJ da carga é o da própria comissária (${esc(fmtCNPJ(S.org.cnpj_proprio)||"configure em Configurações")}), ela entra como <b>“cliente final pendente”</b> e continua alarmando normalmente até os houses serem informados.</p></section>
   </div>`}
+function impPrevHTML(R){return R?`${(()=>{const nv=[...new Set(R.filter(x=>x.novo).map(x=>x.novo))];return nv.length&&pode()?`<div class="qc" style="margin-top:12px"><b style="font-size:14px">${nv.length} CNPJ${nv.length>1?"s":""} ainda não cadastrado${nv.length>1?"s":""} — confira o nome para cadastrar agora:</b>${nv.map(c=>`<div class="ln"><div class="x" style="flex:0 0 auto"><b>${esc(fmtCNPJ(c))}</b>${cnpjOk(c)?"":`<small class="bad-t">dígito não confere</small>`}</div><input class="inp" style="flex:1;min-width:140px" placeholder="Nome do cliente" data-novocnpj="${esc(c)}" value="${esc((R.find(x=>x.novo===c)||{}).nomeNovo||"")}"></div>`).join("")}<button class="btn sm" data-act="impCli" style="align-self:flex-start">Cadastrar e revalidar</button></div>`:""})()}<div class="hint" style="margin-top:10px"><b>${R.filter(x=>x.ok&&!x.upd).length}</b> nova${R.filter(x=>x.ok&&!x.upd).length!==1?"s":""} · <b>${R.filter(x=>x.upd).length}</b> com ETA atualizado · ${R.filter(x=>!x.ok).length} ignorada${R.filter(x=>!x.ok).length!==1?"s":""}${S.importSrc&&S.importSrc.arquivo?" · arquivo "+esc(S.importSrc.arquivo):""}</div>
+    <div class="prev"><table><tr><th></th><th>Container</th><th>CE</th><th>Cliente</th><th>Navio</th><th>Porto · terminal</th><th>ETA</th><th>Prazo</th><th>Armazém</th></tr>${R.map(x=>`<tr><td class="${x.ok?"ok-t":"bad-t"}">${x.ok?"✓":"✕"} ${esc(x.msg)}</td><td>${esc(x.container)}${x.nCe>1?` <small class="muted">(${x.nCe} no CE)</small>`:""}</td><td>${esc(x.ce||"")}</td><td>${esc(x.cliente)}</td><td>${esc(x.navio)}</td><td>${esc((x.porto||"Santos")+(x.terminal?" · "+x.terminal:""))}</td><td>${x.eta?fDT(x.eta):"—"}</td><td>${x.prazo?fDT(x.prazo):"—"}</td><td>${esc(x.armazem)}</td></tr>`).join("")}</table></div>`:""}
+/* ================= EXCEL (ler e gerar .xlsx) ================= */
+let _xlP=null;
+function loadExcel(){if(window.ExcelJS)return Promise.resolve(window.ExcelJS);if(_xlP)return _xlP;
+  _xlP=new Promise((ok,no)=>{const sc=document.createElement("script");sc.src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js";sc.onload=()=>window.ExcelJS?ok(window.ExcelJS):no(new Error("Excel não carregou"));sc.onerror=()=>{_xlP=null;no(new Error("Sem internet para abrir o Excel"))};document.head.appendChild(sc)});return _xlP}
+const semAc=x=>String(x==null?"":x).normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+function colDe(h){h=semAc(h);if(!h)return null;
+  if(/^(chegada|eta|atracacao|data chegada|previsao)/.test(h))return"eta";if(/^navio/.test(h))return"navio";if(/terminal/.test(h))return"terminal";
+  if(/^porto/.test(h))return"porto";if(/^tipo cont/.test(h))return"tcont";if(/^(qtd|quantidade)/.test(h))return null;
+  if(/^(container|conteiner|cntr|ctr)/.test(h))return"cont";if(/^cnpj/.test(h))return"cnpj";if(/^(cliente|consignatario|importador)/.test(h))return"cliente";
+  if(/^(ce mercante|ce|conhecimento eletronico)$/.test(h)||/^ce /.test(h))return"ce";if(/^(bl|hbl|mbl|conhecimento)$/.test(h)||/^bl /.test(h))return"bl";
+  if(/^tipo( bl| de bl| conhecimento)?$/.test(h))return"tbl";if(/^peso/.test(h))return"peso";if(/desconsolid/.test(h))return"desc";return null}
+function cellV(v){if(v&&typeof v==="object"&&!(v instanceof Date)){if(v.result!==undefined)v=v.result;else if(v.richText)v=v.richText.map(t=>t.text).join("");else if(v.text!==undefined)v=v.text;else v=""}
+  if(v instanceof Date)return new Date(v.getUTCFullYear(),v.getUTCMonth(),v.getUTCDate(),v.getUTCHours(),v.getUTCMinutes());return v==null?"":v}
+function numBR(v){if(typeof v==="number")return v;v=String(v||"").trim();if(!v||v==="—"||v==="-")return null;if(/,\d{1,3}$/.test(v))v=v.replace(/\./g,"").replace(",",".");else v=v.replace(/,/g,"");const n=parseFloat(v);return isNaN(n)?null:n}
+function termNorm(t){t=String(t||"").trim();const x=semAc(t);if(/\bbtp\b|brasil terminal port/.test(x))return"BTP";if(/dp world|embraport/.test(x))return"DP World";if(/santos brasil/.test(x))return"Santos Brasil";if(/ecoporto/.test(x))return"Ecoporto Santos";return t}
+function portoDe(term,aba,porto){if(porto)return String(porto).trim();const x=semAc(term);if(/sepetiba|itaguai/.test(x))return"Sepetiba (RJ)";if(/rio de janeiro|multirio|libra rio|icttr/.test(x))return"Rio de Janeiro";
+  if(/btp|santos|embraport|dp world|ecoporto|brasil terminal/.test(x))return"Santos";const a=semAc(aba);if(a&&!/santos|planilha|sheet/.test(a))return String(aba).trim();return"Santos"}
+function tcontDe(t,solta){if(solta)return"Solta";const x=String(t||"").toUpperCase();if(!x||x==="—")return null;if(/REF|REEFER|HEAT/.test(x))return"Reefer";if(/HIGH CUBE|\bHC\b|9'6/.test(x))return"40HC";if(/20/.test(x))return"20DC";if(/40/.test(x))return"40DC";return null}
+function tblDe(t){const x=semAc(t);if(/filhote|hbl|house/.test(x))return"House";if(/master|mbl/.test(x))return"Master";return"Direto"}
+/* tabela (linhas × colunas) → linhas de importação. Aceita a planilha de redestinação da DLT e qualquer planilha com cabeçalho parecido */
+function buildTabela(abas){const out=[];const exist=new Map(S.cargas.map(c=>[c.container+"|"+(c.ce||""),c]));const vistos=new Set();
+  abas.forEach(({nome:aba,linhas})=>{let hi=-1,map=null;
+    for(let i=0;i<Math.min(linhas.length,15);i++){const m=linhas[i].map(colDe);if(m.includes("ce")&&(m.includes("navio")||m.includes("cont"))||m.includes("cont")&&m.includes("eta")){hi=i;map=m;break}}
+    if(hi<0)return;
+    for(let i=hi+1;i<linhas.length;i++){const L=linhas[i],g=k=>{const j=map.indexOf(k);return j<0?"":cellV(L[j])};
+      const ce=normC(String(g("ce")));const ctxt=String(g("cont")||"");if(!ce&&!normC(ctxt))continue;
+      const solta=/solta/i.test(ctxt)||(!normC(ctxt)&&!!ce);const conts=solta?[SOLTA]:ctxt.split(/[\s,;\/]+/).map(normC).filter(Boolean);
+      let eta=g("eta");eta=eta instanceof Date?eta:parseBRDate(String(eta||""));
+      const cnpj=normC(String(g("cnpj")));const nomeCli=String(g("cliente")||"").trim();const termRaw=String(g("terminal")||"").trim();
+      const cli=S.clientes.find(c=>normC(c.cnpj)===cnpj);const proprio=!!(S.org.cnpj_proprio&&normC(S.org.cnpj_proprio)===cnpj);
+      const porto=portoDe(termRaw,aba,g("porto"));const navio=String(g("navio")||"").trim();const descRaw=String(g("desc")||"").trim();
+      const base={cliente_id:cli?cli.id:null,cliente_nome:cli?cli.nome:"",cnpj,bl:String(g("bl")||"").trim(),ce,tipo_bl:proprio?"Master":tblDe(g("tbl")),navio,terminal:termNorm(termRaw),
+        eta:eta&&eta.toISOString(),prazo_limite:eta&&new Date(eta-S.org.prazo_horas*36e5).toISOString(),armazem:porto==="Santos"?(cli?cli.armazem_padrao:(S.org.armazens[0]||"Ecoporto")):null,
+        fonte:"planilha",porto,fonte_detalhe:"Planilha de redestinação"+(abas.arquivo?" ("+abas.arquivo+(aba?" · aba "+aba:"")+")":""),cliente_pendente:proprio,
+        peso_kg:numBR(g("peso")),desconsolidador:descRaw&&descRaw!=="—"&&descRaw!=="-"?descRaw:null,tipo_container:tcontDe(g("tcont"),solta)};
+      conts.forEach(ct=>{const k=ct+"|"+ce;const r={container:ct,ce,cliente:cli?cli.nome:proprio?"Cliente final pendente":(nomeCli||"?"),navio,porto,terminal:base.terminal,eta,armazem:base.armazem||"a definir",ok:true,msg:"novo",nCe:conts.length};
+        if(eta)r.prazo=new Date(eta-S.org.prazo_horas*36e5);
+        if(vistos.has(k)){r.ok=false;r.msg="repetido no arquivo"}
+        else if(exist.has(k)){const c=exist.get(k);if(eta&&c.eta&&Math.abs(new Date(c.eta)-eta)>36e5&&ALERT_ST.concat(["confirmado"]).includes(c.status)){r.upd={id:c.id,eta:eta.toISOString(),prazo_limite:r.prazo.toISOString()};r.msg=`ETA mudou ${fS(c.eta).slice(0,5)} → ${fS(eta).slice(0,5)}`}else{r.ok=false;r.msg="já cadastrado"}}
+        else if(!eta){r.ok=false;r.msg="sem data de chegada"}
+        else if(!cli&&!proprio){r.ok=false;r.msg="cliente não cadastrado";r.novo=cnpj;r.nomeNovo=nomeCli}
+        else if(ct!==SOLTA&&!contOk(ct))r.msg="novo · confira o dígito";
+        vistos.add(k);r.row=Object.assign({},base,{container:ct,status:cli&&cli.excecao?"permanece":"detectado"});if(cli&&cli.excecao&&r.ok&&!r.upd)r.msg="permanece (exceção)";out.push(r)})}});
+  return out}
+async function lerXlsx(file){const X=await loadExcel();const wb=new X.Workbook();await wb.xlsx.load(await file.arrayBuffer());const abas=[];
+  wb.eachSheet(ws=>{const linhas=[];ws.eachRow({includeEmpty:true},(r,n)=>{const a=[];r.eachCell({includeEmpty:true},(c,k)=>{a[k-1]=c.value});linhas[n-1]=a});abas.push({nome:ws.name,linhas:linhas.map(l=>l||[])})});abas.arquivo=file.name;return abas}
+function tabDeTexto(txt){const L=txt.split(/\r?\n/).filter(l=>l.trim()).map(l=>l.split("\t"));return[{nome:"",linhas:L}]}
+function reimport(){const src=S.importSrc;S.importRows=src&&src.tab?buildTabela(src.tab):buildImport(S.importText||"")}
+
+/* ---------- gerar a planilha de redestinação ---------- */
+const XST={urg:["FFF7D4D0","FF9A3328"],conf:["FFFBEBDD","FF8A4A12"],fila:["FFFBE3C9","FFA44A16"],sol:["FFE9EEF6","FF2C4F7C"],ok:["FFE3F1EC","FF22695B"],arm:["FFECEAE4","FF5C5A54"],per:["FFF1E8F6","FF6E3F86"]};
+function stCE(L){const ord=["detectado","aprovado","solicitado","confirmado","armazenado","permanece"];const at=L.filter(c=>c.status!=="permanece");const B=at.length?at:L;
+  const m=B.reduce((a,c)=>ord.indexOf(c.status)<ord.indexOf(a.status)?c:a,B[0]);const urg=B.some(c=>["vencido","critico"].includes(nivel(c)));
+  const nOk=L.filter(c=>["confirmado","armazenado"].includes(c.status)).length;const parc=L.length>1&&nOk&&nOk<L.length?` (${nOk} de ${L.length} confirmados)`:"";
+  const t={detectado:[urg?"URGENTE – PEDIR PUXE":"A CONFERIR",urg?"urg":"conf"],aprovado:[(urg?"URGENTE – ":"")+"NA FILA – PEDIR PUXE",urg?"urg":"fila"],solicitado:[(urg&&hEta(m)<0?"SEM CONFIRMAÇÃO – COBRAR ARMAZÉM":"SOLICITADO – AGUARDANDO CONFIRMAÇÃO"),urg&&hEta(m)<0?"urg":"sol"],
+    confirmado:["REDESTINAÇÃO CONFIRMADA","ok"],armazenado:["ARMAZENADO","arm"],permanece:["PERMANECE NO TERMINAL","per"]}[m.status]||[STL[m.status]||m.status,"arm"];return[t[0]+parc,t[1]]}
+function xD(d,hora){if(!d)return null;d=new Date(d);return new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate(),hora?d.getHours():0,hora?d.getMinutes():0))}
+async function exportarExcel(){toast("Gerando a planilha…");let X;try{X=await loadExcel()}catch(e){return toast(e.message)}
+  const now=new Date(),lim=Date.now()-15*864e5;const C=S.cargas.filter(c=>c.status!=="cancelado"&&(!c.eta||new Date(c.eta)>lim));if(!C.length)return toast("Nenhuma carga para exportar");
+  const wb=new X.Workbook();wb.creator="PUXE";wb.created=now;
+  const grupos=new Map();C.forEach(c=>{const p=c.porto||"Santos";if(!grupos.has(p))grupos.set(p,new Map());const g=grupos.get(p),k=c.ce||("ctr:"+c.container);if(!g.has(k))g.set(k,[]);g.get(k).push(c)});
+  const portos=[...grupos.keys()].sort((a,b)=>(a==="Santos"?-1:b==="Santos"?1:a.localeCompare(b)));
+  const H=["Chegada","Navio","Terminal de descarga","Cliente","CNPJ","CE Mercante","BL","Tipo","Qtd cont.","Container(s)","Tipo cont.","Peso bruto (kg)","Desconsolidador","Status redestinação","Prazo do puxe","Armazém destino","Operador","Confirmação (quando · quem · protocolo)","Alertas enviados"];
+  const W=[11,24,22,22,20,18,18,13,9,30,12,14,28,30,16,16,14,36,26];
+  const carimbo=`${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()} ${fT(now)}`;
+  const head=(ws,ncol,titulo)=>{ws.mergeCells(1,1,1,ncol);const t=ws.getCell(1,1);t.value=titulo;t.font={bold:true,size:13,color:{argb:"FF12324A"}};ws.getRow(1).height=22;
+    const hr=ws.getRow(2);hr.height=30;hr.eachCell(c=>{c.font={bold:true,color:{argb:"FFFFFFFF"}};c.fill={type:"pattern",pattern:"solid",fgColor:{argb:"FF12324A"}};c.alignment={vertical:"middle",wrapText:true}});ws.views=[{state:"frozen",ySplit:2}]};
+  const usado=new Set();const nomeAba=n=>{let x=String(n).replace(/[:\\\/?*\[\]]/g," ").slice(0,31)||"Porto";while(usado.has(x))x=x.slice(0,28)+" "+usado.size;usado.add(x);return x};
+  let nCE=0;
+  portos.forEach(p=>{const ws=wb.addWorksheet(nomeAba(p));const G=[...grupos.get(p).values()].map(L=>L.sort((a,b)=>a.container.localeCompare(b.container))).sort((a,b)=>new Date(a[0].eta||0)-new Date(b[0].eta||0)||(a[0].navio||"").localeCompare(b[0].navio||""));
+    ws.addRow([]);ws.addRow(H);W.forEach((w,i)=>ws.getColumn(i+1).width=w);
+    G.forEach(L=>{const c=L[0],cli=S.clientes.find(x=>x.id===c.cliente_id)||{};const[st,cor]=stCE(L);const R=L.map(x=>({c:x,r:resp(x)}));
+      const solta=L.every(x=>x.container===SOLTA);const conts=L.filter(x=>x.container!==SOLTA).map(x=>x.container);
+      const conf=R.filter(z=>z.r.confirmado).map(z=>`${fS(z.r.confirmado.at)} · ${z.r.confirmado.by}${z.c.protocolo?" · prot. "+z.c.protocolo:""}${L.length>1?" ("+z.c.container+")":""}`);
+      const sol=R.filter(z=>!z.r.confirmado&&z.r.solicitado).map(z=>`pedido ${fS(z.r.solicitado.at)} · ${z.r.solicitado.by}${z.c.protocolo?" · prot. "+z.c.protocolo:""}`);
+      const al=R.flatMap(z=>z.r.alarmes.filter(a=>a.canal==="email"));const ult=al.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];
+      const tipos=[...new Set(L.map(x=>x.tipo_container).filter(Boolean))].join(", ");const pz=L.map(x=>x.prazo_limite).filter(Boolean).sort()[0];
+      const row=ws.addRow([xD(c.eta),c.navio||"",c.terminal||"",cliName(c),fmtCNPJ(c.cnpj)||"",c.ce||"",c.bl||"",TBL[c.tipo_bl]||c.tipo_bl||"",solta?0:conts.length,solta?"Carga solta":conts.join(", "),solta?"—":(tipos||"—"),c.peso_kg==null||c.peso_kg===""?null:+c.peso_kg,c.desconsolidador||"—",st,
+        xD(pz,true),[...new Set(L.map(x=>x.armazem).filter(Boolean))].join(", ")||"a definir",cli.operador||"",conf.concat(sol).join(" | ")||"—",al.length?`${al.length} e-mail${al.length>1?"s":""} · último ${ult.nivel||""} ${fS(ult.created_at)}`:"—"]);
+      row.getCell(1).numFmt="dd/mm/yyyy";row.getCell(15).numFmt="dd/mm/yyyy hh:mm";row.getCell(12).numFmt="#,##0.##";row.getCell(9).alignment={horizontal:"center"};
+      [10,18,19].forEach(k=>row.getCell(k).alignment={wrapText:true,vertical:"top"});
+      const sc=row.getCell(14);sc.fill={type:"pattern",pattern:"solid",fgColor:{argb:XST[cor][0]}};sc.font={bold:true,color:{argb:XST[cor][1]}};nCE++});
+    const nC=G.reduce((a,L)=>a+L.filter(x=>x.container!==SOLTA).length,0),nS=G.filter(L=>L.every(x=>x.container===SOLTA)).length;
+    head(ws,H.length,`Alerta de Redestinação – ${p} – ${S.org.nome||"PUXE"} – ${carimbo} – ${G.length} CEs${nC?` · ${nC} container${nC>1?"s":""}`:""}${nS?` · ${nS} carga${nS>1?"s":""} solta${nS>1?"s":""}`:""}`);ws.autoFilter={from:{row:2,column:1},to:{row:2,column:H.length}}});
+  const H2=["Container","Qtd no CE","CE Mercante","Cliente","Navio","Chegada","Porto","Terminal","Status","Prazo do puxe","Armazém destino","Protocolo"];
+  const ws2=wb.addWorksheet("Por container");ws2.addRow([]);ws2.addRow(H2);[16,9,18,22,22,11,14,16,26,16,16,14].forEach((w,i)=>ws2.getColumn(i+1).width=w);
+  C.slice().sort((a,b)=>new Date(a.eta||0)-new Date(b.eta||0)||a.container.localeCompare(b.container)).forEach(c=>{const L=ceConts(c.ce);const r=ws2.addRow([c.container===SOLTA?"Carga solta":c.container,c.ce?L.length:1,c.ce||"",cliName(c),c.navio||"",xD(c.eta),c.porto||"Santos",c.terminal||"",stCE([c])[0],xD(c.prazo_limite,true),c.armazem||"a definir",c.protocolo||""]);r.getCell(6).numFmt="dd/mm/yyyy";r.getCell(10).numFmt="dd/mm/yyyy hh:mm";
+    const sc=r.getCell(9),cor=stCE([c])[1];sc.fill={type:"pattern",pattern:"solid",fgColor:{argb:XST[cor][0]}};sc.font={bold:true,color:{argb:XST[cor][1]}}});
+  head(ws2,H2.length,`Por container – ${S.org.nome||"PUXE"} – ${carimbo} – ${C.length} linhas`);ws2.autoFilter={from:{row:2,column:1},to:{row:2,column:H2.length}};
+  const buf=await wb.xlsx.writeBuffer();const nome=`Redestinacao_${pad(now.getDate())}-${pad(now.getMonth()+1)}-${now.getFullYear()}_${pad(now.getHours())}${pad(now.getMinutes())}.xlsx`;
+  window._ultimoXlsx={nome,buf};
+  try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([buf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));a.download=nome;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},800);toast(`Planilha baixada ✓ ${nCE} CEs`)}catch(e){toast("Não consegui baixar: "+e.message)}}
+
 function parseBRDate(s){s=(s||"").trim();let m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})(?:\s+(\d{1,2}):(\d{2}))?/);if(m){let y=+m[3];if(y<100)y+=2000;return new Date(y,+m[2]-1,+m[1],+(m[4]||0),+(m[5]||0))}
   m=s.match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2}))?/);if(m)return new Date(+m[1],+m[2]-1,+m[3],+(m[4]||0),+(m[5]||0));return null}
 function buildImport(txt){const out=[];const seen=new Set(S.cargas.map(c=>c.container+"|"+(c.ce||"")));
@@ -1165,7 +1307,7 @@ function vConfig(){const o=S.org,adm=isAdmin();const dis=adm?"":"disabled";
   </section></div></div>`}
 
 /* ================= DRAWER ================= */
-function openDrawer(html){$("#drawer").innerHTML=html;$("#drawer").hidden=false;$("#ovl").hidden=false;$("#drawer").scrollTop=0}
+function openDrawer(html){$("#sheet").hidden=true;$("#drawer").innerHTML=html;$("#drawer").hidden=false;$("#ovl").hidden=false;$("#drawer").scrollTop=0}
 function closeAll(){$("#drawer").hidden=true;$("#sheet").hidden=true;$("#ovl").hidden=true;S.drawerId=null}
 function detalhe(c){S.drawerId=c.id;const ed=pode(),st=c.status;const h=S.eventos.filter(e=>e.carga_id===c.id);
   const A=[];
@@ -1179,11 +1321,13 @@ function detalhe(c){S.drawerId=c.id;const ed=pode(),st=c.status;const h=S.evento
   return`<div class="dhead"><span class="st ${st}">${STL[st]}</span><span style="margin-right:auto"></span><button data-act="closeAll" class="icb">${ic("x")}</button></div>
   <div style="display:flex;gap:14px;align-items:center">${ctype(c)}<div style="min-width:0"><div class="big-c">${esc(c.container)}</div><div class="muted">${esc(cliName(c))}</div></div></div>
   <div style="margin:18px 0 6px">${stepper(c)}</div>
-  <div style="margin-top:10px">${cdChip(c)}${!contOk(c.container)?` <span class="cd atencao"><i></i>dígito do container não confere</span>`:""}</div>
+  <div style="margin-top:10px">${cdChip(c)}${c.container!==SOLTA&&!contOk(c.container)?` <span class="cd atencao"><i></i>dígito do container não confere</span>`:""}</div>
   <div class="kv"><div><small>Prazo limite</small><b>${fDT(c.prazo_limite)}</b></div><div><small>ETA (atracação)</small><b>${fDT(c.eta)}</b></div>
    <div><small>Navio · viagem</small><b>${esc(c.navio||"—")} ${esc(c.viagem||"")}</b></div><div><small>Armador</small><b>${esc(c.armador||"—")}</b></div>
    <div><small>Terminal de atracação</small><b>${esc(c.terminal||"—")}</b></div><div><small>Armazém destino</small><b>${esc(c.armazem||"—")}</b></div>
-   <div><small>CNPJ</small><b>${esc(fmtCNPJ(c.cnpj)||"—")}</b></div><div><small>Tipo de BL</small><b>${esc(c.tipo_bl||"—")}</b></div>
+   <div><small>CNPJ</small><b>${esc(fmtCNPJ(c.cnpj)||"—")}</b></div><div><small>Tipo de BL</small><b>${esc(TBL[c.tipo_bl]||c.tipo_bl||"—")}</b></div>
+   <div><small>Porto</small><b>${esc(c.porto||"Santos")}</b></div><div><small>Peso bruto</small><b>${c.peso_kg!=null&&c.peso_kg!==""?esc((+c.peso_kg).toLocaleString("pt-BR"))+" kg":"—"}</b></div>
+   <div style="grid-column:1/-1"><small>Desconsolidador</small><b>${esc(c.desconsolidador||"—")}</b></div>${ceIrmaos(c)}
    <div><small>BL</small><b>${esc(c.bl||"—")}</b></div><div><small>CE-Mercante</small><b>${esc(c.ce||"—")}</b></div>
    <div><small>Fonte</small><b>${FONTE[c.fonte]||"—"}</b></div><div><small>Protocolo</small><b>${esc(c.protocolo||"—")}</b></div></div>
   ${c.obs?`<div class="note" style="margin-bottom:10px">${esc(c.obs)}</div>`:""}
@@ -1226,20 +1370,21 @@ function formCarga(c){const o=S.org,isNew=!c;c=c||{tipo_container:"40HC",tipo_bl
    <label>Cliente<select name="cliente_id">${cliOpts(c.cliente_pendente&&!c.cliente_id?"__master":c.cliente_id)}</select></label>
    <div class="qc" id="qc" hidden><b style="font-size:14px">Novo cliente</b><div class="row"><label>Nome / razão social<input id="qcNome" autocomplete="off"></label><label>CNPJ<input id="qcCnpj" placeholder="00.000.000/0000-00" inputmode="numeric"></label></div><span class="hint" id="qcMsg"></span><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn sm" data-act="qcSave">Salvar e usar nesta carga</button><button type="button" class="btn ghost sm" data-act="qcCancel">Cancelar</button></div></div>
    <label><span>CNPJ <span style="font-weight:500">· escolhe o cliente sozinho</span></span><input name="cnpj" value="${esc(fmtCNPJ(c.cnpj||""))}" placeholder="00.000.000/0000-00" inputmode="numeric"></label><span class="hint" id="cnpjHint"></span>
-   <label>${isNew?"Container(s) — vários? um por linha":"Container"}<textarea name="container" rows="${isNew?2:1}" placeholder="MSCU1234565">${esc(c.container||"")}</textarea><span class="hint" id="contMsg"></span></label>
-   <div class="lbl">Tipo</div>${seg("tipo_container",["20DC","40DC","40HC","Reefer"],c.tipo_container)}
+   <label>${isNew?"Container(s) — vários? um por linha":"Container"}<textarea name="container" rows="${isNew?2:1}" placeholder="MSCU1234565 · sem container? escreva CARGA SOLTA">${esc(c.container||"")}</textarea><span class="hint" id="contMsg"></span></label>
+   <div class="lbl">Tipo</div>${seg("tipo_container",["20DC","40DC","40HC","Reefer","Solta"],c.tipo_container)}
    <div class="row"><label>BL<input name="bl" value="${esc(c.bl||"")}"></label><label>CE-Mercante<input name="ce" inputmode="numeric" value="${esc(c.ce||"")}"></label></div>
-   <div class="lbl">Tipo de BL</div>${seg("tipo_bl",["Direto","Master","House"],c.tipo_bl)}
+   <div class="row"><label>Peso bruto (kg)<input name="peso_kg" type="number" min="0" step="0.01" value="${c.peso_kg==null?"":esc(c.peso_kg)}"></label><label>Desconsolidador<input name="desconsolidador" value="${esc(c.desconsolidador||"")}" list="descL"><datalist id="descL">${[...new Set(S.cargas.map(x=>x.desconsolidador).filter(Boolean))].sort().map(x=>`<option>${esc(x)}</option>`).join("")}</datalist></label></div>
+   <div class="lbl">Tipo de BL</div>${seg("tipo_bl",["Direto","Master","House"],c.tipo_bl,{Direto:"Comum (BL)",Master:"Master (MBL)",House:"Filhote (HBL)"})}
    <div class="row"><label>Navio<input name="navio" value="${esc(c.navio||"")}" list="navL" autocomplete="off"><datalist id="navL">${navios().map(n=>`<option>${esc(n)}</option>`).join("")}</datalist></label><label>Viagem<input name="viagem" value="${esc(c.viagem||"")}"></label></div>
    <span class="hint" id="navHint"></span>
    <label><span>Armador <span style="font-weight:500">· automático pelo container</span></span><input name="armador" value="${esc(c.armador||"")}" list="armL"><datalist id="armL">${Object.keys(ARM_PFX).map(x=>`<option>${x}</option>`).join("")}</datalist></label>
    <label>Porto de descarga<input name="porto" value="${esc(c.porto||"Santos")}" list="portoL"><datalist id="portoL">${["Santos","Itajaí","Navegantes","Itapoá","Paranaguá","Rio de Janeiro","Itaguaí","Vitória","Salvador","Suape","Pecém","Manaus","Rio Grande"].map(x=>`<option>${x}</option>`).join("")}</datalist></label>
-   <div class="lbl">Terminal de atracação</div>${seg("terminal",o.terminais,c.terminal)}
+   <div class="lbl">Terminal de atracação</div>${seg("terminal",[...new Set([...o.terminais,c.terminal].filter(Boolean))],c.terminal)}
    <div class="row3"><label>ETA — data<input type="date" name="eta_d" value="${ymd}"></label><label>Hora<select name="eta_h">${Array.from({length:24},(_,i)=>`<option ${i===eta.getHours()?"selected":""}>${pad(i)}</option>`).join("")}</select></label><label>Min<select name="eta_m">${["00","15","30","45"].map(x=>`<option ${+x===Math.floor(eta.getMinutes()/15)*15?"selected":""}>${x}</option>`).join("")}</select></label></div>
    <label>Pedir o puxe até quantas horas antes da atracação?<input name="ph" type="number" min="0" value="${ph}"></label>
    <div class="hint" id="etaLine"></div>
-   <div class="lbl">Armazém de destino</div>${seg("armazem",o.armazens,c.armazem)}
-   <div class="lbl">Como soubemos (fonte)</div>${seg("fonte",["siscarga","email","manual"],c.fonte,FONTE)}
+   <div class="lbl">Armazém de destino</div>${seg("armazem",[...new Set([...o.armazens,c.armazem].filter(Boolean))],c.armazem)}
+   <div class="lbl">Como soubemos (fonte)</div>${seg("fonte",["siscarga","planilha","email","manual"],c.fonte,FONTE)}
    <label>Detalhe da captação<input name="fonte_detalhe" value="${esc(c.fonte_detalhe||"")}" placeholder="ex.: pré-alerta do agente de Xangai por e-mail"></label>
    <label class="chk"><input type="checkbox" name="cliente_pendente" ${c.cliente_pendente?"checked":""}> Cliente final pendente (house ainda não informado)</label>
    <div class="hint w" id="excMsg"></div>
@@ -1250,11 +1395,11 @@ function formCarga(c){const o=S.org,isNew=!c;c=c||{tipo_container:"40HC",tipo_bl
 function fcVal(){const f=$("#fc"),g=n=>f.querySelector(`[name="${n}"]`),sv=n=>{const b=f.querySelector(`.seg[data-name="${n}"] .on`);return b?b.dataset.v:""};
   const d=g("eta_d").value;let eta=null;if(d){const [y,m,dd]=d.split("-").map(Number);eta=new Date(y,m-1,dd,+g("eta_h").value,+g("eta_m").value)}
   const ph=Math.max(0,+g("ph").value||0);
-  return{cliente_id:g("cliente_id").value,cnpj:normC(g("cnpj").value),conts:g("container").value.split(/[\s,;]+/).map(normC).filter(Boolean),tipo_container:sv("tipo_container"),bl:g("bl").value.trim(),ce:normC(g("ce").value),tipo_bl:sv("tipo_bl"),
+  return{cliente_id:g("cliente_id").value,cnpj:normC(g("cnpj").value),conts:/carga\s*solta/i.test(g("container").value)?[SOLTA]:g("container").value.split(/[\s,;]+/).map(normC).filter(Boolean),peso_kg:g("peso_kg").value===""?null:+g("peso_kg").value,desconsolidador:g("desconsolidador").value.trim(),tipo_container:sv("tipo_container"),bl:g("bl").value.trim(),ce:normC(g("ce").value),tipo_bl:sv("tipo_bl"),
     navio:g("navio").value.trim(),viagem:g("viagem").value.trim(),armador:g("armador").value.trim(),terminal:sv("terminal"),eta,prazo:eta?new Date(eta-ph*36e5):null,armazem:sv("armazem"),fonte:sv("fonte"),cliente_pendente:g("cliente_pendente").checked,obs:g("obs").value.trim(),porto:g("porto").value.trim()||"Santos",fonte_detalhe:g("fonte_detalhe").value.trim()}}
 function fcRefresh(){const f=$("#fc");if(!f)return;const v=fcVal();
   $("#etaLine").innerHTML=v.eta?`→ Atracação <b>${fDT(v.eta)}</b> · prazo do puxe <b style="color:var(--acc)">${fDT(v.prazo)}</b> (${leftTxt((v.prazo-Date.now())/36e5)})`:"Informe a data de atracação";
-  const bad=v.conts.filter(c=>!contOk(c));$("#contMsg").className="hint"+(bad.length?" w":"");$("#contMsg").textContent=v.conts.length?(bad.length?`Confira: ${bad.join(", ")} (dígito/formato não confere)`:`${v.conts.length} container${v.conts.length>1?"s":""} ✓`):"";
+  const bad=v.conts.filter(c=>c!==SOLTA&&!contOk(c));$("#contMsg").className="hint"+(bad.length?" w":"");$("#contMsg").textContent=v.conts.length?(bad.length?`Confira: ${bad.join(", ")} (dígito/formato não confere)`:`${v.conts.length} container${v.conts.length>1?"s":""} ✓`):"";
   const cli=S.clientes.find(c=>c.id===v.cliente_id);$("#excMsg").textContent=cli&&cli.excecao?"Este cliente costuma permanecer no terminal: a carga entra como “Permanece”, sem alarme.":""}
 
 /* ================= ALARM ================= */
@@ -1285,9 +1430,49 @@ function resumoTxt(){const pend=S.cargas.filter(c=>PEND.includes(c.status)).sort
   return`*PUXE · ${S.org.nome} · ${fD(t)}*\n⛔ Vencidos: ${pend.filter(c=>hLeft(c)<0).length}\n🔴 Vencem em 24h: ${pend.filter(c=>hLeft(c)>=0&&hLeft(c)<=24).length}\n🟠 Vencem em 48h: ${pend.filter(c=>hLeft(c)>24&&hLeft(c)<=48).length}\n📋 Na fila de puxe: ${S.cargas.filter(c=>c.status==="aprovado").length}\n\n`+
     L.map(c=>`• ${c.container} · ${cliName(c)} → ${c.armazem} · ${leftTxt(hLeft(c))}`).join("\n")}
 
-/* ================= THEME ================= */
-function isDark(){const t=LS.get("puxe-theme",null);return t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches}
-function applyTheme(){const t=LS.get("puxe-theme",null);if(t)document.documentElement.setAttribute("data-theme",t);else document.documentElement.removeAttribute("data-theme")}
+/* ================= VERSÃO (regras 3 e 4) ================= */
+const APP_VERSAO=5;
+const NOVIDADES=[
+ [5,"28/10/2026",["Exportar Excel no modelo da DLT (1 linha por CE, uma aba por porto) com quantidade e numeração dos containers e a coluna de status/confirmação preenchida pelo PUXE",
+   "Importar a planilha de redestinação (.xlsx) arrastando o arquivo na Captação: cria as cargas, cadastra clientes novos e atualiza o ETA quando a data de chegada muda",
+   "Novos campos: peso bruto, desconsolidador e carga solta (sem container)","Outros portos além de Santos (ex.: Sepetiba RJ)",
+   "Clicar no logo volta ao Painel · versão sempre à vista · aviso automático de versão nova · 🎨 8 opções de cores · arrastar e soltar arquivos",
+   "Quadros não fecham mais ao clicar fora (use o X ou Esc)"]],
+ [4,"19/10/2026",["Regras de alerta da DLT: D-5, D-2, D-1 contados do ETA; alertas só param com a redestinação confirmada","E-mails automáticos de alerta (PUXE DLT <alertas@puxe.mintess.com>)","Etapa “Aguardando confirmação” e colar e-mail da Ecoporto","Modo demonstração dentro do app"]],
+ [3,"13/10/2026",["Decisões do Luis: prazo 24h antes da atracação, carteira por operador, plantão, custo R$ 1.000 por container","Navios: alterar ETA em lote"]],
+ [2,"12/10/2026",["Cargas com rastreio completo: captação, alarmes, avisos e responsáveis","Relatórios, Equipe, Histórico, Integrações"]],
+ [1,"10/10/2026",["Primeira versão: painel, fila de puxe, alarme, clientes"]]];
+function verHTML(){return`<span>PUXE · <button data-act="novidades" title="O que mudou">Versão ${APP_VERSAO}</button></span>`}
+function novidadesHTML(){return`<div class="dhead"><h3>O que mudou</h3><button data-act="closeAll" class="icb">${ic("x")}</button></div><div class="novs">${NOVIDADES.map(([v,d,L])=>`<h4>Versão ${v} <small class="muted" style="font-weight:500">· ${d}${v===APP_VERSAO?" · atual":""}</small></h4><ul>${L.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`).join("")}</div>`}
+let _verNova=0;
+async function checaVersao(){if(window.PUXE_PREVIEW||location.protocol==="file:")return;
+  try{const r=await fetch(location.pathname+"?v="+Date.now(),{cache:"no-store"});if(!r.ok)return;const t=await r.text();const m=t.match(/const APP_VERSAO=(\d+)/);
+    if(m&&+m[1]!==APP_VERSAO){_verNova=+m[1];const u=$("#upd");u.innerHTML=`Versão ${_verNova} disponível <b>Atualizar</b>`;u.hidden=false}}catch(e){}}
+setInterval(checaVersao,5*60000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)checaVersao()});
+
+/* ================= CORES (regra 5) ================= */
+const TEMAS=[["porto","Porto","bege e azul-marinho",["#F2EEE6","#12324A","#D2642C"]],["dark","Noite","azul-noite e laranja",["#0A111B","#2E6E99","#E9874F"],1],
+ ["oceano","Oceano","azul-marinho e ciano",["#06141F","#0E7C9B","#2FD3E6"],1],["floresta","Floresta","verde e menta",["#0B1510","#2E7D57","#7FE0B0"],1],
+ ["ameixa","Ameixa","vinho e âmbar",["#170C12","#8E2E52","#F0A93B"],1],["areia","Areia","bege e terracota",["#F4ECDF","#9C4A2A","#C8692F"]],
+ ["papel","Papel","branco e azul",["#F6F7F9","#1F2933","#2F6FEB"]],["lavanda","Lavanda","lilás e roxo",["#F3F0FA","#5B3BA8","#B04FD6"]]];
+function temaAtual(){let t=LS.get("puxe-theme",null);if(t==="light")t="porto";return t}
+function isDark(){const t=temaAtual();if(!t)return matchMedia("(prefers-color-scheme: dark)").matches;const x=TEMAS.find(z=>z[0]===t);return!!(x&&x[4])}
+function applyTheme(){const t=temaAtual(),R=document.documentElement;if(t)R.setAttribute("data-theme",t);else R.removeAttribute("data-theme");R.classList.toggle("dk",!!t&&isDark());
+  const m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",getComputedStyle(R).getPropertyValue("--side").trim()||"#12324A")}
+function coresHTML(){const t=temaAtual()||(isDark()?"dark":"porto");return`<div class="dhead"><h3>🎨 Cores</h3><button data-act="closeAll" class="icb">${ic("x")}</button></div>
+  <p class="muted" style="font-size:12px;margin:0 0 6px">Vale só para você, neste aparelho.</p>
+  <div class="thg">${TEMAS.map(([k,n,d,c])=>`<button class="thc ${k===t?"on":""}" data-act="setTema" data-v="${k}"><span class="sw">${c.map(x=>`<i style="background:${x}"></i>`).join("")}</span><b>${n}</b><small>${d}</small></button>`).join("")}</div>
+  <button class="btn ghost sm" style="margin-top:12px" data-act="setTema" data-v="">Automático (claro de dia, escuro se o aparelho estiver no modo escuro)</button>`}
+
+/* ================= ARRASTAR E SOLTAR (regra 2) ================= */
+function dzWrap(inp){if(inp.dataset.dz)return;inp.dataset.dz="1";const box=document.createElement("label");box.className="dz";
+  box.innerHTML=`<b>Arraste o arquivo e solte aqui</b><span>ou toque para escolher${inp.accept?" · "+esc(inp.accept.replace(/\./g,"").toUpperCase()):""}</span>`;
+  inp.parentNode.insertBefore(box,inp);box.appendChild(inp);
+  ["dragenter","dragover"].forEach(ev=>box.addEventListener(ev,e=>{e.preventDefault();box.classList.add("over")}));
+  ["dragleave","drop"].forEach(ev=>box.addEventListener(ev,e=>{e.preventDefault();box.classList.remove("over")}));
+  box.addEventListener("drop",e=>{const fl=e.dataTransfer&&e.dataTransfer.files;if(!fl||!fl.length)return;try{const dt=new DataTransfer();[...fl].slice(0,inp.multiple?99:1).forEach(f=>dt.items.add(f));inp.files=dt.files}catch(_){inp._files=[...fl]}inp.dispatchEvent(new Event("change",{bubbles:true}))})}
+new MutationObserver(()=>document.querySelectorAll('input[type=file]:not([data-dz])').forEach(dzWrap)).observe(document.documentElement,{childList:true,subtree:true});
+window.addEventListener("dragover",e=>e.preventDefault());window.addEventListener("drop",e=>{if(!e.target.closest||!e.target.closest(".dz"))e.preventDefault()});
 
 /* ================= ACTIONS ================= */
 const cur=()=>S.cargas.find(c=>c.id===S.drawerId);
@@ -1306,14 +1491,19 @@ const ACT={
   async logout(){stopAlarm();clearInterval(window._tick);if(S.mode==="supa"&&sb)await sb.auth.signOut();S.mode=null;S.view="painel";closeAll();show("login")},
   reload(){location.reload()},
   nav(t){S.view=t.dataset.v;S.dia=null;closeAll();renderAll();window.scrollTo(0,0)},
-  mais(){$("#sheet").innerHTML=NAV.filter(n=>MAIS.includes(n[0])).map(([v,i,l])=>`<button data-act="nav" data-v="${v}">${ic(i,22)} ${l}</button>`).join("")+(S.mode==="supa"||S.demoFrom?`<button data-act="demoToggle">${ic("radar",22)} ${S.demoFrom?"Sair da demonstração":"Modo demonstração"}</button>`:"");$("#sheet").hidden=false;$("#ovl").hidden=false},
+  mais(){$("#sheet").innerHTML=NAV.filter(n=>MAIS.includes(n[0])).map(([v,i,l])=>`<button data-act="nav" data-v="${v}">${ic(i,22)} ${l}</button>`).join("")+(S.mode==="supa"||S.demoFrom?`<button data-act="demoToggle">${ic("radar",22)} ${S.demoFrom?"Sair da demonstração":"Modo demonstração"}</button>`:"")+`<button data-act="cores"><span style="font-size:19px;width:22px;text-align:center">🎨</span> Cores</button><div class="foot-ver" style="display:block;padding:8px 0 2px">${verHTML()}</div>`;$("#sheet").hidden=false;$("#ovl").hidden=false},
   filtro(t){S.filtro=t.dataset.f;S.view="painel";renderAll()},
   filtroC(t){S.filtroC=t.dataset.f;renderAll()},
   dia(t){const d=new Date(t.dataset.d);S.dia=S.dia&&sameDay(S.dia,d)?null:d;S.filtro="todas";renderAll()},
   clearDia(){S.dia=null;renderAll()},
   calM(t){S.calM.setMonth(S.calM.getMonth()+ +t.dataset.d);renderAll()},
   histTab(t){S.histTab=t.dataset.t;renderAll()},
-  theme(){LS.set("puxe-theme",isDark()?"light":"dark");applyTheme();renderAll()},
+  theme(){LS.set("puxe-theme",isDark()?"porto":"dark");applyTheme();renderAll()},
+  cores(){openDrawer(coresHTML())},
+  setTema(t){LS.set("puxe-theme",t.dataset.v||null);if(!t.dataset.v){try{localStorage.removeItem("puxe-theme")}catch(_){}}applyTheme();renderAll();openDrawer(coresHTML())},
+  novidades(){openDrawer(novidadesHTML())},
+  atualizar(){location.reload()},
+  ovlClick(){if($("#drawer").hidden)closeAll()},
   demoRole(){S.demoPapel=S.demoPapel==="operador"?"consulta":"operador";renderAll();toast(S.demoPapel==="operador"?"Agora: Operador (vê e altera)":"Agora: Consulta (só vê)")},
   openCarga(t){const c=S.cargas.find(x=>x.id===t.dataset.id);if(c){stopAlarm();openDrawer(detalhe(c))}},
   closeAll(){closeAll()},
@@ -1357,7 +1547,7 @@ const ACT={
     if(v.cliente_id==="__novo"&&!$("#qc").hidden)return err("Salve o novo cliente primeiro (botão “Salvar e usar nesta carga”).");
     if(!cli&&!master){const m=S.clientes.find(c=>normC(c.cnpj)===v.cnpj);if(m)return selCli(m),err("Cliente selecionado pelo CNPJ — confira e salve de novo.");return err(v.cnpj?"Esse CNPJ não está cadastrado — use “Cadastrar como cliente”.":"Escolha o cliente ou digite o CNPJ.")}
     const base={cliente_id:cli?cli.id:null,cliente_nome:cli?cli.nome:"",cnpj:v.cnpj||(cli?normC(cli.cnpj):master?normC(S.org.cnpj_proprio):""),tipo_container:v.tipo_container,bl:v.bl,ce:v.ce,tipo_bl:master&&v.tipo_bl==="Direto"?"Master":v.tipo_bl,navio:v.navio,viagem:v.viagem,armador:v.armador,
-      terminal:v.terminal,eta:v.eta.toISOString(),prazo_limite:v.prazo.toISOString(),armazem:v.armazem,fonte:v.fonte,cliente_pendente:master||v.cliente_pendente,obs:v.obs,porto:v.porto,fonte_detalhe:v.fonte_detalhe};
+      terminal:v.terminal,eta:v.eta.toISOString(),prazo_limite:v.prazo.toISOString(),armazem:v.armazem,fonte:v.fonte,cliente_pendente:master||v.cliente_pendente,obs:v.obs,porto:v.porto,fonte_detalhe:v.fonte_detalhe,peso_kg:v.peso_kg,desconsolidador:v.desconsolidador||null};if(v.conts[0]===SOLTA)base.tipo_container="Solta";
     let ok;if(id){ok=await run(()=>DB.updCarga(id,Object.assign(base,{container:v.conts[0]})),"Carga atualizada ✓");if(ok){openDrawer(detalhe(S.cargas.find(c=>c.id===id)));renderAll()}}
     else{const dup=v.conts.filter(ct=>S.cargas.some(c=>c.container===ct&&(c.ce||"")===v.ce));if(dup.length)return err("Já cadastrado: "+dup.join(", "));
       const st=cli&&cli.excecao?"permanece":"detectado";ok=await run(()=>DB.addCargas(v.conts.map(ct=>Object.assign({},base,{container:ct,status:st}))),`${v.conts.length} container${v.conts.length>1?"s":""} cadastrado${v.conts.length>1?"s":""} ✓`);if(ok){closeAll();renderAll();checkAlarm()}}},
@@ -1380,8 +1570,13 @@ const ACT={
   snooze(){logAck("Soneca 30 min");stopAlarm();LS.set("puxe-snooze",Date.now()+30*6e4);toast("Soneca: volta em 30 min")},
   async notif(){if(!("Notification"in window))return toast("Este navegador não suporta notificações");const p=await Notification.requestPermission();toast(p==="granted"?"Notificações ativadas ✓":"Notificações bloqueadas")},
   impEx(){$("#imp").value=[S.clientes[0],S.clientes[1],S.clientes[2]].filter(Boolean).map((c,i)=>{const p=["MSCU","HLXU","CMAU"][i]+String(400000+i*1371).padStart(6,"0");const d=new Date(Date.now()+(3+i)*864e5);return`${fmtCNPJ(c.cnpj)};${p+contDV(p)};15260${String(5100000000+i)};Sea Pioneer;${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} 06:00;BTP`}).join("\n")},
-  impPrev(){S.importText=$("#imp").value;S.importRows=buildImport(S.importText);renderAll()},
-  async impGo(){const rows=S.importRows.filter(x=>x.ok).map(x=>x.row);if(await run(()=>DB.addCargas(rows),`${rows.length} carga${rows.length>1?"s":""} importada${rows.length>1?"s":""} ✓`)){S.importRows=null;S.importText="";renderAll();checkAlarm()}},
+  impPrev(){S.importText=$("#imp").value;const t=S.importText;const h=(t.split(/\r?\n/).find(l=>l.trim())||"").split("\t").map(colDe);
+    S.importSrc=h.includes("ce")||(h.includes("cont")&&h.includes("eta"))?{tab:tabDeTexto(t)}:null;reimport();renderAll()},
+  impLimpa(){S.importRows=null;S.importText="";S.importSrc=null;renderAll()},
+  xlsx(){exportarExcel()},
+  async impGo(){const ok=S.importRows.filter(x=>x.ok),rows=ok.filter(x=>!x.upd).map(x=>x.row),ups=ok.filter(x=>x.upd).map(x=>x.upd);
+    const msg=[rows.length?`${rows.length} carga${rows.length>1?"s":""} importada${rows.length>1?"s":""}`:"",ups.length?`${ups.length} ETA atualizado${ups.length>1?"s":""}`:""].filter(Boolean).join(" · ")+" ✓";
+    if(await run(async()=>{if(rows.length)await DB.addCargas(rows);for(const u of ups){const{id,...p}=u;await DB.updCarga(id,p)}},msg)){S.importRows=null;S.importText="";S.importSrc=null;renderAll();checkAlarm()}},
   novoCli(){openDrawer(formCli())},
   loteCli(){openDrawer(formLoteCli());setTimeout(()=>$("#lote").focus(),30)},
   async loteGo(){const r=parseLoteCli($("#lote").value);if(!r.ok.length)return;if(await run(()=>DB.addClientes(r.ok),`${r.ok.length} cliente${r.ok.length>1?"s":""} cadastrado${r.ok.length>1?"s":""} ✓`)){closeAll();S.view="clientes";renderAll()}},
@@ -1397,7 +1592,7 @@ const ACT={
     $("#qcNome").value="";$("#qcCnpj").value="";selCli(cli)},
   async impCli(){const ins=[...document.querySelectorAll("[data-novocnpj]")].filter(i=>i.value.trim());if(!ins.length)return toast("Digite o nome de pelo menos um CNPJ");
     const rows=ins.map(i=>({nome:i.value.trim(),cnpj:i.dataset.novocnpj,armazem_padrao:S.org.armazens[0]||"Ecoporto"}));
-    if(await run(()=>DB.addClientes(rows),`${rows.length} cliente${rows.length>1?"s":""} cadastrado${rows.length>1?"s":""} ✓`)){S.importRows=buildImport(S.importText||"");renderAll()}},
+    if(await run(()=>DB.addClientes(rows),`${rows.length} cliente${rows.length>1?"s":""} cadastrado${rows.length>1?"s":""} ✓`)){reimport();renderAll()}},
   editCli(t){const c=S.clientes.find(x=>x.id===t.dataset.id);if(c)openDrawer(formCli(c))},
   async saveCli(){const f=$("#fcl"),g=n=>f.querySelector(`[name="${n}"]`);const sv=f.querySelector('.seg[data-name="armazem_padrao"] .on');
     const o={id:f.dataset.id||undefined,nome:g("nome").value.trim(),cnpj:normC(g("cnpj").value),contato:g("contato").value.trim(),whatsapp:g("whatsapp").value.trim(),email:g("email").value.trim(),operador:g("operador").value.trim(),armazem_padrao:sv?sv.dataset.v:"Ecoporto",excecao:g("excecao").checked,ativo:g("ativo").checked,obs:g("obs").value.trim()};
@@ -1409,8 +1604,8 @@ const ACT={
     const a=arr(g("alerta_horas")).map(Number).filter(n=>n>0);
     await run(()=>DB.updOrg({nome:g("nome").trim(),cnpj_proprio:normC(g("cnpj_proprio")),prazo_horas:Math.max(1,+g("prazo_horas")||48),alerta_horas:a.length>=3?a.slice(0,3):[120,48,24],armazens:arr(g("armazens")),terminais:arr(g("terminais"))}),"Regras salvas ✓");renderAll()},
   csv(){const q=v=>{v=v==null?"":String(v);return/[;"\n]/.test(v)?`"${v.replace(/"/g,'""')}"`:v};
-    const H=["container","tipo","armador","cliente","cnpj","porto","terminal","navio","viagem","eta","prazo_puxe","armazem","status","captado_em","captado_por","fonte","detalhe_captacao","qtd_alarmes","primeiro_alarme","ultimo_alarme","alarme_para","quem_viu","avisos","aprovado_em","aprovado_por","solicitado_em","solicitado_por","protocolo","confirmado_em","armazenado_em"];
-    const rows=S.cargas.slice().sort(byPrazo).map(c=>{const r=resp(c),a=r.alarmes;return[c.container,c.tipo_container,c.armador,cliName(c),fmtCNPJ(c.cnpj),c.porto||"Santos",c.terminal,c.navio,c.viagem,fS(c.eta),fS(c.prazo_limite),c.armazem,STL[c.status],fS(r.captado.at),r.captado.by,r.captado.como,r.captado.det,a.length,a[0]?fS(a[0].created_at):"",a.length?fS(a[a.length-1].created_at):"",[...new Set(a.map(x=>x.destinatario||x.user_nome))].join(", "),r.acks.map(x=>x.user_nome+" ("+x.detalhe+")").join(", "),r.avisos.map(x=>`${CANAL[x.canal]||x.canal} → ${x.destinatario} por ${x.user_nome} em ${fS(x.created_at)}`).join(" | "),r.aprovado?fS(r.aprovado.at):"",r.aprovado?r.aprovado.by:"",r.solicitado?fS(r.solicitado.at):"",r.solicitado?r.solicitado.by:"",c.protocolo,r.confirmado?fS(r.confirmado.at):"",r.armazenado?fS(r.armazenado.at):""].map(q).join(";")});
+    const H=["container","ce","bl","peso_kg","desconsolidador","tipo","armador","cliente","cnpj","porto","terminal","navio","viagem","eta","prazo_puxe","armazem","status","captado_em","captado_por","fonte","detalhe_captacao","qtd_alarmes","primeiro_alarme","ultimo_alarme","alarme_para","quem_viu","avisos","aprovado_em","aprovado_por","solicitado_em","solicitado_por","protocolo","confirmado_em","armazenado_em"];
+    const rows=S.cargas.slice().sort(byPrazo).map(c=>{const r=resp(c),a=r.alarmes;return[c.container,c.ce,c.bl,c.peso_kg,c.desconsolidador,c.tipo_container,c.armador,cliName(c),fmtCNPJ(c.cnpj),c.porto||"Santos",c.terminal,c.navio,c.viagem,fS(c.eta),fS(c.prazo_limite),c.armazem,STL[c.status],fS(r.captado.at),r.captado.by,r.captado.como,r.captado.det,a.length,a[0]?fS(a[0].created_at):"",a.length?fS(a[a.length-1].created_at):"",[...new Set(a.map(x=>x.destinatario||x.user_nome))].join(", "),r.acks.map(x=>x.user_nome+" ("+x.detalhe+")").join(", "),r.avisos.map(x=>`${CANAL[x.canal]||x.canal} → ${x.destinatario} por ${x.user_nome} em ${fS(x.created_at)}`).join(" | "),r.aprovado?fS(r.aprovado.at):"",r.aprovado?r.aprovado.by:"",r.solicitado?fS(r.solicitado.at):"",r.solicitado?r.solicitado.by:"",c.protocolo,r.confirmado?fS(r.confirmado.at):"",r.armazenado?fS(r.armazenado.at):""].map(q).join(";")});
     const txt="\ufeff"+[H.join(";")].concat(rows).join("\n");
     if(window.PUXE_PREVIEW)return copy(txt.slice(1));
     try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type:"text/csv;charset=utf-8"}));a.download=`puxe-rastreio-${new Date().toISOString().slice(0,10)}.csv`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);toast("Planilha baixada ✓")}catch(e){copy(txt.slice(1))}},
@@ -1456,6 +1651,8 @@ document.addEventListener("input",e=>{const t=e.target;
     fcRefresh()}
   if(t.name==="cnpj"&&t.closest("#fcl")){const v=normC(t.value);$("#cnpjMsg").className="hint"+(v.length===14&&!cnpjOk(v)?" b":"");$("#cnpjMsg").textContent=v.length===14?(cnpjOk(v)?"CNPJ válido ✓":"Dígito do CNPJ não confere"):""}});
 document.addEventListener("change",async e=>{const t=e.target;
+  if(t.id==="impFile"){const f=(t.files&&t.files[0])||(t._files&&t._files[0]);if(!f)return;if(!/\.xlsx$/i.test(f.name)){toast("Use um arquivo .xlsx");return}
+    toast("Lendo "+f.name+"…");try{const tab=await lerXlsx(f);S.importSrc={tab,arquivo:f.name};S.importText="";reimport();if(!S.importRows.length)toast("Não achei o cabeçalho (CE, Navio, Container…) nessa planilha");renderAll();const b=$("#impFile");if(b)b.scrollIntoView({behavior:"smooth",block:"start"})}catch(err){toast("Não consegui ler: "+err.message)}return}
   if(t.name==="cliente_id"&&t.closest("#fc")&&t.value==="__novo"){openQc();return}
   if(t.name==="cliente_id"&&t.closest("#fc")){const f=$("#fc");const cli=S.clientes.find(c=>c.id===t.value);$("#qc").hidden=true;$("#cnpjHint").textContent="";
     if(cli){f.querySelector('[name="cnpj"]').value=fmtCNPJ(cli.cnpj);f.querySelectorAll('.seg[data-name="armazem"] button').forEach(b=>b.classList.toggle("on",b.dataset.v===cli.armazem_padrao));f.querySelector('[name="cliente_pendente"]').checked=false}
