@@ -753,6 +753,10 @@ const DB={
       Object.assign(c,patch,{updated_at:new Date().toISOString()});return}
     let {error}=await sb.from("puxe_cargas").update(patch).eq("id",id);if(error&&colErr(error)){avisaSQL();({error}=await sb.from("puxe_cargas").update(semCols(patch)).eq("id",id))}if(error)throw error;await DB.load();
   },
+  async updCargas(ids,patch){if(!ids.length)return;
+    if(S.mode==="demo"){for(const id of ids)await DB.updCarga(id,patch);return}
+    for(let i=0;i<ids.length;i+=80){const part=ids.slice(i,i+80);let {error}=await sb.from("puxe_cargas").update(patch).in("id",part);if(error&&colErr(error)){avisaSQL();({error}=await sb.from("puxe_cargas").update(semCols(patch)).in("id",part))}if(error)throw error}
+    await DB.load()},
   async saveCliente(obj){
     if(S.mode==="demo"){if(obj.id){Object.assign(S.clientes.find(x=>x.id===obj.id),obj)}else{S.clientes.push(Object.assign({id:uid(),created_at:new Date().toISOString()},obj))}S.clientes.sort((a,b)=>a.nome.localeCompare(b.nome));return}
     const {id,...rest}=obj;const go=x=>id?sb.from("puxe_clientes").update(x).eq("id",id):sb.from("puxe_clientes").insert(x);let r=await go(rest);if(r.error&&colErr(r.error)){avisaSQL();r=await go(semCols(rest))}if(r.error)throw r.error;await DB.load();
@@ -1083,7 +1087,7 @@ function xpPanel(c,r,cli){return`<div class="xp"><div><h4>Container</h4><div cla
    <div><small>Tipo BL</small><b>${esc(TBL[c.tipo_bl]||c.tipo_bl||"—")}</b></div><div><small>Armazém destino</small><b>${esc(c.armazem||"—")}</b></div><div><small>Peso bruto · desconsolidador</small><b>${c.peso_kg!=null&&c.peso_kg!==""?esc((+c.peso_kg).toLocaleString("pt-BR"))+" kg":"—"} · ${esc(c.desconsolidador||"—")}</b></div>${ceIrmaos(c)}
    <div><small>Porto · terminal</small><b>${esc(c.porto||"Santos")} · ${esc(c.terminal||"—")}</b></div><div><small>ETA</small><b>${fDT(c.eta)}</b></div>
    <div><small>Contato cliente</small><b>${esc((cli&&(cli.contato||cli.email||cli.whatsapp))||"—")}</b></div><div><small>Operador responsável</small><b>${esc(opDe(c)||"—")}</b></div><div><small>Prazo oficial</small><b>${fH((new Date(c.eta)-new Date(c.prazo_limite))/36e5)} antes da atracação</b></div><div><small>Protocolo</small><b>${esc(c.protocolo||"—")}</b></div></div>
-   <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn sm" data-act="openCarga" data-id="${c.id}">Abrir / ações</button><button class="btn ghost sm" data-act="openAviso" data-id="${c.id}">Registrar aviso</button></div></div>
+   <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn sm" data-act="openCarga" data-id="${c.id}">Abrir / ações</button>${baixaBtn(c,"Dar baixa")}<button class="btn ghost sm" data-act="openAviso" data-id="${c.id}">Registrar aviso</button></div></div>
   <div><h4>Linha do tempo</h4>${timeline(c)}</div>
   <div><h4>Responsabilidade</h4>${respList(c,r)}</div></div>`}
 function evTxt(e){if(e.tipo==="alarme")return`Alarme ${e.nivel||""} · ${CANAL[e.canal]||"app"} → ${e.destinatario||e.user_nome||""}`;if(e.tipo==="aviso")return`Aviso ${CANAL[e.canal]||e.canal||""} → ${e.destinatario||""}`;if(e.tipo==="alarme_ack")return`Alarme reconhecido · ${e.detalhe||""}`;
@@ -1105,18 +1109,19 @@ function vCargas(){
 function groupBy(L,k){const g={};L.forEach(c=>{(g[c[k]||"—"]=g[c[k]||"—"]||[]).push(c)});return Object.entries(g).sort((a,b)=>b[1].length-a[1].length)}
 function vFila(){
   const det=S.cargas.filter(c=>c.status==="detectado").sort(byPrazo),apr=S.cargas.filter(c=>c.status==="aprovado").sort(byPrazo),sol=S.cargas.filter(c=>c.status==="solicitado").sort((a,b)=>new Date(a.eta)-new Date(b.eta));const ed=pode();
-  const line=(c,chk)=>`<div class="ln">${chk&&ed?`<input type="checkbox" ${["vencido","critico","alerta","atencao"].includes(nivel(c))?"checked":""} data-grp="${esc(c.armazem||"—")}" data-id="${c.id}">`:""}<div class="x"><b>${esc(c.container)}</b> <span class="tag">${esc(c.tipo_container||"")}</span><small>${esc(cliName(c))} · ${esc(c.navio||"")} · prazo ${fDT(c.prazo_limite)}</small></div>${cdChip(c)}<button class="icb" style="width:38px;height:38px" data-act="openCarga" data-id="${c.id}">${ic("right",16)}</button></div>`;
-  return`<div class="ph"><div><span class="kick">REDESTINATION</span><h1>Fila de Puxe</h1></div></div>
+  const line=(c,chk)=>`<div class="ln">${chk&&ed?`<input type="checkbox" ${["vencido","critico","alerta","atencao"].includes(nivel(c))?"checked":""} data-grp="${esc(c.armazem||"—")}" data-id="${c.id}">`:""}<div class="x"><b>${esc(c.container)}</b> <span class="tag">${esc(c.tipo_container||"")}</span><small>${esc(cliName(c))} · ${esc(c.navio||"")} · prazo ${fDT(c.prazo_limite)}</small></div>${cdChip(c)}${baixaBtn(c)}<button class="icb" style="width:38px;height:38px" data-act="openCarga" data-id="${c.id}">${ic("right",16)}</button></div>`;
+  return`<div class="ph"><div><span class="kick">REDESTINATION</span><h1>Fila de Puxe</h1></div>${pode()?`<button class="btn acc sm" data-act="confEmail">${ic("check",15)} Dar baixa em lote</button>`:""}</div>
+  <div class="note" style="margin-bottom:14px">Já fez a redestinação? Use <b>✓ Baixa</b> no container (ou <b>Dar baixa em lote</b> colando os CEs). Ele sai da fila, os alertas param e não volta no Excel de pendentes, mesmo com o Siscarga ainda mostrando “manifestado”.</div>
   <div class="two"><div>
    <h3 style="margin:0 0 4px">1 · Aguardando seu OK</h3><p class="muted" style="margin:0 0 14px;font-size:13px">Agrupado por armazém de destino. Já vêm marcados os que estão em alerta (5 dias ou menos da chegada) — confira e aprove.</p>
-   ${groupBy(det,"armazem").map(([a,L])=>`<section class="card grp"><div class="grp-h"><span class="n">${L.length}</span><h3>→ ${esc(a)}</h3>${ed?`<button class="btn acc sm" data-act="aprovarGrp" data-grp="${esc(a)}">${ic("check",16)} OK, aprovar</button>`:""}</div>${L.map(c=>line(c,true)).join("")}</section>`).join("")||`<div class="card empty">Nada aguardando aprovação. ✓</div>`}
+   ${groupBy(det,"armazem").map(([a,L])=>`<section class="card grp"><div class="grp-h"><span class="n">${L.length}</span><h3>→ ${esc(a)}</h3>${ed?`<button class="btn ghost sm" data-act="baixaGrp" data-grp="${esc(a)}" title="Os marcados já foram redestinados">Dar baixa</button><button class="btn acc sm" data-act="aprovarGrp" data-grp="${esc(a)}">${ic("check",16)} OK, aprovar</button>`:""}</div>${L.map(c=>line(c,true)).join("")}</section>`).join("")||`<div class="card empty">Nada aguardando aprovação. ✓</div>`}
   </div><div>
    <h3 style="margin:0 0 4px">2 · Solicitar no armazém</h3><p class="muted" style="margin:0 0 14px;font-size:13px">Lance a redestinação no portal de cada armazém e informe o protocolo.</p>
    ${groupBy(apr,"armazem").map(([a,L])=>`<section class="card grp"><div class="grp-h"><span class="n">${L.length}</span><h3>→ ${esc(a)}</h3><button class="btn ghost sm" data-act="copiarGrp" data-grp="${esc(a)}">Copiar lista</button></div>${L.map(c=>line(c,false)).join("")}
      ${ed?`<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><input class="inp" style="flex:1;min-width:150px" placeholder="Protocolo do armazém (opcional)" data-prot="${esc(a)}"><button class="btn sm" data-act="solicitarGrp" data-grp="${esc(a)}">Marquei como solicitado</button></div>`:""}</section>`).join("")||`<div class="card empty">Nenhum container na fila.</div>`}
    <h3 style="margin:18px 0 4px">3 · Aguardando confirmação do armazém</h3><p class="muted" style="margin:0 0 10px;font-size:12px">Solicitado não encerra o processo: os alertas continuam até a confirmação. Cole o e-mail de confirmação da Ecoporto e o sistema acha os containers.</p>
-   ${ed?`<button class="btn acc sm" data-act="confEmail" style="margin-bottom:10px">${ic("check",15)} Colar e-mail de confirmação</button>`:""}
-   ${groupBy(sol,"armazem").map(([a,L])=>`<section class="card grp"><div class="grp-h"><span class="n">${L.length}</span><h3>→ ${esc(a)}</h3><span class="sp warn">aguardando confirmação</span></div>${L.map(c=>{const r=resp(c);return`<div class="ln"><div class="x"><b>${esc(c.container)}</b> <span class="tag">${esc(c.protocolo||"sem protocolo")}</span><small>${esc(cliName(c))} · solicitado ${r.solicitado?fS(r.solicitado.at)+" por "+esc(r.solicitado.by):""} · ETA ${fS(c.eta)}</small></div>${cdChip(c)}${ed?`<button class="btn ghost sm" data-act="confUm" data-id="${c.id}">Confirmada</button>`:""}</div>`}).join("")}</section>`).join("")||`<div class="card empty">Nada aguardando confirmação.</div>`}
+   ${ed?`<button class="btn acc sm" data-act="confEmail" style="margin-bottom:10px">${ic("check",15)} Dar baixa em lote (colar CEs, containers ou e-mail)</button>`:""}
+   ${groupBy(sol,"armazem").map(([a,L])=>`<section class="card grp"><div class="grp-h"><span class="n">${L.length}</span><h3>→ ${esc(a)}</h3><span class="sp warn">aguardando confirmação</span></div>${L.map(c=>{const r=resp(c);return`<div class="ln"><div class="x"><b>${esc(c.container)}</b> <span class="tag">${esc(c.protocolo||"sem protocolo")}</span><small>${esc(cliName(c))} · solicitado ${r.solicitado?fS(r.solicitado.at)+" por "+esc(r.solicitado.by):""} · ETA ${fS(c.eta)}</small></div>${cdChip(c)}${baixaBtn(c,"Dar baixa")}</div>`}).join("")}</section>`).join("")||`<div class="card empty">Nada aguardando confirmação.</div>`}
    <div class="note" style="margin-top:14px"><b>Fase 2 — robô de solicitação:</b> depois do seu OK, o sistema entra no portal de cada armazém (Ecoporto, Marimex, Santos Brasil…) e lança o puxe sozinho. Hoje ele prepara a lista; o lançamento ainda é manual.</div>
   </div></div>`}
 
@@ -1192,7 +1197,7 @@ function buildTabela(abas){const out=[];const exist=new Map(S.cargas.map(c=>[c.c
       conts.forEach(ct=>{const k=ct+"|"+ce;const r={container:ct,ce,cliente:cli?cli.nome:proprio?"Cliente final pendente":(nomeCli||"?"),navio,porto,terminal:base.terminal,eta,armazem:base.armazem||"a definir",ok:true,msg:"novo",nCe:conts.length};
         if(eta)r.prazo=new Date(eta-S.org.prazo_horas*36e5);
         if(vistos.has(k)){r.ok=false;r.msg="repetido no arquivo"}
-        else if(exist.has(k)){const c=exist.get(k);if(eta&&c.eta&&Math.abs(new Date(c.eta)-eta)>36e5&&ALERT_ST.concat(["confirmado"]).includes(c.status)){r.upd={id:c.id,eta:eta.toISOString(),prazo_limite:r.prazo.toISOString()};r.msg=`ETA mudou ${fS(c.eta).slice(0,5)} → ${fS(eta).slice(0,5)}`}else{r.ok=false;r.msg="já cadastrado"}}
+        else if(exist.has(k)){const c=exist.get(k);if(["confirmado","armazenado"].includes(c.status)){r.ok=false;r.msg="já redestinado ✓ (baixa dada)"}else if(c.status==="permanece"||c.status==="cancelado"){r.ok=false;r.msg="já cadastrado ("+STL[c.status].toLowerCase()+")"}else if(eta&&c.eta&&Math.abs(new Date(c.eta)-eta)>36e5){r.upd={id:c.id,eta:eta.toISOString(),prazo_limite:r.prazo.toISOString()};r.msg=`ETA mudou ${fS(c.eta).slice(0,5)} → ${fS(eta).slice(0,5)}`}else{r.ok=false;r.msg="já cadastrado"}}
         else if(!eta){r.ok=false;r.msg="sem data de chegada"}
         else if(!cli&&!proprio){r.ok=false;r.msg="cliente não cadastrado";r.novo=cnpj;r.nomeNovo=nomeCli}
         else if(ct!==SOLTA&&!contOk(ct))r.msg="novo · confira o dígito";
@@ -1211,8 +1216,8 @@ function stCE(L){const ord=["detectado","aprovado","solicitado","confirmado","ar
   const t={detectado:[urg?"URGENTE – PEDIR PUXE":"A CONFERIR",urg?"urg":"conf"],aprovado:[(urg?"URGENTE – ":"")+"NA FILA – PEDIR PUXE",urg?"urg":"fila"],solicitado:[(urg&&hEta(m)<0?"SEM CONFIRMAÇÃO – COBRAR ARMAZÉM":"SOLICITADO – AGUARDANDO CONFIRMAÇÃO"),urg&&hEta(m)<0?"urg":"sol"],
     confirmado:["REDESTINAÇÃO CONFIRMADA","ok"],armazenado:["ARMAZENADO","arm"],permanece:["PERMANECE NO TERMINAL","per"]}[m.status]||[STL[m.status]||m.status,"arm"];return[t[0]+parc,t[1]]}
 function xD(d,hora){if(!d)return null;d=new Date(d);return new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate(),hora?d.getHours():0,hora?d.getMinutes():0))}
-async function exportarExcel(){toast("Gerando a planilha…");let X;try{X=await loadExcel()}catch(e){return toast(e.message)}
-  const now=new Date(),lim=Date.now()-15*864e5;const C=S.cargas.filter(c=>c.status!=="cancelado"&&(!c.eta||new Date(c.eta)>lim));if(!C.length)return toast("Nenhuma carga para exportar");
+async function exportarExcel(modo){toast("Gerando a planilha…");const soPend=modo==="pend";let X;try{X=await loadExcel()}catch(e){return toast(e.message)}
+  const now=new Date(),lim=Date.now()-15*864e5;const C=S.cargas.filter(c=>soPend?ALERT_ST.includes(c.status):c.status!=="cancelado"&&(!c.eta||new Date(c.eta)>lim));if(!C.length)return toast(soPend?"Nenhum CE pendente ✓":"Nenhuma carga para exportar");
   const wb=new X.Workbook();wb.creator="PUXE";wb.created=now;
   const grupos=new Map();C.forEach(c=>{const p=c.porto||"Santos";if(!grupos.has(p))grupos.set(p,new Map());const g=grupos.get(p),k=c.ce||("ctr:"+c.container);if(!g.has(k))g.set(k,[]);g.get(k).push(c)});
   const portos=[...grupos.keys()].sort((a,b)=>(a==="Santos"?-1:b==="Santos"?1:a.localeCompare(b)));
@@ -1237,13 +1242,13 @@ async function exportarExcel(){toast("Gerando a planilha…");let X;try{X=await 
       [10,18,19].forEach(k=>row.getCell(k).alignment={wrapText:true,vertical:"top"});
       const sc=row.getCell(14);sc.fill={type:"pattern",pattern:"solid",fgColor:{argb:XST[cor][0]}};sc.font={bold:true,color:{argb:XST[cor][1]}};nCE++});
     const nC=G.reduce((a,L)=>a+L.filter(x=>x.container!==SOLTA).length,0),nS=G.filter(L=>L.every(x=>x.container===SOLTA)).length;
-    head(ws,H.length,`Alerta de Redestinação – ${p} – ${S.org.nome||"PUXE"} – ${carimbo} – ${G.length} CEs${nC?` · ${nC} container${nC>1?"s":""}`:""}${nS?` · ${nS} carga${nS>1?"s":""} solta${nS>1?"s":""}`:""}`);ws.autoFilter={from:{row:2,column:1},to:{row:2,column:H.length}}});
+    head(ws,H.length,`Alerta de Redestinação${soPend?" (pendentes)":""} – ${p} – ${S.org.nome||"PUXE"} – ${carimbo} – ${G.length} CEs${nC?` · ${nC} container${nC>1?"s":""}`:""}${nS?` · ${nS} carga${nS>1?"s":""} solta${nS>1?"s":""}`:""}`);ws.autoFilter={from:{row:2,column:1},to:{row:2,column:H.length}}});
   const H2=["Container","Qtd no CE","CE Mercante","Cliente","Navio","Chegada","Porto","Terminal","Status","Prazo do puxe","Armazém destino","Protocolo"];
   const ws2=wb.addWorksheet("Por container");ws2.addRow([]);ws2.addRow(H2);[16,9,18,22,22,11,14,16,26,16,16,14].forEach((w,i)=>ws2.getColumn(i+1).width=w);
   C.slice().sort((a,b)=>new Date(a.eta||0)-new Date(b.eta||0)||a.container.localeCompare(b.container)).forEach(c=>{const L=ceConts(c.ce);const r=ws2.addRow([c.container===SOLTA?"Carga solta":c.container,c.ce?L.length:1,c.ce||"",cliName(c),c.navio||"",xD(c.eta),c.porto||"Santos",c.terminal||"",stCE([c])[0],xD(c.prazo_limite,true),c.armazem||"a definir",c.protocolo||""]);r.getCell(6).numFmt="dd/mm/yyyy";r.getCell(10).numFmt="dd/mm/yyyy hh:mm";
     const sc=r.getCell(9),cor=stCE([c])[1];sc.fill={type:"pattern",pattern:"solid",fgColor:{argb:XST[cor][0]}};sc.font={bold:true,color:{argb:XST[cor][1]}}});
   head(ws2,H2.length,`Por container – ${S.org.nome||"PUXE"} – ${carimbo} – ${C.length} linhas`);ws2.autoFilter={from:{row:2,column:1},to:{row:2,column:H2.length}};
-  const buf=await wb.xlsx.writeBuffer();const nome=`Redestinacao_${pad(now.getDate())}-${pad(now.getMonth()+1)}-${now.getFullYear()}_${pad(now.getHours())}${pad(now.getMinutes())}.xlsx`;
+  const buf=await wb.xlsx.writeBuffer();const nome=`Redestinacao${soPend?"_pendentes":""}_${pad(now.getDate())}-${pad(now.getMonth()+1)}-${now.getFullYear()}_${pad(now.getHours())}${pad(now.getMinutes())}.xlsx`;
   window._ultimoXlsx={nome,buf};
   try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([buf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));a.download=nome;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},800);toast(`Planilha baixada ✓ ${nCE} CEs`)}catch(e){toast("Não consegui baixar: "+e.message)}}
 
@@ -1283,7 +1288,7 @@ function vConfig(){const o=S.org,adm=isAdmin();const dis=adm?"":"disabled";
   <div class="two"><section class="card p"><h3 style="margin:0 0 12px">Regras de prazo</h3><div class="form" id="fo">
     <label>Empresa<input name="nome" value="${esc(o.nome)}" ${dis}></label>
     <label>CNPJ da própria comissária (regra master)<input name="cnpj_proprio" value="${esc(fmtCNPJ(o.cnpj_proprio||""))}" ${dis}></label>
-    <label>Prazo para pedir o puxe (horas antes da atracação) · oficial: 24h<input name="prazo_horas" type="number" min="1" data-fav="24" value="${o.prazo_horas}" ${dis}></label>
+    <label>Prazo para pedir o puxe (horas antes da atracação) · oficial: 24h<input name="prazo_horas" type="number" min="1" value="${o.prazo_horas}" ${dis}></label>
     <label>Alertas (horas antes da chegada/ETA) · DLT: 120 (5 dias), 48 (2 dias), 24 (1 dia)<input name="alerta_horas" value="${(o.alerta_horas||[]).join(", ")}" ${dis}></label>
     <label>Armazéns de destino<input name="armazens" value="${esc((o.armazens||[]).join(", "))}" ${dis}></label>
     <label>Terminais de atracação<input name="terminais" value="${esc((o.terminais||[]).join(", "))}" ${dis}></label>
@@ -1292,8 +1297,8 @@ function vConfig(){const o=S.org,adm=isAdmin();const dis=adm?"":"disabled";
   <section class="card p"><h3 style="margin:0 0 6px">Alarme</h3><p class="muted" style="font-size:13px;line-height:1.6;margin:0 0 12px">O alarme toca com o app aberto e repete a cada minuto enquanto houver container vencido ou a menos de ${Math.min(...(o.alerta_horas||[24]))}h do prazo sem puxe. Avisos com o app fechado (WhatsApp/push) entram na fase 2.</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn acc sm" data-act="testAlarm">Testar alarme</button><button class="btn ghost sm" data-act="notif">Ativar notificações</button></div></section>
   <section class="card p"><h3 style="margin:0 0 10px">Regras de alarme e avisos</h3><div class="form" id="frg">
-    <label>Custo médio de um container que fica no terminal (R$)<input name="custo" type="number" min="0" step="100" data-fav="1000" data-fav-key="custo-container" value="${CUSTO()}" ${dis}></label>
-    <label>Escalar para gerentes se ninguém reagir em (minutos)<input name="escala" type="number" min="5" step="5" data-fav="15,30,60" data-fav-key="escala-min" value="${REG().escala_min}" ${dis}></label>
+    <label>Custo médio de um container que fica no terminal (R$)<input name="custo" type="number" min="0" step="100" value="${CUSTO()}" ${dis}></label>
+    <label>Escalar para gerentes se ninguém reagir em (minutos)<input name="escala" type="number" min="5" step="5" value="${REG().escala_min}" ${dis}></label>
     <label>Aviso automático ao cliente<select name="avc" ${dis}>${Object.entries(AVC).map(([k,v])=>`<option value="${k}" ${REG().aviso_cliente===k?"selected":""}>${v}</option>`).join("")}</select></label>
     <div class="lbl">Canais para a equipe (fase 2)</div>
     ${["email","sms","whatsapp"].map(k=>`<label class="chk"><input type="checkbox" name="cn_${k}" ${REG().canais[k]?"checked":""} ${dis}> ${{email:"E-mail",sms:"SMS",whatsapp:"WhatsApp"}[k]}</label>`).join("")}
@@ -1311,10 +1316,10 @@ function openDrawer(html){$("#sheet").hidden=true;$("#drawer").innerHTML=html;$(
 function closeAll(){$("#drawer").hidden=true;$("#sheet").hidden=true;$("#ovl").hidden=true;S.drawerId=null}
 function detalhe(c){S.drawerId=c.id;const ed=pode(),st=c.status;const h=S.eventos.filter(e=>e.carga_id===c.id);
   const A=[];
-  if(ed){if(st==="detectado"){A.push(`<button class="btn acc" data-act="setSt" data-st="aprovado">${ic("check",17)} Aprovar puxe (OK)</button>`,`<button class="btn ghost" data-act="setSt" data-st="permanece">Permanece no terminal</button>`)}
+  if(ed){if(ALERT_ST.includes(st))A.push(`<button class="btn acc" data-act="baixa">${ic("check",17)} Dar baixa (já redestinado)</button>`);
+   if(st==="detectado"){A.push(`<button class="btn" data-act="setSt" data-st="aprovado">${ic("check",17)} Aprovar puxe (OK)</button>`,`<button class="btn ghost" data-act="setSt" data-st="permanece">Permanece no terminal</button>`)}
    if(st==="aprovado"){A.push(`<input class="inp" id="protD" placeholder="Protocolo do armazém" style="flex:1 1 100%">`,`<button class="btn" data-act="setSt" data-st="solicitado">Marcar como solicitado</button>`,`<button class="btn ghost" data-act="setSt" data-st="detectado">Voltar</button>`)}
-   if(st==="solicitado")A.push(`<button class="btn" data-act="setSt" data-st="confirmado">Confirmado pelo armazém</button>`);
-   if(st==="confirmado")A.push(`<button class="btn" data-act="setSt" data-st="armazenado">Armazenado</button>`);
+   if(st==="confirmado")A.push(`<button class="btn" data-act="setSt" data-st="armazenado">Armazenado</button>`,`<button class="btn ghost" data-act="setSt" data-st="detectado">Desfazer baixa</button>`);
    if(["permanece","cancelado","armazenado"].includes(st))A.push(`<button class="btn ghost" data-act="setSt" data-st="detectado">Reativar</button>`);
    A.push(`<button class="btn ghost" data-act="editCarga">Editar dados</button>`);
    if(st!=="cancelado")A.push(`<button class="btn bad" data-act="cancel2">Cancelar</button>`)}
@@ -1367,7 +1372,7 @@ function formCarga(c){const o=S.org,isNew=!c;c=c||{tipo_container:"40HC",tipo_bl
   const ymd=`${eta.getFullYear()}-${pad(eta.getMonth()+1)}-${pad(eta.getDate())}`;
   return`<div class="dhead"><h3>${isNew?"Nova carga":"Editar carga"}</h3><button data-act="closeAll" class="icb">${ic("x")}</button></div>
   <div class="form" id="fc" data-id="${c.id||""}">
-   <label>Cliente<select name="cliente_id" data-1c="lista">${cliOpts(c.cliente_pendente&&!c.cliente_id?"__master":c.cliente_id)}</select></label>
+   <label>Cliente<select name="cliente_id">${cliOpts(c.cliente_pendente&&!c.cliente_id?"__master":c.cliente_id)}</select></label>
    <div class="qc" id="qc" hidden><b style="font-size:14px">Novo cliente</b><div class="row"><label>Nome / razão social<input id="qcNome" autocomplete="off"></label><label>CNPJ<input id="qcCnpj" placeholder="00.000.000/0000-00" inputmode="numeric"></label></div><span class="hint" id="qcMsg"></span><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn sm" data-act="qcSave">Salvar e usar nesta carga</button><button type="button" class="btn ghost sm" data-act="qcCancel">Cancelar</button></div></div>
    <label><span>CNPJ <span style="font-weight:500">· escolhe o cliente sozinho</span></span><input name="cnpj" value="${esc(fmtCNPJ(c.cnpj||""))}" placeholder="00.000.000/0000-00" inputmode="numeric"></label><span class="hint" id="cnpjHint"></span>
    <label>${isNew?"Container(s) — vários? um por linha":"Container"}<textarea name="container" rows="${isNew?2:1}" placeholder="MSCU1234565 · sem container? escreva CARGA SOLTA">${esc(c.container||"")}</textarea><span class="hint" id="contMsg"></span></label>
@@ -1381,7 +1386,7 @@ function formCarga(c){const o=S.org,isNew=!c;c=c||{tipo_container:"40HC",tipo_bl
    <label>Porto de descarga<input name="porto" value="${esc(c.porto||"Santos")}" list="portoL"><datalist id="portoL">${["Santos","Itajaí","Navegantes","Itapoá","Paranaguá","Rio de Janeiro","Itaguaí","Vitória","Salvador","Suape","Pecém","Manaus","Rio Grande"].map(x=>`<option>${x}</option>`).join("")}</datalist></label>
    <div class="lbl">Terminal de atracação</div>${seg("terminal",[...new Set([...o.terminais,c.terminal].filter(Boolean))],c.terminal)}
    <div class="row3"><label>ETA — data<input type="date" name="eta_d" value="${ymd}"></label><label>Hora<select name="eta_h">${Array.from({length:24},(_,i)=>`<option ${i===eta.getHours()?"selected":""}>${pad(i)}</option>`).join("")}</select></label><label>Min<select name="eta_m">${["00","15","30","45"].map(x=>`<option ${+x===Math.floor(eta.getMinutes()/15)*15?"selected":""}>${x}</option>`).join("")}</select></label></div>
-   <label>Pedir o puxe até quantas horas antes da atracação?<input name="ph" type="number" min="0" data-fav="24,48" data-fav-key="prazo-horas-carga" value="${ph}"></label>
+   <label>Pedir o puxe até quantas horas antes da atracação?<input name="ph" type="number" min="0" value="${ph}"></label>
    <div class="hint" id="etaLine"></div>
    <div class="lbl">Armazém de destino</div>${seg("armazem",[...new Set([...o.armazens,c.armazem].filter(Boolean))],c.armazem)}
    <div class="lbl">Como soubemos (fonte)</div>${seg("fonte",["siscarga","planilha","email","manual"],c.fonte,FONTE)}
@@ -1430,10 +1435,31 @@ function resumoTxt(){const pend=S.cargas.filter(c=>PEND.includes(c.status)).sort
   return`*PUXE · ${S.org.nome} · ${fD(t)}*\n⛔ Vencidos: ${pend.filter(c=>hLeft(c)<0).length}\n🔴 Vencem em 24h: ${pend.filter(c=>hLeft(c)>=0&&hLeft(c)<=24).length}\n🟠 Vencem em 48h: ${pend.filter(c=>hLeft(c)>24&&hLeft(c)<=48).length}\n📋 Na fila de puxe: ${S.cargas.filter(c=>c.status==="aprovado").length}\n\n`+
     L.map(c=>`• ${c.container} · ${cliName(c)} → ${c.armazem} · ${leftTxt(hLeft(c))}`).join("\n")}
 
+/* ================= BAIXA (redestinação feita) ================= */
+const VIAS=["Consulta no Siscarga","E-mail do armazém","Portal do armazém","Telefone"];
+function baixaHTML(ids){const L=ids.map(id=>S.cargas.find(c=>c.id===id)).filter(c=>c&&ALERT_ST.includes(c.status));S.baixaIds=L.map(c=>c.id);
+  if(!L.length)return`<div class="dhead"><h3>Dar baixa</h3><button data-act="closeAll" class="icb">${ic("x")}</button></div><div class="empty">Nada pendente para dar baixa.</div>`;
+  const ces=[...new Set(L.map(c=>c.ce).filter(Boolean))];const extra=ces.flatMap(ceConts).filter(c=>!S.baixaIds.includes(c.id)&&ALERT_ST.includes(c.status));S.baixaExtra=extra.map(c=>c.id);
+  const arms=[...new Set([...(S.org.armazens||[]),...L.map(c=>c.armazem)].filter(Boolean))];const arm1=(L.find(c=>c.armazem)||{}).armazem||"";
+  const lst=L.slice(0,10).map(c=>`<div class="ln"><div class="x"><b>${esc(c.container)}</b><small>${esc(cliName(c))} · CE ${esc(c.ce||"—")} · ${esc(c.navio||"")} · chegada ${c.eta?fD(c.eta):"—"}</small></div><span class="st ${c.status}">${STL[c.status]}</span></div>`).join("")+(L.length>10?`<div class="hint">+ ${L.length-10} outros</div>`:"");
+  return`<div class="dhead"><h3>Dar baixa · redestinação feita</h3><button data-act="closeAll" class="icb">${ic("x")}</button></div>
+  <div class="form" id="fbx"><p class="muted" style="margin:0;font-size:12px;line-height:1.6">Marca como <b>Redestinação confirmada</b>: sai da fila, <b>param os alertas</b> (app e e-mail) e o CE não aparece mais no Excel “só pendentes”, mesmo que o Siscarga ainda mostre “manifestado”. Fica registrado quem deu baixa, quando e como.</p>
+  <div>${lst}</div>
+  ${extra.length?`<label class="chk"><input type="checkbox" id="bxCe" checked> Incluir também ${extra.length===1?"o outro container":`os outros ${extra.length} containers`} do mesmo CE <small class="muted">(${extra.slice(0,6).map(c=>esc(c.container)).join(", ")}${extra.length>6?"…":""})</small></label>`:""}
+  <div class="lbl">Como foi confirmado</div>${seg("bxVia",VIAS,VIAS[0])}<input class="inp" id="bxViaOutro" placeholder="Outro jeito (escreva)">
+  <div class="lbl">Armazém de destino</div>${seg("bxArm",arms,arm1)}<input class="inp" id="bxArmOutro" placeholder="Outro armazém (escreva)">
+  <div class="row"><label>Protocolo (opcional)<input id="bxProt" value="${L.length===1?esc(L[0].protocolo||""):""}"></label><label>Observação (opcional)<input id="bxObs" placeholder="ex.: confirmado pela Ana da Ecoporto"></label></div>
+  <div style="display:flex;gap:8px"><button class="btn acc" data-act="baixaGo" style="flex:1" id="bxBtn">${ic("check",17)} Dar baixa em ${L.length+extra.length} container${L.length+extra.length>1?"s":""}</button><button class="btn ghost" data-act="closeAll">Fechar</button></div></div>`}
+function baixaBtn(c,txt){return pode()&&ALERT_ST.includes(c.status)?`<button class="btn ghost sm" data-act="baixa" data-id="${c.id}" title="Já redestinado: dar baixa">${ic("check",14)} ${txt||"Baixa"}</button>`:""}
+
 /* ================= VERSÃO (regras 3 e 4) ================= */
 const APP_VERSAO=6;
 const NOVIDADES=[
- [6,"29/10/2026",["Regra 7 · Um clique: nos formulários, listas curtas viram botões (ex.: minutos do ETA) e campos de número ganham favoritos — toque em “+ favorito” para guardar o valor do campo como botão (ex.: 24h, R$ 1.000); vale por pessoa e por aparelho"]],
+ [6,"29/10/2026",["Dar baixa: botão “✓ Baixa” em cada container (Fila de Puxe, Cargas e na ficha da carga) para registrar que a redestinação já foi feita, mesmo com o Siscarga ainda mostrando “manifestado”",
+   "A baixa pode valer para todos os containers do mesmo CE de uma vez e registra como foi confirmado, armazém, protocolo, quem e quando",
+   "Dar baixa em lote: cole uma lista de CEs ou containers (ou o e-mail do armazém) e confirme todos juntos",
+   "Depois da baixa: sai da fila, os alertas param (app e e-mail), a reimportação da planilha mostra “já redestinado” e o Excel “só pendentes” não traz mais esse CE",
+   "Exportar Excel pergunta: só pendentes (para enviar) ou tudo (com as já redestinadas)","Desfazer baixa, se foi por engano"]],
  [5,"28/10/2026",["Exportar Excel no modelo da DLT (1 linha por CE, uma aba por porto) com quantidade e numeração dos containers e a coluna de status/confirmação preenchida pelo PUXE",
    "Importar a planilha de redestinação (.xlsx) arrastando o arquivo na Captação: cria as cargas, cadastra clientes novos e atualiza o ETA quando a data de chegada muda",
    "Novos campos: peso bruto, desconsolidador e carga solta (sem container)","Outros portos além de Santos (ex.: Sepetiba RJ)",
@@ -1523,14 +1549,23 @@ const ACT={
     const cs=S.cargas.filter(c=>((c.navio||"—")+"|"+(c.viagem||""))===f.dataset.k&&!["cancelado","armazenado"].includes(c.status));const mot=g("mot").value.trim();
     if(await run(async()=>{for(const c of cs){const off=new Date(c.eta)-new Date(c.prazo_limite);await DB.updCarga(c.id,{eta:ne.toISOString(),prazo_limite:new Date(ne-off).toISOString()})}
       if(mot&&S.mode!=="demo")await DB.logEventos(cs.map(c=>({carga_id:c.id,container:c.container,tipo:"nota",detalhe:"ETA: "+mot}))).catch(()=>{});if(mot&&S.mode==="demo")cs.forEach(c=>demoLog(c,"nota","ETA: "+mot))},`ETA atualizado em ${cs.length} container${cs.length>1?"s":""} ✓`)){closeAll();renderAll();checkAlarm()}},
-  confEmail(){openDrawer(`<div class="dhead"><h3>Confirmação por e-mail</h3><button data-act="closeAll" class="icb">${ic("x")}</button></div>
-    <div class="form"><p class="muted" style="margin:0;font-size:12px;line-height:1.6">Cole aqui o e-mail da Ecoporto (ou de outro armazém) confirmando a redestinação — assunto e corpo. O sistema encontra os números de container e marca como <b>Redestinação confirmada</b>, guardando o trecho do e-mail como prova.</p>
-    <label>E-mail<textarea id="cfTxt" rows="9" placeholder="De: redestinacao@ecoporto.com.br&#10;Assunto: Confirmação de redestinação – Protocolo 123456&#10;Informamos que os containers MSCU1234565, HLXU…"></textarea></label>
+  confEmail(){openDrawer(`<div class="dhead"><h3>Dar baixa em lote</h3><button data-act="closeAll" class="icb">${ic("x")}</button></div>
+    <div class="form"><p class="muted" style="margin:0;font-size:12px;line-height:1.6">Cole aqui uma <b>lista de CEs ou de containers</b> (pode copiar a coluna do Excel) ou o <b>e-mail de confirmação</b> do armazém. O sistema encontra os containers (pelo CE, entram todos do CE) e marca como <b>Redestinação confirmada</b>: param os alertas e saem da lista de pendentes. O texto colado fica guardado como prova.</p>
+    <label>CEs, containers ou e-mail<textarea id="cfTxt" rows="9" placeholder="152605349202808&#10;152605351924750&#10;MSCU1234565&#10;&#10;ou o e-mail: Assunto: Confirmação de redestinação – Protocolo 123456…"></textarea></label>
     <div id="cfRes" class="hint">Cole o e-mail acima.</div><button class="btn" data-act="confGo" id="cfBtn" disabled>Confirmar</button></div>`);setTimeout(()=>$("#cfTxt").focus(),50)},
   async confGo(){const t=$("#cfTxt").value,ids=[...document.querySelectorAll("#cfRes input:checked")].map(i=>i.dataset.id);if(!ids.length)return;
     const de=(t.match(/^\s*(de|from)\s*:\s*(.+)$/im)||[])[2]||"",as=(t.match(/^\s*(assunto|subject)\s*:\s*(.+)$/im)||[])[2]||"",trecho=(as||t.replace(/\s+/g," ").slice(0,140)).trim();
-    if(await run(async()=>{for(const id of ids){const c=S.cargas.find(x=>x.id===id);await DB.updCarga(id,{status:"confirmado"});const n=`Confirmação do armazém por e-mail${de?" · de "+de.trim():""} · ${trecho}`;if(S.mode==="demo")demoLog(c,"nota",n);else await DB.logEventos([{carga_id:id,container:c.container,tipo:"nota",detalhe:n}]).catch(()=>{})}},`${ids.length} redestinaç${ids.length>1?"ões confirmadas":"ão confirmada"} ✓`)){closeAll();renderAll()}},
+    if(await run(async()=>{for(const id of ids){const c=S.cargas.find(x=>x.id===id);await DB.updCarga(id,{status:"confirmado"});const n=(de||as?`Baixa: confirmação do armazém por e-mail${de?" · de "+de.trim():""}`:"Baixa em lote (lista colada)")+` · ${trecho}`;if(S.mode==="demo")demoLog(c,"nota",n);else await DB.logEventos([{carga_id:id,container:c.container,tipo:"nota",detalhe:n}]).catch(()=>{})}},`Baixa dada em ${ids.length} container${ids.length>1?"s":""} ✓`)){closeAll();renderAll()}},
   async confUm(t){const c=S.cargas.find(x=>x.id===t.dataset.id);if(await run(()=>DB.updCarga(c.id,{status:"confirmado"}),"Redestinação confirmada ✓"))renderAll()},
+  baixa(t){stopAlarm();const id=t.dataset.id||S.drawerId;if(id)openDrawer(baixaHTML([id]))},
+  baixaGrp(t){const g=t.dataset.grp;const ids=[...document.querySelectorAll("input[data-grp]")].filter(i=>i.dataset.grp===g&&i.checked).map(i=>i.dataset.id);if(!ids.length)return toast("Marque os containers que já foram redestinados");openDrawer(baixaHTML(ids))},
+  async baixaGo(){const f=$("#fbx"),sv=n=>{const b=f.querySelector(`.seg[data-name="${n}"] .on`);return b?b.dataset.v:""};
+    const ids=[...S.baixaIds,...($("#bxCe")&&$("#bxCe").checked?S.baixaExtra:[])];
+    const via=$("#bxViaOutro").value.trim()||sv("bxVia"),arm=$("#bxArmOutro").value.trim()||sv("bxArm"),prot=$("#bxProt").value.trim(),obs=$("#bxObs").value.trim();
+    const patch={status:"confirmado"};if(arm)patch.armazem=arm;if(prot)patch.protocolo=prot;
+    const det=["Baixa: redestinação feita",via&&"via "+via,arm&&"→ "+arm,prot&&"protocolo "+prot,obs].filter(Boolean).join(" · ");
+    const conts=ids.map(id=>(S.cargas.find(c=>c.id===id)||{}).container);$("#bxBtn").disabled=true;
+    if(await run(async()=>{await DB.updCargas(ids,patch);await DB.logEventos(ids.map((id,k)=>({carga_id:id,container:conts[k],tipo:"nota",detalhe:det}))).catch(()=>{})},`Baixa dada em ${ids.length} container${ids.length>1?"s":""} ✓`)){closeAll();renderAll()}else $("#bxBtn").disabled=false},
   alTipo(t){S.alTipo=t.dataset.v;renderAll()},
   rper(t){S.rper=t.dataset.v==="tudo"?"tudo":+t.dataset.v;renderAll()},
   navioGo(t){S.busca=t.dataset.n;S.filtroC="todas";S.view="cargas";renderAll();window.scrollTo(0,0)},
@@ -1574,7 +1609,11 @@ const ACT={
   impPrev(){S.importText=$("#imp").value;const t=S.importText;const h=(t.split(/\r?\n/).find(l=>l.trim())||"").split("\t").map(colDe);
     S.importSrc=h.includes("ce")||(h.includes("cont")&&h.includes("eta"))?{tab:tabDeTexto(t)}:null;reimport();renderAll()},
   impLimpa(){S.importRows=null;S.importText="";S.importSrc=null;renderAll()},
-  xlsx(){exportarExcel()},
+  xlsx(){const np=new Set(S.cargas.filter(c=>ALERT_ST.includes(c.status)).map(c=>c.ce||c.container)).size;
+    openDrawer(`<div class="dhead"><h3>Exportar Excel</h3><button data-act="closeAll" class="icb">${ic("x")}</button></div><div class="form">
+    <button class="btn acc" data-act="xlsxGo" data-m="pend" style="height:auto;padding:12px 18px;white-space:normal;flex-direction:column;align-items:flex-start;border-radius:16px"><b>Só pendentes · para enviar</b><small style="font-weight:500;opacity:.85">${np} CE${np!==1?"s":""} ainda sem baixa (a conferir, na fila, solicitados)</small></button>
+    <button class="btn ghost" data-act="xlsxGo" data-m="tudo" style="height:auto;padding:12px 18px;white-space:normal;flex-direction:column;align-items:flex-start;border-radius:16px"><b>Tudo · com as já redestinadas</b><small style="font-weight:500;opacity:.8">pendentes + confirmadas dos últimos 15 dias, com quem deu baixa e quando</small></button></div>`)},
+  xlsxGo(t){closeAll();exportarExcel(t.dataset.m)},
   async impGo(){const ok=S.importRows.filter(x=>x.ok),rows=ok.filter(x=>!x.upd).map(x=>x.row),ups=ok.filter(x=>x.upd).map(x=>x.upd);
     const msg=[rows.length?`${rows.length} carga${rows.length>1?"s":""} importada${rows.length>1?"s":""}`:"",ups.length?`${ups.length} ETA atualizado${ups.length>1?"s":""}`:""].filter(Boolean).join(" · ")+" ✓";
     if(await run(async()=>{if(rows.length)await DB.addCargas(rows);for(const u of ups){const{id,...p}=u;await DB.updCarga(id,p)}},msg)){S.importRows=null;S.importText="";S.importSrc=null;renderAll();checkAlarm()}},
@@ -1632,7 +1671,8 @@ document.addEventListener("click",e=>{const t=e.target.closest("[data-act]");if(
 document.addEventListener("input",e=>{const t=e.target;
   if(t.id==="q"||t.dataset.in==="busca"){S.busca=t.value;const pos=t.selectionStart,isQ=t.id==="q";if(isQ&&!["painel","cargas","clientes"].includes(S.view))S.view="cargas";renderAll();const n=isQ?$("#q"):document.querySelector('[data-in="busca"]');if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(_){}}return}
   if(t.id==="cfTxt"){const cs=[...new Set((t.value.toUpperCase().match(/[A-Z]{4}\s?-?\d{6}\s?-?\d/g)||[]).map(normC))];const m=cs.map(x=>({x,c:S.cargas.find(c=>c.container===x&&c.status!=="cancelado")}));
-    $("#cfRes").innerHTML=cs.length?m.map(({x,c})=>c?`<label class="chk"><input type="checkbox" data-id="${c.id}" ${["solicitado","aprovado","detectado"].includes(c.status)?"checked":""}><span style="flex:1;min-width:0"><b>${x}</b> <small style="display:block;color:var(--muted)">${esc(cliName(c))} · ${esc(c.armazem||"")}</small></span><span class="st ${c.status}">${STL[c.status]}</span></label>`:`<div class="hint w">${x} · não está no sistema</div>`).join(""):"Nenhum número de container encontrado no texto.";
+    [...new Set(t.value.match(/\b\d{15}\b/g)||[])].forEach(ce=>{const L=ceConts(ce);if(!L.length)m.push({x:"CE "+ce,c:null});L.forEach(c=>{if(!m.some(z=>z.c&&z.c.id===c.id))m.push({x:c.container===SOLTA?"CE "+ce+" · carga solta":c.container+" · CE "+ce,c})})});
+    $("#cfRes").innerHTML=m.length?m.map(({x,c})=>c?`<label class="chk"><input type="checkbox" data-id="${c.id}" ${["solicitado","aprovado","detectado"].includes(c.status)?"checked":""}><span style="flex:1;min-width:0"><b>${x}</b> <small style="display:block;color:var(--muted)">${esc(cliName(c))} · ${esc(c.armazem||"")}</small></span><span class="st ${c.status}">${STL[c.status]}</span></label>`:`<div class="hint w">${x} · não está no sistema</div>`).join(""):"Nenhum CE (15 dígitos) ou container encontrado no texto.";
     const n=m.filter(z=>z.c).length;$("#cfBtn").disabled=!n;$("#cfBtn").textContent=n?`Confirmar ${n} container${n>1?"s":""}`:"Confirmar";return}
   if(t.id==="lote"){const r=parseLoteCli(t.value);$("#loteMsg").className="hint"+(r.bad.length?" w":"");$("#loteMsg").innerHTML=`<b>${r.ok.length}</b> pronto${r.ok.length!==1?"s":""} para cadastrar`+(r.dup.length?` · ${r.dup.length} já cadastrado${r.dup.length>1?"s":""}`:"")+(r.bad.length?`<br>${r.bad.slice(0,5).map(esc).join("<br>")}`:"");$("#loteBtn").disabled=!r.ok.length;$("#loteBtn").textContent=r.ok.length?`Cadastrar ${r.ok.length}`:"Cadastrar";return}
   if(t.closest&&t.closest("#fc")){const f=$("#fc");
@@ -1646,7 +1686,7 @@ document.addEventListener("input",e=>{const t=e.target;
     if(t.name==="armador")t.dataset.auto="";
     if(t.name==="navio"&&!f.dataset.id){const i=navioInfo(t.value),nh=$("#navHint");nh.textContent="";
       if(i){const g=n=>f.querySelector(`[name="${n}"]`),e=new Date(i.eta);if(!g("viagem").value)g("viagem").value=i.viagem||"";if(i.armador&&(!g("armador").value||g("armador").dataset.auto==="1"))g("armador").value=i.armador;if(i.terminal)setSeg(f,"terminal",i.terminal);
-        g("eta_d").value=`${e.getFullYear()}-${pad(e.getMonth()+1)}-${pad(e.getDate())}`;g("eta_h").value=pad(e.getHours());g("eta_m").value=pad(Math.floor(e.getMinutes()/15)*15);g("eta_m").dispatchEvent(new Event("change",{bubbles:true}));
+        g("eta_d").value=`${e.getFullYear()}-${pad(e.getMonth()+1)}-${pad(e.getDate())}`;g("eta_h").value=pad(e.getHours());g("eta_m").value=pad(Math.floor(e.getMinutes()/15)*15);
         if(i.eta&&i.prazo_limite)g("ph").value=Math.round((new Date(i.eta)-new Date(i.prazo_limite))/36e5);
         nh.className="hint";nh.textContent=`✓ Navio já cadastrado: ETA, terminal e viagem preenchidos (${fDT(i.eta)} · ${i.terminal||""}).`}}
     fcRefresh()}
@@ -1667,127 +1707,6 @@ document.addEventListener("change",async e=>{const t=e.target;
   if(t.dataset.perfil){await run(()=>DB.updPerfil(t.dataset.perfil,{papel:t.value,org_id:S.org.id}),"Acesso atualizado ✓");renderAll()}});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeAll()}if(e.key==="Enter"&&(e.target.id==="lgPass"||e.target.id==="lgEmail"))ACT.login()});
 boot();
-</script>
-<script>
-/* ===== Regra 7 · Um clique: opções favoritas + campo livre (Tae · 29/10/2026) =====
-   Módulo genérico, sem dependências. Cole antes de </body> (ou dentro do script principal).
-   O que faz, sozinho, em qualquer tela (MutationObserver):
-   1) <select> com até 6 opções curtas  → vira botões lado a lado (1 clique). O select continua no formulário, escondido.
-   2) <select> maior                      → ganha os favoritos dele em botões acima da lista.
-   3) <input type=number> com rótulo      → ganha a linha de favoritos: [12%] [15%] [20%] [+ favorito] [✎]
-      e campos de texto marcados com data-fav também.
-   Favoritos: "+ favorito" guarda o valor que está no campo; "✎" mostra o × para tirar. Valem por pessoa e por aparelho.
-   Padrões por campo: data-fav="10,15,20" (sugestões iniciais). Unidade nos botões: data-fav-un="%" ou "R$" (ou detecta pelo rótulo).
-   Desligar num campo ou num bloco: data-1c="off". Chave própria: data-fav-key="desconto-valor".
-   Botões do select: data-1c="botoes" força botões; data-1c="lista" força lista. */
-(function () {
-  if (window.__umclique) return; window.__umclique = true;
-  const APP = (document.querySelector('meta[name="app-id"]') || {}).content || location.pathname.replace(/index\.html$/, '');
-  const K = k => 'umclique:' + APP + ':' + k;
-  const ler = k => { try { return JSON.parse(localStorage.getItem(K(k)) || 'null'); } catch (_) { return null; } };
-  const gravar = (k, v) => { try { localStorage.setItem(K(k), JSON.stringify(v)); } catch (_) {} };
-  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const off = el => !!el.closest('[data-1c="off"]') && el.dataset['1c'] !== 'botoes';
-
-  const css = document.createElement('style');
-  css.textContent =
-    '.uc-hid{position:absolute!important;opacity:0!important;pointer-events:none!important;width:1px!important;height:1px!important;overflow:hidden!important}' +
-    '.uc-seg{display:flex;flex-wrap:wrap;gap:6px}' +
-    '.uc-seg button,.uc-fav button{font:inherit;font-size:13px;line-height:1.2;border:1px solid var(--line,#E6D9DF);background:var(--surface,var(--card,#fff));color:inherit;border-radius:999px;padding:7px 12px;min-height:34px;cursor:pointer}' +
-    '.uc-seg button[aria-pressed="true"]{background:var(--accent,var(--pri,#B83D66));border-color:var(--accent,var(--pri,#B83D66));color:var(--on-accent,var(--on-pri,var(--pri-ink,#fff)));font-weight:600}' +
-    '.uc-seg button:disabled,.uc-fav button:disabled{opacity:.5;cursor:default}' +
-    '.uc-fav{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;align-items:center}' +
-    '.uc-fav .uc-v[aria-pressed="true"]{border-color:var(--accent,var(--pri,#B83D66));color:var(--accent,var(--pri,#B83D66));font-weight:600}' +
-    '.uc-fav .uc-add,.uc-fav .uc-ed{border-style:dashed;color:var(--muted,var(--mute,#8a7480))}' +
-    '.uc-fav .uc-x{margin-left:6px;font-weight:700;opacity:.7}' +
-    '.uc-fav.uc-vazio{display:none}' +
-    ':focus-within>.uc-fav.uc-vazio,.uc-fav.uc-vazio:focus-within{display:flex}';
-  document.head.appendChild(css);
-
-  const setVal = (el, v) => {
-    const d = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), 'value');
-    d && d.set ? d.set.call(el, v) : (el.value = v);
-    el.dispatchEvent(new Event('input', { bubbles: true }));
-    el.dispatchEvent(new Event('change', { bubbles: true }));
-  };
-  const rotulo = el => {
-    const l = (el.id && document.querySelector('label[for="' + CSS.escape(el.id) + '"]')) || el.closest('label');
-    return l ? l.textContent.trim() : (el.getAttribute('aria-label') || '');
-  };
-  const chave = el => el.dataset.favKey || el.name || el.id || rotulo(el).toLowerCase().slice(0, 40);
-  const unidade = el => el.dataset.favUn || (/%/.test(rotulo(el)) ? '%' : /R\$/.test(rotulo(el)) ? 'R$' : '');
-  const mostra = (v, un) => un === 'R$' ? 'R$ ' + String(v).replace('.', ',') : un === '%' ? String(v).replace('.', ',') + '%' : String(v);
-
-  // ---------- select → botões ----------
-  function botoes(sel) {
-    const ops = [...sel.options].filter(o => o.value !== '' && !/^outr[ao]…?$/i.test(o.text.trim()) && o.value !== '__outra');
-    const forca = sel.dataset['1c'];
-    if (forca === 'lista') return false;
-    if (forca !== 'botoes' && (ops.length < 2 || ops.length > 6 || ops.some(o => o.text.trim().length > 40) || sel.multiple)) return false;
-    const temOutra = [...sel.options].some(o => o.value === '__outra');
-    const box = document.createElement('div'); box.className = 'uc-seg'; box.setAttribute('role', 'group');
-    const nome = rotulo(sel); if (nome) box.setAttribute('aria-label', nome);
-    const desenha = () => {
-      box.innerHTML = ops.map(o => '<button type="button" data-v="' + esc(o.value) + '" aria-pressed="' + (sel.value === o.value) + '"' + (sel.disabled ? ' disabled' : '') + '>' + esc(o.text.trim()) + '</button>').join('') +
-        (temOutra ? '<button type="button" data-v="__outra" aria-pressed="' + (sel.value === '__outra') + '"' + (sel.disabled ? ' disabled' : '') + '>Outra…</button>' : '');
-    };
-    desenha();
-    box.addEventListener('click', e => { const b = e.target.closest('button'); if (!b || b.disabled) return; setVal(sel, b.dataset.v); desenha(); if (b.dataset.v === '__outra') { const o = sel.parentNode.querySelector('input[type="text"]'); o && o.focus(); } });
-    sel.addEventListener('change', desenha);
-    sel.classList.add('uc-hid'); sel.tabIndex = -1; sel.setAttribute('aria-hidden', 'true');
-    sel.insertAdjacentElement('afterend', box);
-    return true;
-  }
-
-  // ---------- favoritos (select grande, número, texto com data-fav) ----------
-  function favoritos(el) {
-    const k = chave(el); if (!k) return;
-    const un = el.tagName === 'SELECT' ? '' : unidade(el);
-    const padrao = (el.dataset.fav || '').split(',').map(s => s.trim()).filter(Boolean);
-    let editando = false;
-    const box = document.createElement('div'); box.className = 'uc-fav';
-    const lista = () => { const s = ler(k); return Array.isArray(s) ? s : padrao; };
-    const texto = v => el.tagName === 'SELECT' ? ((([...el.options].find(o => o.value === v) || {}).text) || v) : mostra(v, un);
-    const desenha = () => {
-      const L = lista(), cur = String(el.value ?? '');
-      box.classList.toggle('uc-vazio', !L.length && !editando);
-      box.innerHTML = L.map(v => '<button type="button" class="uc-v" data-v="' + esc(v) + '" aria-pressed="' + (cur !== '' && String(v) === cur) + '"' + (el.disabled || el.readOnly ? ' disabled' : '') + '>' + esc(texto(v)) + (editando ? '<span class="uc-x" aria-label="tirar">×</span>' : '') + '</button>').join('') +
-        (el.disabled || el.readOnly ? '' : '<button type="button" class="uc-add" title="Guarda o valor que está no campo como botão">+ favorito</button>' + (L.length ? '<button type="button" class="uc-ed" aria-pressed="' + editando + '" title="Tirar favoritos">' + (editando ? 'Pronto' : '✎') + '</button>' : ''));
-    };
-    box.addEventListener('mousedown', e => e.preventDefault()); // não tira o foco do campo
-    box.addEventListener('click', e => {
-      const b = e.target.closest('button'); if (!b || b.disabled) return;
-      if (b.classList.contains('uc-add')) {
-        const v = String(el.value ?? '').trim();
-        if (!v || v === '__outra') { el.focus(); el.setAttribute('placeholder', 'Digite ou escolha e toque em + favorito'); return; }
-        const L = lista().filter(x => String(x) !== v); L.push(v);
-        if (el.type === 'number') L.sort((a, b) => Number(a) - Number(b));
-        gravar(k, L.slice(-12)); desenha(); return;
-      }
-      if (b.classList.contains('uc-ed')) { editando = !editando; desenha(); return; }
-      if (editando && e.target.closest('.uc-x')) { gravar(k, lista().filter(x => String(x) !== b.dataset.v)); desenha(); return; }
-      setVal(el, b.dataset.v); desenha();
-    });
-    el.addEventListener('input', desenha); el.addEventListener('change', desenha);
-    el.insertAdjacentElement('afterend', box);
-    desenha();
-  }
-
-  function aplica(raiz) {
-    const Q = 'select:not([data-uc]),input:not([data-uc])';
-    [...(raiz.matches && raiz.matches(Q) ? [raiz] : []), ...raiz.querySelectorAll(Q)].forEach(el => {
-      el.dataset.uc = '1';
-      if (off(el) || el.type === 'hidden' || el.closest('.uc-seg,.uc-fav')) return;
-      // só em formulários e quadros (filtros de barra ficam como estão, a não ser com data-1c="botoes")
-      if (!el.closest('form,[role="dialog"],.modal,.form,.drawer,[data-1c="on"]') && el.dataset['1c'] !== 'botoes' && el.dataset.fav === undefined) return;
-      if (el.tagName === 'SELECT') { if (!botoes(el) && el.dataset.fav !== undefined) favoritos(el); return; }
-      const temRotulo = !!rotulo(el) && !!((el.id && document.querySelector('label[for="' + CSS.escape(el.id) + '"]')) || el.closest('label'));
-      if ((el.type === 'number' && temRotulo) || el.dataset.fav !== undefined) favoritos(el);
-    });
-  }
-  const go = () => { aplica(document); new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(n => { if (n.nodeType === 1) aplica(n); }))).observe(document.body, { childList: true, subtree: true }); };
-  document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', go) : go();
-})();
 </script>
 </body>
 </html>
