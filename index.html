@@ -1471,8 +1471,9 @@ function baixaHTML(ids){const L=ids.map(id=>S.cargas.find(c=>c.id===id)).filter(
 function baixaBtn(c,txt){return pode()&&ALERT_ST.includes(c.status)?`<button class="btn ghost sm" data-act="baixa" data-id="${c.id}" title="Já redestinado: dar baixa">${ic("check",14)} ${txt||"Baixa"}</button>`:""}
 
 /* ================= VERSÃO (regras 3 e 4) ================= */
-const APP_VERSAO=7;
+const APP_VERSAO=8;
 const NOVIDADES=[
+ [8,"29/10/2026",["Um clique: listas com até 10 opções curtas também viram botões, e listas maiores ganham botões favoritos. Os botões acompanham quando o sistema muda o valor sozinho."]],
  [7,"29/10/2026",["ID curto para cada container: A0001, A0002… (depois do A9999 vem B0001). No dia a dia, fale só os 4 números: “7782”",
    "O mesmo container no mesmo navio e na mesma chegada tem um ID só, mesmo aparecendo em vários CEs. Se ele voltar em outra viagem, ganha um ID novo",
    "Busque pelo ID na barra de busca; dê baixa em lote colando os IDs; o ID aparece no Excel, no CSV, no alarme e no resumo do WhatsApp",
@@ -1785,19 +1786,34 @@ boot();
   const mostra = (v, un) => un === 'R$' ? 'R$ ' + String(v).replace('.', ',') : un === '%' ? String(v).replace('.', ',') + '%' : String(v);
 
   // ---------- select → botões ----------
+  // valor trocado por código (sel.value = …, sem evento) também atualiza os botões
+  if (!window.__ucValor) {
+    window.__ucValor = true;
+    for (const prop of ['value', 'selectedIndex']) {
+      const d = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, prop);
+      if (d && d.set) Object.defineProperty(HTMLSelectElement.prototype, prop, { configurable: true, enumerable: d.enumerable, get() { return d.get.call(this); }, set(v) { d.set.call(this, v); if (this.__ucSync) this.__ucSync(); } });
+    }
+  }
   function botoes(sel) {
-    const ops = [...sel.options].filter(o => o.value !== '' && !/^outr[ao]…?$/i.test(o.text.trim()) && o.value !== '__outra');
+    // opção vazia só vira botão se tiver nome (ex.: "— nenhum —"); "Outra…" do campo livre vira botão próprio no fim
+    const opcoes = () => [...sel.options].filter(o => o.value !== '__outra' && (o.value !== '' || !/^[—–-]*$/.test(o.text.trim())));
+    const ops0 = opcoes();
     const forca = sel.dataset['1c'];
     if (forca === 'lista') return false;
-    if (forca !== 'botoes' && (ops.length < 2 || ops.length > 6 || ops.some(o => o.text.trim().length > 40) || sel.multiple)) return false;
-    const temOutra = [...sel.options].some(o => o.value === '__outra');
+    // poucas opções curtas (até 10, somando até ~90 letras: cabem em duas linhas) viram botões
+    const letras = ops0.reduce((t, o) => t + o.text.trim().length, 0);
+    if (forca !== 'botoes' && (ops0.length < 2 || ops0.length > 10 || letras > 90 || ops0.some(o => o.text.trim().length > 40) || sel.multiple)) return false;
     const box = document.createElement('div'); box.className = 'uc-seg'; box.setAttribute('role', 'group');
     const nome = rotulo(sel); if (nome) box.setAttribute('aria-label', nome);
     const desenha = () => {
+      const ops = opcoes(), temOutra = [...sel.options].some(o => o.value === '__outra');
       box.innerHTML = ops.map(o => '<button type="button" data-v="' + esc(o.value) + '" aria-pressed="' + (sel.value === o.value) + '"' + (sel.disabled ? ' disabled' : '') + '>' + esc(o.text.trim()) + '</button>').join('') +
         (temOutra ? '<button type="button" data-v="__outra" aria-pressed="' + (sel.value === '__outra') + '"' + (sel.disabled ? ' disabled' : '') + '>Outra…</button>' : '');
     };
     desenha();
+    sel.__ucSync = desenha;
+    // opções trocadas por código (lista refeita) → botões refeitos
+    new MutationObserver(desenha).observe(sel, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled', 'selected'] });
     box.addEventListener('click', e => { const b = e.target.closest('button'); if (!b || b.disabled) return; setVal(sel, b.dataset.v); desenha(); if (b.dataset.v === '__outra') { const o = sel.parentNode.querySelector('input[type="text"]'); o && o.focus(); } });
     sel.addEventListener('change', desenha);
     sel.classList.add('uc-hid'); sel.tabIndex = -1; sel.setAttribute('aria-hidden', 'true');
@@ -1846,7 +1862,7 @@ boot();
       if (off(el) || el.type === 'hidden' || el.closest('.uc-seg,.uc-fav')) return;
       // só em formulários e quadros (filtros de barra ficam como estão, a não ser com data-1c="botoes")
       if (!el.closest('form,[role="dialog"],.modal,[data-1c="on"]') && el.dataset['1c'] !== 'botoes' && el.dataset.fav === undefined) return;
-      if (el.tagName === 'SELECT') { if (!botoes(el) && el.dataset.fav !== undefined) favoritos(el); return; }
+      if (el.tagName === 'SELECT') { if (!botoes(el) && (el.dataset.fav !== undefined || el.dataset['1c'] !== 'lista')) favoritos(el); return; }
       const temRotulo = !!rotulo(el) && !!((el.id && document.querySelector('label[for="' + CSS.escape(el.id) + '"]')) || el.closest('label'));
       if ((el.type === 'number' && temRotulo) || el.dataset.fav !== undefined) favoritos(el);
     });
