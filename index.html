@@ -1283,7 +1283,7 @@ function vConfig(){const o=S.org,adm=isAdmin();const dis=adm?"":"disabled";
   <div class="two"><section class="card p"><h3 style="margin:0 0 12px">Regras de prazo</h3><div class="form" id="fo">
     <label>Empresa<input name="nome" value="${esc(o.nome)}" ${dis}></label>
     <label>CNPJ da própria comissária (regra master)<input name="cnpj_proprio" value="${esc(fmtCNPJ(o.cnpj_proprio||""))}" ${dis}></label>
-    <label>Prazo para pedir o puxe (horas antes da atracação) · oficial: 24h<input name="prazo_horas" type="number" min="1" value="${o.prazo_horas}" ${dis}></label>
+    <label>Prazo para pedir o puxe (horas antes da atracação) · oficial: 24h<input name="prazo_horas" type="number" min="1" data-fav="24" value="${o.prazo_horas}" ${dis}></label>
     <label>Alertas (horas antes da chegada/ETA) · DLT: 120 (5 dias), 48 (2 dias), 24 (1 dia)<input name="alerta_horas" value="${(o.alerta_horas||[]).join(", ")}" ${dis}></label>
     <label>Armazéns de destino<input name="armazens" value="${esc((o.armazens||[]).join(", "))}" ${dis}></label>
     <label>Terminais de atracação<input name="terminais" value="${esc((o.terminais||[]).join(", "))}" ${dis}></label>
@@ -1292,8 +1292,8 @@ function vConfig(){const o=S.org,adm=isAdmin();const dis=adm?"":"disabled";
   <section class="card p"><h3 style="margin:0 0 6px">Alarme</h3><p class="muted" style="font-size:13px;line-height:1.6;margin:0 0 12px">O alarme toca com o app aberto e repete a cada minuto enquanto houver container vencido ou a menos de ${Math.min(...(o.alerta_horas||[24]))}h do prazo sem puxe. Avisos com o app fechado (WhatsApp/push) entram na fase 2.</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn acc sm" data-act="testAlarm">Testar alarme</button><button class="btn ghost sm" data-act="notif">Ativar notificações</button></div></section>
   <section class="card p"><h3 style="margin:0 0 10px">Regras de alarme e avisos</h3><div class="form" id="frg">
-    <label>Custo médio de um container que fica no terminal (R$)<input name="custo" type="number" min="0" step="100" value="${CUSTO()}" ${dis}></label>
-    <label>Escalar para gerentes se ninguém reagir em (minutos)<input name="escala" type="number" min="5" step="5" value="${REG().escala_min}" ${dis}></label>
+    <label>Custo médio de um container que fica no terminal (R$)<input name="custo" type="number" min="0" step="100" data-fav="1000" data-fav-key="custo-container" value="${CUSTO()}" ${dis}></label>
+    <label>Escalar para gerentes se ninguém reagir em (minutos)<input name="escala" type="number" min="5" step="5" data-fav="15,30,60" data-fav-key="escala-min" value="${REG().escala_min}" ${dis}></label>
     <label>Aviso automático ao cliente<select name="avc" ${dis}>${Object.entries(AVC).map(([k,v])=>`<option value="${k}" ${REG().aviso_cliente===k?"selected":""}>${v}</option>`).join("")}</select></label>
     <div class="lbl">Canais para a equipe (fase 2)</div>
     ${["email","sms","whatsapp"].map(k=>`<label class="chk"><input type="checkbox" name="cn_${k}" ${REG().canais[k]?"checked":""} ${dis}> ${{email:"E-mail",sms:"SMS",whatsapp:"WhatsApp"}[k]}</label>`).join("")}
@@ -1367,7 +1367,7 @@ function formCarga(c){const o=S.org,isNew=!c;c=c||{tipo_container:"40HC",tipo_bl
   const ymd=`${eta.getFullYear()}-${pad(eta.getMonth()+1)}-${pad(eta.getDate())}`;
   return`<div class="dhead"><h3>${isNew?"Nova carga":"Editar carga"}</h3><button data-act="closeAll" class="icb">${ic("x")}</button></div>
   <div class="form" id="fc" data-id="${c.id||""}">
-   <label>Cliente<select name="cliente_id">${cliOpts(c.cliente_pendente&&!c.cliente_id?"__master":c.cliente_id)}</select></label>
+   <label>Cliente<select name="cliente_id" data-1c="lista">${cliOpts(c.cliente_pendente&&!c.cliente_id?"__master":c.cliente_id)}</select></label>
    <div class="qc" id="qc" hidden><b style="font-size:14px">Novo cliente</b><div class="row"><label>Nome / razão social<input id="qcNome" autocomplete="off"></label><label>CNPJ<input id="qcCnpj" placeholder="00.000.000/0000-00" inputmode="numeric"></label></div><span class="hint" id="qcMsg"></span><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn sm" data-act="qcSave">Salvar e usar nesta carga</button><button type="button" class="btn ghost sm" data-act="qcCancel">Cancelar</button></div></div>
    <label><span>CNPJ <span style="font-weight:500">· escolhe o cliente sozinho</span></span><input name="cnpj" value="${esc(fmtCNPJ(c.cnpj||""))}" placeholder="00.000.000/0000-00" inputmode="numeric"></label><span class="hint" id="cnpjHint"></span>
    <label>${isNew?"Container(s) — vários? um por linha":"Container"}<textarea name="container" rows="${isNew?2:1}" placeholder="MSCU1234565 · sem container? escreva CARGA SOLTA">${esc(c.container||"")}</textarea><span class="hint" id="contMsg"></span></label>
@@ -1381,7 +1381,7 @@ function formCarga(c){const o=S.org,isNew=!c;c=c||{tipo_container:"40HC",tipo_bl
    <label>Porto de descarga<input name="porto" value="${esc(c.porto||"Santos")}" list="portoL"><datalist id="portoL">${["Santos","Itajaí","Navegantes","Itapoá","Paranaguá","Rio de Janeiro","Itaguaí","Vitória","Salvador","Suape","Pecém","Manaus","Rio Grande"].map(x=>`<option>${x}</option>`).join("")}</datalist></label>
    <div class="lbl">Terminal de atracação</div>${seg("terminal",[...new Set([...o.terminais,c.terminal].filter(Boolean))],c.terminal)}
    <div class="row3"><label>ETA — data<input type="date" name="eta_d" value="${ymd}"></label><label>Hora<select name="eta_h">${Array.from({length:24},(_,i)=>`<option ${i===eta.getHours()?"selected":""}>${pad(i)}</option>`).join("")}</select></label><label>Min<select name="eta_m">${["00","15","30","45"].map(x=>`<option ${+x===Math.floor(eta.getMinutes()/15)*15?"selected":""}>${x}</option>`).join("")}</select></label></div>
-   <label>Pedir o puxe até quantas horas antes da atracação?<input name="ph" type="number" min="0" value="${ph}"></label>
+   <label>Pedir o puxe até quantas horas antes da atracação?<input name="ph" type="number" min="0" data-fav="24,48" data-fav-key="prazo-horas-carga" value="${ph}"></label>
    <div class="hint" id="etaLine"></div>
    <div class="lbl">Armazém de destino</div>${seg("armazem",[...new Set([...o.armazens,c.armazem].filter(Boolean))],c.armazem)}
    <div class="lbl">Como soubemos (fonte)</div>${seg("fonte",["siscarga","planilha","email","manual"],c.fonte,FONTE)}
@@ -1431,8 +1431,9 @@ function resumoTxt(){const pend=S.cargas.filter(c=>PEND.includes(c.status)).sort
     L.map(c=>`• ${c.container} · ${cliName(c)} → ${c.armazem} · ${leftTxt(hLeft(c))}`).join("\n")}
 
 /* ================= VERSÃO (regras 3 e 4) ================= */
-const APP_VERSAO=5;
+const APP_VERSAO=6;
 const NOVIDADES=[
+ [6,"29/10/2026",["Regra 7 · Um clique: nos formulários, listas curtas viram botões (ex.: minutos do ETA) e campos de número ganham favoritos — toque em “+ favorito” para guardar o valor do campo como botão (ex.: 24h, R$ 1.000); vale por pessoa e por aparelho"]],
  [5,"28/10/2026",["Exportar Excel no modelo da DLT (1 linha por CE, uma aba por porto) com quantidade e numeração dos containers e a coluna de status/confirmação preenchida pelo PUXE",
    "Importar a planilha de redestinação (.xlsx) arrastando o arquivo na Captação: cria as cargas, cadastra clientes novos e atualiza o ETA quando a data de chegada muda",
    "Novos campos: peso bruto, desconsolidador e carga solta (sem container)","Outros portos além de Santos (ex.: Sepetiba RJ)",
@@ -1645,7 +1646,7 @@ document.addEventListener("input",e=>{const t=e.target;
     if(t.name==="armador")t.dataset.auto="";
     if(t.name==="navio"&&!f.dataset.id){const i=navioInfo(t.value),nh=$("#navHint");nh.textContent="";
       if(i){const g=n=>f.querySelector(`[name="${n}"]`),e=new Date(i.eta);if(!g("viagem").value)g("viagem").value=i.viagem||"";if(i.armador&&(!g("armador").value||g("armador").dataset.auto==="1"))g("armador").value=i.armador;if(i.terminal)setSeg(f,"terminal",i.terminal);
-        g("eta_d").value=`${e.getFullYear()}-${pad(e.getMonth()+1)}-${pad(e.getDate())}`;g("eta_h").value=pad(e.getHours());g("eta_m").value=pad(Math.floor(e.getMinutes()/15)*15);
+        g("eta_d").value=`${e.getFullYear()}-${pad(e.getMonth()+1)}-${pad(e.getDate())}`;g("eta_h").value=pad(e.getHours());g("eta_m").value=pad(Math.floor(e.getMinutes()/15)*15);g("eta_m").dispatchEvent(new Event("change",{bubbles:true}));
         if(i.eta&&i.prazo_limite)g("ph").value=Math.round((new Date(i.eta)-new Date(i.prazo_limite))/36e5);
         nh.className="hint";nh.textContent=`✓ Navio já cadastrado: ETA, terminal e viagem preenchidos (${fDT(i.eta)} · ${i.terminal||""}).`}}
     fcRefresh()}
@@ -1666,6 +1667,127 @@ document.addEventListener("change",async e=>{const t=e.target;
   if(t.dataset.perfil){await run(()=>DB.updPerfil(t.dataset.perfil,{papel:t.value,org_id:S.org.id}),"Acesso atualizado ✓");renderAll()}});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeAll()}if(e.key==="Enter"&&(e.target.id==="lgPass"||e.target.id==="lgEmail"))ACT.login()});
 boot();
+</script>
+<script>
+/* ===== Regra 7 · Um clique: opções favoritas + campo livre (Tae · 29/10/2026) =====
+   Módulo genérico, sem dependências. Cole antes de </body> (ou dentro do script principal).
+   O que faz, sozinho, em qualquer tela (MutationObserver):
+   1) <select> com até 6 opções curtas  → vira botões lado a lado (1 clique). O select continua no formulário, escondido.
+   2) <select> maior                      → ganha os favoritos dele em botões acima da lista.
+   3) <input type=number> com rótulo      → ganha a linha de favoritos: [12%] [15%] [20%] [+ favorito] [✎]
+      e campos de texto marcados com data-fav também.
+   Favoritos: "+ favorito" guarda o valor que está no campo; "✎" mostra o × para tirar. Valem por pessoa e por aparelho.
+   Padrões por campo: data-fav="10,15,20" (sugestões iniciais). Unidade nos botões: data-fav-un="%" ou "R$" (ou detecta pelo rótulo).
+   Desligar num campo ou num bloco: data-1c="off". Chave própria: data-fav-key="desconto-valor".
+   Botões do select: data-1c="botoes" força botões; data-1c="lista" força lista. */
+(function () {
+  if (window.__umclique) return; window.__umclique = true;
+  const APP = (document.querySelector('meta[name="app-id"]') || {}).content || location.pathname.replace(/index\.html$/, '');
+  const K = k => 'umclique:' + APP + ':' + k;
+  const ler = k => { try { return JSON.parse(localStorage.getItem(K(k)) || 'null'); } catch (_) { return null; } };
+  const gravar = (k, v) => { try { localStorage.setItem(K(k), JSON.stringify(v)); } catch (_) {} };
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const off = el => !!el.closest('[data-1c="off"]') && el.dataset['1c'] !== 'botoes';
+
+  const css = document.createElement('style');
+  css.textContent =
+    '.uc-hid{position:absolute!important;opacity:0!important;pointer-events:none!important;width:1px!important;height:1px!important;overflow:hidden!important}' +
+    '.uc-seg{display:flex;flex-wrap:wrap;gap:6px}' +
+    '.uc-seg button,.uc-fav button{font:inherit;font-size:13px;line-height:1.2;border:1px solid var(--line,#E6D9DF);background:var(--surface,var(--card,#fff));color:inherit;border-radius:999px;padding:7px 12px;min-height:34px;cursor:pointer}' +
+    '.uc-seg button[aria-pressed="true"]{background:var(--accent,var(--pri,#B83D66));border-color:var(--accent,var(--pri,#B83D66));color:var(--on-accent,var(--on-pri,var(--pri-ink,#fff)));font-weight:600}' +
+    '.uc-seg button:disabled,.uc-fav button:disabled{opacity:.5;cursor:default}' +
+    '.uc-fav{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;align-items:center}' +
+    '.uc-fav .uc-v[aria-pressed="true"]{border-color:var(--accent,var(--pri,#B83D66));color:var(--accent,var(--pri,#B83D66));font-weight:600}' +
+    '.uc-fav .uc-add,.uc-fav .uc-ed{border-style:dashed;color:var(--muted,var(--mute,#8a7480))}' +
+    '.uc-fav .uc-x{margin-left:6px;font-weight:700;opacity:.7}' +
+    '.uc-fav.uc-vazio{display:none}' +
+    ':focus-within>.uc-fav.uc-vazio,.uc-fav.uc-vazio:focus-within{display:flex}';
+  document.head.appendChild(css);
+
+  const setVal = (el, v) => {
+    const d = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), 'value');
+    d && d.set ? d.set.call(el, v) : (el.value = v);
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+    el.dispatchEvent(new Event('change', { bubbles: true }));
+  };
+  const rotulo = el => {
+    const l = (el.id && document.querySelector('label[for="' + CSS.escape(el.id) + '"]')) || el.closest('label');
+    return l ? l.textContent.trim() : (el.getAttribute('aria-label') || '');
+  };
+  const chave = el => el.dataset.favKey || el.name || el.id || rotulo(el).toLowerCase().slice(0, 40);
+  const unidade = el => el.dataset.favUn || (/%/.test(rotulo(el)) ? '%' : /R\$/.test(rotulo(el)) ? 'R$' : '');
+  const mostra = (v, un) => un === 'R$' ? 'R$ ' + String(v).replace('.', ',') : un === '%' ? String(v).replace('.', ',') + '%' : String(v);
+
+  // ---------- select → botões ----------
+  function botoes(sel) {
+    const ops = [...sel.options].filter(o => o.value !== '' && !/^outr[ao]…?$/i.test(o.text.trim()) && o.value !== '__outra');
+    const forca = sel.dataset['1c'];
+    if (forca === 'lista') return false;
+    if (forca !== 'botoes' && (ops.length < 2 || ops.length > 6 || ops.some(o => o.text.trim().length > 40) || sel.multiple)) return false;
+    const temOutra = [...sel.options].some(o => o.value === '__outra');
+    const box = document.createElement('div'); box.className = 'uc-seg'; box.setAttribute('role', 'group');
+    const nome = rotulo(sel); if (nome) box.setAttribute('aria-label', nome);
+    const desenha = () => {
+      box.innerHTML = ops.map(o => '<button type="button" data-v="' + esc(o.value) + '" aria-pressed="' + (sel.value === o.value) + '"' + (sel.disabled ? ' disabled' : '') + '>' + esc(o.text.trim()) + '</button>').join('') +
+        (temOutra ? '<button type="button" data-v="__outra" aria-pressed="' + (sel.value === '__outra') + '"' + (sel.disabled ? ' disabled' : '') + '>Outra…</button>' : '');
+    };
+    desenha();
+    box.addEventListener('click', e => { const b = e.target.closest('button'); if (!b || b.disabled) return; setVal(sel, b.dataset.v); desenha(); if (b.dataset.v === '__outra') { const o = sel.parentNode.querySelector('input[type="text"]'); o && o.focus(); } });
+    sel.addEventListener('change', desenha);
+    sel.classList.add('uc-hid'); sel.tabIndex = -1; sel.setAttribute('aria-hidden', 'true');
+    sel.insertAdjacentElement('afterend', box);
+    return true;
+  }
+
+  // ---------- favoritos (select grande, número, texto com data-fav) ----------
+  function favoritos(el) {
+    const k = chave(el); if (!k) return;
+    const un = el.tagName === 'SELECT' ? '' : unidade(el);
+    const padrao = (el.dataset.fav || '').split(',').map(s => s.trim()).filter(Boolean);
+    let editando = false;
+    const box = document.createElement('div'); box.className = 'uc-fav';
+    const lista = () => { const s = ler(k); return Array.isArray(s) ? s : padrao; };
+    const texto = v => el.tagName === 'SELECT' ? ((([...el.options].find(o => o.value === v) || {}).text) || v) : mostra(v, un);
+    const desenha = () => {
+      const L = lista(), cur = String(el.value ?? '');
+      box.classList.toggle('uc-vazio', !L.length && !editando);
+      box.innerHTML = L.map(v => '<button type="button" class="uc-v" data-v="' + esc(v) + '" aria-pressed="' + (cur !== '' && String(v) === cur) + '"' + (el.disabled || el.readOnly ? ' disabled' : '') + '>' + esc(texto(v)) + (editando ? '<span class="uc-x" aria-label="tirar">×</span>' : '') + '</button>').join('') +
+        (el.disabled || el.readOnly ? '' : '<button type="button" class="uc-add" title="Guarda o valor que está no campo como botão">+ favorito</button>' + (L.length ? '<button type="button" class="uc-ed" aria-pressed="' + editando + '" title="Tirar favoritos">' + (editando ? 'Pronto' : '✎') + '</button>' : ''));
+    };
+    box.addEventListener('mousedown', e => e.preventDefault()); // não tira o foco do campo
+    box.addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b || b.disabled) return;
+      if (b.classList.contains('uc-add')) {
+        const v = String(el.value ?? '').trim();
+        if (!v || v === '__outra') { el.focus(); el.setAttribute('placeholder', 'Digite ou escolha e toque em + favorito'); return; }
+        const L = lista().filter(x => String(x) !== v); L.push(v);
+        if (el.type === 'number') L.sort((a, b) => Number(a) - Number(b));
+        gravar(k, L.slice(-12)); desenha(); return;
+      }
+      if (b.classList.contains('uc-ed')) { editando = !editando; desenha(); return; }
+      if (editando && e.target.closest('.uc-x')) { gravar(k, lista().filter(x => String(x) !== b.dataset.v)); desenha(); return; }
+      setVal(el, b.dataset.v); desenha();
+    });
+    el.addEventListener('input', desenha); el.addEventListener('change', desenha);
+    el.insertAdjacentElement('afterend', box);
+    desenha();
+  }
+
+  function aplica(raiz) {
+    const Q = 'select:not([data-uc]),input:not([data-uc])';
+    [...(raiz.matches && raiz.matches(Q) ? [raiz] : []), ...raiz.querySelectorAll(Q)].forEach(el => {
+      el.dataset.uc = '1';
+      if (off(el) || el.type === 'hidden' || el.closest('.uc-seg,.uc-fav')) return;
+      // só em formulários e quadros (filtros de barra ficam como estão, a não ser com data-1c="botoes")
+      if (!el.closest('form,[role="dialog"],.modal,.form,.drawer,[data-1c="on"]') && el.dataset['1c'] !== 'botoes' && el.dataset.fav === undefined) return;
+      if (el.tagName === 'SELECT') { if (!botoes(el) && el.dataset.fav !== undefined) favoritos(el); return; }
+      const temRotulo = !!rotulo(el) && !!((el.id && document.querySelector('label[for="' + CSS.escape(el.id) + '"]')) || el.closest('label'));
+      if ((el.type === 'number' && temRotulo) || el.dataset.fav !== undefined) favoritos(el);
+    });
+  }
+  const go = () => { aplica(document); new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(n => { if (n.nodeType === 1) aplica(n); }))).observe(document.body, { childList: true, subtree: true }); };
+  document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', go) : go();
+})();
 </script>
 </body>
 </html>
