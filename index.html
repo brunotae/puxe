@@ -500,6 +500,16 @@ textarea.inp{font-size:12px}
 .novs h4{margin:14px 0 4px;font-size:13px}.novs ul{margin:0;padding-left:18px;font-size:12.5px;line-height:1.6}
 .xlsb{display:inline-flex;align-items:center;gap:6px}
 .ctlist{font-size:10.5px;color:var(--muted);word-break:break-all}
+.apl{display:inline-flex;align-items:baseline;gap:1px;background:var(--pri);color:var(--pri-ink);border-radius:6px;padding:1px 6px;font-size:.95em;font-weight:700;margin-right:6px;font-variant-numeric:tabular-nums;letter-spacing:.03em;line-height:1.35;vertical-align:baseline}
+.apl i{font-style:normal;font-size:.68em;opacity:.65;font-weight:600}
+.who b:has(.apl),.x b:has(.apl){display:flex;flex-wrap:wrap;align-items:center;row-gap:2px;white-space:normal;overflow:visible;text-overflow:clip}
+.apl.big{font-size:26px;padding:2px 12px;border-radius:10px;margin:0}
+/* regra 6: cabeçalho de tabela sempre visível */
+.tbw,.tw{overflow:auto;max-height:calc(100dvh - 170px)}
+#drawer .tbw,#drawer .tw,.prev{max-height:60vh;overflow:auto}
+.tb thead th,.prev thead th{position:sticky;top:0;z-index:3;background:var(--card)}
+.th,.cth{position:sticky;top:0;z-index:3;background:var(--card)}
+@media (max-width:860px){.tbw,.tw{max-height:calc(100dvh - 230px)}}
 </style>
 </head>
 <body>
@@ -562,7 +572,7 @@ textarea.inp{font-size:12px}
 </div>
 
 <div id="ovl" class="ovl" hidden data-act="ovlClick"></div>
-<div id="drawer" class="drawer" hidden></div>
+<div id="drawer" class="drawer" role="dialog" hidden></div>
 <div id="sheet" class="sheet" hidden></div>
 <div id="alarm" class="alarm" hidden></div>
 <div id="toast"></div>
@@ -605,6 +615,13 @@ const PEND=["detectado","aprovado"],ALERT_ST=["detectado","aprovado","solicitado
 const STL={detectado:"Detectado",aprovado:"Na fila de puxe",solicitado:"Solicitado · acompanhando",confirmado:"Redestinação confirmada",armazenado:"Armazenado",permanece:"Permanece no terminal",cancelado:"Cancelado"};
 const FONTE={siscarga:"Siscarga",email:"E-mail",manual:"Manual",planilha:"Planilha"};
 const SOLTA="CARGA SOLTA",TBL={Direto:"Comum (BL)",Master:"Master (MBL)",House:"Filhote (HBL)"};
+/* ID curto (apelido): A0001…A9999, B0001… · fala-se só os 4 números. Gerado no banco (SQL v7); na demonstração, aqui. */
+const aplFmt=n=>String.fromCharCode(65+Math.floor((n-1)/9999))+String(((n-1)%9999)+1).padStart(4,"0");
+const aplT=(c,big)=>c&&c.apelido?`<span class="apl${big?" big":""}" title="ID PUXE ${esc(c.apelido)} · fale só ${esc(c.apelido.slice(1))}"><i>${esc(c.apelido.slice(0,1))}</i>${esc(c.apelido.slice(1))}</span>`:"";
+const aplS=c=>c&&c.apelido?c.apelido.slice(1):"";
+function aplDe(c){if(!c.container||c.container===SOLTA)return null;const nv=x=>(x||"").trim().toLowerCase();
+  const m=S.cargas.filter(x=>x!==c&&x.apelido&&x.container===c.container&&(!nv(x.navio)||!nv(c.navio)||nv(x.navio)===nv(c.navio))&&(!x.eta||!c.eta||Math.abs(new Date(x.eta)-new Date(c.eta))<15*864e5)).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];return m?m.apelido:null}
+function aplNovo(c){if(!c.apelido)c.apelido=aplDe(c)||aplFmt(S.org.apelido_seq=(+S.org.apelido_seq||0)+1)}
 const hEta=c=>(new Date(c.eta)-Date.now())/36e5;
 const ALH=()=>{const a=[...((S.org&&S.org.alerta_horas)||[120,48,24])].map(Number).filter(x=>x>0).sort((x,y)=>x-y);return a.length>=3?a:[24,48,120]};
 function nivel(c){if(!ALERT_ST.includes(c.status)||!c.eta)return"ok";const h=hEta(c),a=ALH();
@@ -711,6 +728,7 @@ function demoSeed(){
     S.cargas.push(c);S.eventos.push({id:ev++,carga_id:c.id,container:SOLTA,tipo:"criado",detalhe:"Detectado via Planilha · "+c.fonte_detalhe,user_nome:"Carla",created_at:created})});
   S.cargas.filter(c=>c.navio==="Sea Pioneer").forEach(c=>S.eventos.push({id:ev++,carga_id:c.id,container:c.container,tipo:"eta",detalhe:`ETA ${fS(new Date(c.eta).getTime()+10*H)} → ${fS(c.eta)} (antecipou 10h)`,user_nome:"Carla",created_at:new Date(now-20*H).toISOString()}));
   S.perfis=[{user_id:"d1",nome:"Luis",email:"luis@dlt.com.br",papel:"admin",cargo:"Diretor",telefone:"(13) 99701-2200"},{user_id:"d2",nome:"Carla",email:"carla@dlt.com.br",papel:"operador",cargo:"Operador",telefone:"(13) 99701-2202"},{user_id:"d3",nome:"Pedro",email:"pedro@dlt.com.br",papel:"operador",cargo:"Operador",telefone:"(13) 99701-2201"},{user_id:"d4",nome:"Marcos",email:"marcos@dlt.com.br",papel:"operador",cargo:"Gerente",telefone:"(13) 99701-2204"}];
+  S.org.apelido_seq=0;S.cargas.slice().sort((a,b)=>new Date(a.created_at)-new Date(b.created_at)).forEach(aplNovo);
   S.eventos.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
 }
 
@@ -741,7 +759,7 @@ const DB={
     if(papel()==="admin"){const p=await sb.from("puxe_perfis").select("*").order("created_at");if(!p.error)S.perfis=p.data||[]}
   },
   async addCargas(rows){
-    if(S.mode==="demo"){rows.forEach(r=>{const c=Object.assign({id:uid(),created_at:new Date().toISOString(),updated_at:new Date().toISOString(),status:"detectado"},r);S.cargas.push(c);demoLog(c,"criado","Detectado via "+(FONTE[c.fonte]||c.fonte))});return}
+    if(S.mode==="demo"){rows.forEach(r=>{const c=Object.assign({id:uid(),created_at:new Date().toISOString(),updated_at:new Date().toISOString(),status:"detectado"},r);aplNovo(c);S.cargas.push(c);demoLog(c,"criado","Detectado via "+(FONTE[c.fonte]||c.fonte))});return}
     let {error}=await sb.from("puxe_cargas").insert(rows);if(error&&colErr(error)){avisaSQL();({error}=await sb.from("puxe_cargas").insert(rows.map(semCols)))}if(error)throw error;await DB.load();
   },
   async updCarga(id,patch){
@@ -837,17 +855,17 @@ function cdChip(c){const n=nivel(c);if(n==="ok")return"";
   return`<span class="cd ${n}"><i></i>${leftTxt(hLeft(c))}</span>`}
 function ctype(c){return`<span class="ctype" style="background:${TCOL[c.tipo_container]||"#5C6B7A"}"><span>${esc((c.tipo_container||"CTR").replace("Reefer","RF"))}</span></span>`}
 function ceConts(ce){return ce?S.cargas.filter(x=>x.ce===ce&&x.status!=="cancelado"):[]}
-function ceIrmaos(c){const L=ceConts(c.ce);if(L.length<2)return"";return`<div style="grid-column:1/-1"><small>Este CE tem ${L.length} containers</small><b class="ctlist" style="font-size:12px;color:var(--ink)">${L.map(x=>esc(x.container)).join(" · ")}</b></div>`}
+function ceIrmaos(c){const L=ceConts(c.ce);if(L.length<2)return"";return`<div style="grid-column:1/-1"><small>Este CE tem ${L.length} containers</small><b class="ctlist" style="font-size:12px;color:var(--ink)">${L.map(x=>(aplS(x)?aplS(x)+" ":"")+esc(x.container)).join(" · ")}</b></div>`}
 function cliName(c){return c.cliente_pendente&&!c.cliente_nome?"Cliente final pendente":(c.cliente_nome||"—")}
 function row(c){return`<button class="tr" data-act="openCarga" data-id="${c.id}">
-  <div class="who c1">${ctype(c)}<div style="min-width:0"><b>${esc(c.container)}</b><small>${esc(cliName(c))}</small>${c.cliente_pendente?`<span class="tag warn">House pendente</span>`:(c.tipo_bl&&c.tipo_bl!=="Direto"?`<span class="tag">${esc(c.tipo_bl)}</span>`:"")}</div></div>
+  <div class="who c1">${ctype(c)}<div style="min-width:0"><b>${aplT(c)}${esc(c.container)}</b><small>${esc(cliName(c))}</small>${c.cliente_pendente?`<span class="tag warn">House pendente</span>`:(c.tipo_bl&&c.tipo_bl!=="Direto"?`<span class="tag">${esc(c.tipo_bl)}</span>`:"")}</div></div>
   <div class="c2">${stepper(c)}</div>
   <div class="cell c3"><b>${fDT(c.prazo_limite)}</b>${cdChip(c)||`<small>prazo limite</small>`}</div>
   <div class="cell c4"><b>${esc(c.navio||"—")}</b><small>ETA ${c.eta?fD(c.eta):"—"} · ${esc(c.terminal||"")}</small></div>
   <div class="cell c5"><b>${esc(c.armazem||"—")}</b><small>${FONTE[c.fonte]||""}</small></div>
   <div class="c6"><span class="st ${c.status}">${STL[c.status]}</span></div></button>`}
 const TH=`<div class="th"><span>Container / Cliente</span><span>Progresso</span><span>Prazo limite</span><span>Navio / ETA</span><span>Armazém</span><span>Status</span></div>`;
-function match(c,q){if(!q)return true;q=q.toLowerCase();return[c.container,c.cliente_nome,c.bl,c.ce,c.navio,c.armazem,c.cnpj,c.armador].some(x=>(x||"").toLowerCase().includes(q))}
+function match(c,q){if(!q)return true;q=q.toLowerCase().trim();if(/^[a-z]?\d{4}$/.test(q))return!!c.apelido&&(q.length===5?c.apelido.toLowerCase()===q:c.apelido.slice(1)===q);return[c.apelido,c.container,c.cliente_nome,c.bl,c.ce,c.navio,c.armazem,c.cnpj,c.armador].some(x=>(x||"").toLowerCase().includes(q))}
 const byPrazo=(a,b)=>new Date(a.prazo_limite||0)-new Date(b.prazo_limite||0);
 const sameDay=(a,b)=>{a=new Date(a);b=new Date(b);return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate()};
 
@@ -882,7 +900,7 @@ function vPainel(){
 }
 function rAlarmes(){const L=S.cargas.filter(c=>["vencido","critico","alerta"].includes(nivel(c))).sort(byPrazo);const t=new Date();
   return`<section class="card p rc"><h3>Alarmes <small>${t.getDate()} de ${MS[t.getMonth()]} (${DS[t.getDay()]})</small><button class="more" data-act="filtro" data-f="vencendo">ver todos ›</button></h3>
-  <div style="margin-top:8px">${L.slice(0,6).map(c=>`<button class="al" data-act="openCarga" data-id="${c.id}"><span class="tm">${fT(c.prazo_limite)}</span><span class="dt" style="background:${NCOL[nivel(c)]}"></span><span style="min-width:0"><b>${esc(c.container)}</b><small>${esc(cliName(c))} · ${esc(c.armazem||"")} · ${leftTxt(hLeft(c))}</small></span></button>`).join("")||`<div class="empty" style="padding:18px 0">Nenhum prazo crítico. ✓</div>`}</div></section>`}
+  <div style="margin-top:8px">${L.slice(0,6).map(c=>`<button class="al" data-act="openCarga" data-id="${c.id}"><span class="tm">${fT(c.prazo_limite)}</span><span class="dt" style="background:${NCOL[nivel(c)]}"></span><span style="min-width:0"><b>${aplT(c)}${esc(c.container)}</b><small>${esc(cliName(c))} · ${esc(c.armazem||"")} · ${leftTxt(hLeft(c))}</small></span></button>`).join("")||`<div class="empty" style="padding:18px 0">Nenhum prazo crítico. ✓</div>`}</div></section>`}
 function rRadar(){const pend=S.cargas.filter(c=>PEND.includes(c.status));const c24=pend.filter(c=>hLeft(c)<=24).length;
   return`<section class="radar">${radarSVG()}<div class="kick">ASSISTENTE DE PRAZOS</div><div class="big">RADAR</div>
   <p>${c24?`${c24} container${c24>1?"s":""} vence${c24>1?"m":""} em até 24h.`:"Nenhum container vence nas próximas 24h."}<br><span style="font-weight:500;opacity:.85">${pend.length} aguardando redestinação</span></p>
@@ -923,7 +941,7 @@ function alCell(c,r){const n=r.alarmes.length,m=r.avisos.length,lv=nivel(c);
   return`<b>${ic("bell",12)} ${n} alarme${n!==1?"s":""} · ${m} aviso${m!==1?"s":""}</b><small>${esc(CANAL[u.canal]||u.canal||"App")} → ${esc(dest)} · ${fS(u.created_at)}</small>`}
 function ctRow(c){const r=resp(c),cli=S.clientes.find(x=>x.id===c.cliente_id),open=S.xp===c.id;
   return`<button class="ctr ${open?"open":""}" data-act="xp" data-id="${c.id}">
-  <div class="who k1">${ctype(c)}<div style="min-width:0"><b>${esc(c.container)}</b><small>${esc(c.tipo_container||"")} · ${esc(c.armador||"—")}</small></div></div>
+  <div class="who k1">${ctype(c)}<div style="min-width:0"><b>${aplT(c)}${esc(c.container)}</b><small>${esc(c.tipo_container||"")} · ${esc(c.armador||"—")}</small></div></div>
   <div class="cell k2"><b>${esc(cliName(c))}</b><small>${opDe(c)?"Resp. "+esc(opDe(c))+" · ":""}${c.cliente_pendente?"House pendente":esc(fmtCNPJ(c.cnpj)||"")}</small></div>
   <div class="cell k3"><b>${fS(r.captado.at)}</b><small>${esc(r.captado.by)} · ${esc(r.captado.como)}</small></div>
   <div class="cell k4"><b>${esc(c.navio||"—")} ${esc(c.viagem||"")}${antecipou(c)?` <span class="tag warn">antecipou</span>`:""}</b><small>${esc(c.porto||"Santos")} · ${esc(c.terminal||"")} · ETA ${fS(c.eta)}</small></div>
@@ -994,7 +1012,7 @@ function vAlarmes(){const now=Date.now(),day=new Date();day.setHours(0,0,0,0);
   return`<div class="ph"><div><span class="kick">ALERTS & NOTICES</span><h1>Alarmes</h1></div><button class="btn ghost sm" data-act="testAlarm">Testar alarme</button></div>
   ${tiles([["Alarmes hoje",hoje,"disparados no app"],["Precisam de ação",pend.length,"≤48h, ≤24h ou vencidos sem puxe",pend.length?"bad":""],["Críticos sem aviso",semAviso.length,"ninguém avisou o cliente",semAviso.length?"bad":"ok"],["Tempo médio de reação",fMin(avg(R30.map(x=>x.min))),"alarme → 1ª ação (30 dias)"]])}
   <section class="card sect"><div class="sect-h"><h3>Precisam de ação agora</h3><span class="muted" style="font-size:11px">ordenado pelo prazo</span></div><div class="tbw"><table class="tb"><thead><tr><th>Container</th><th>Cliente</th><th>Armazém</th><th>Prazo</th><th class="num">Alarmes</th><th>Último alarme</th><th>Avisos</th><th></th></tr></thead><tbody>
-  ${pend.map(c=>{const r=resp(c),la=r.alarmes[r.alarmes.length-1];return`<tr><td><b>${esc(c.container)}</b><small>${esc(c.navio||"")}</small></td><td>${esc(cliName(c))}</td><td>${esc(c.armazem||"—")}</td><td>${fS(c.prazo_limite)} ${cdChip(c)}</td><td class="num">${r.alarmes.length}</td><td>${la?`${fS(la.created_at)}<small>→ ${esc(la.destinatario||la.user_nome||"")}</small>`:"—"}</td>
+  ${pend.map(c=>{const r=resp(c),la=r.alarmes[r.alarmes.length-1];return`<tr><td><b>${aplT(c)}${esc(c.container)}</b><small>${esc(c.navio||"")}</small></td><td>${esc(cliName(c))}</td><td>${esc(c.armazem||"—")}</td><td>${fS(c.prazo_limite)} ${cdChip(c)}</td><td class="num">${r.alarmes.length}</td><td>${la?`${fS(la.created_at)}<small>→ ${esc(la.destinatario||la.user_nome||"")}</small>`:"—"}</td>
   <td>${r.avisos.length?`<span class="sp ok">${r.avisos.length} aviso${r.avisos.length>1?"s":""}</span><small>${esc(CANAL[r.avisos[r.avisos.length-1].canal]||"")} → ${esc((r.avisos[r.avisos.length-1].destinatario||"").split(" <")[0])}</small>`:`<span class="sp bad">ninguém avisado</span>`}</td>
   <td><button class="btn ghost sm" data-act="openAviso" data-id="${c.id}">Registrar aviso</button> <button class="btn sm" data-act="openCarga" data-id="${c.id}">Abrir</button></td></tr>`}).join("")||`<tr><td colspan="8" class="empty">Nada crítico agora ✓</td></tr>`}</tbody></table></div></section>
   <section class="card sect"><div class="sect-h"><h3>Regras de escalonamento</h3><span class="sp ok">documento DLT · 19/10</span>${isAdmin()?`<button class="btn ghost sm" data-act="nav" data-v="config">Ajustar</button>`:""}</div><div class="tbw"><table class="tb rules"><thead><tr><th>Nível</th><th>Quando</th><th>Quem recebe</th><th>Como</th><th>Repetição</th></tr></thead><tbody>
@@ -1109,7 +1127,7 @@ function vCargas(){
 function groupBy(L,k){const g={};L.forEach(c=>{(g[c[k]||"—"]=g[c[k]||"—"]||[]).push(c)});return Object.entries(g).sort((a,b)=>b[1].length-a[1].length)}
 function vFila(){
   const det=S.cargas.filter(c=>c.status==="detectado").sort(byPrazo),apr=S.cargas.filter(c=>c.status==="aprovado").sort(byPrazo),sol=S.cargas.filter(c=>c.status==="solicitado").sort((a,b)=>new Date(a.eta)-new Date(b.eta));const ed=pode();
-  const line=(c,chk)=>`<div class="ln">${chk&&ed?`<input type="checkbox" ${["vencido","critico","alerta","atencao"].includes(nivel(c))?"checked":""} data-grp="${esc(c.armazem||"—")}" data-id="${c.id}">`:""}<div class="x"><b>${esc(c.container)}</b> <span class="tag">${esc(c.tipo_container||"")}</span><small>${esc(cliName(c))} · ${esc(c.navio||"")} · prazo ${fDT(c.prazo_limite)}</small></div>${cdChip(c)}${baixaBtn(c)}<button class="icb" style="width:38px;height:38px" data-act="openCarga" data-id="${c.id}">${ic("right",16)}</button></div>`;
+  const line=(c,chk)=>`<div class="ln">${chk&&ed?`<input type="checkbox" ${["vencido","critico","alerta","atencao"].includes(nivel(c))?"checked":""} data-grp="${esc(c.armazem||"—")}" data-id="${c.id}">`:""}<div class="x"><b>${aplT(c)}${esc(c.container)}</b> <span class="tag">${esc(c.tipo_container||"")}</span><small>${esc(cliName(c))} · ${esc(c.navio||"")} · prazo ${fDT(c.prazo_limite)}</small></div>${cdChip(c)}${baixaBtn(c)}<button class="icb" style="width:38px;height:38px" data-act="openCarga" data-id="${c.id}">${ic("right",16)}</button></div>`;
   return`<div class="ph"><div><span class="kick">REDESTINATION</span><h1>Fila de Puxe</h1></div>${pode()?`<button class="btn acc sm" data-act="confEmail">${ic("check",15)} Dar baixa em lote</button>`:""}</div>
   <div class="note" style="margin-bottom:14px">Já fez a redestinação? Use <b>✓ Baixa</b> no container (ou <b>Dar baixa em lote</b> colando os CEs). Ele sai da fila, os alertas param e não volta no Excel de pendentes, mesmo com o Siscarga ainda mostrando “manifestado”.</div>
   <div class="two"><div>
@@ -1121,7 +1139,7 @@ function vFila(){
      ${ed?`<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><input class="inp" style="flex:1;min-width:150px" placeholder="Protocolo do armazém (opcional)" data-prot="${esc(a)}"><button class="btn sm" data-act="solicitarGrp" data-grp="${esc(a)}">Marquei como solicitado</button></div>`:""}</section>`).join("")||`<div class="card empty">Nenhum container na fila.</div>`}
    <h3 style="margin:18px 0 4px">3 · Aguardando confirmação do armazém</h3><p class="muted" style="margin:0 0 10px;font-size:12px">Solicitado não encerra o processo: os alertas continuam até a confirmação. Cole o e-mail de confirmação da Ecoporto e o sistema acha os containers.</p>
    ${ed?`<button class="btn acc sm" data-act="confEmail" style="margin-bottom:10px">${ic("check",15)} Dar baixa em lote (colar CEs, containers ou e-mail)</button>`:""}
-   ${groupBy(sol,"armazem").map(([a,L])=>`<section class="card grp"><div class="grp-h"><span class="n">${L.length}</span><h3>→ ${esc(a)}</h3><span class="sp warn">aguardando confirmação</span></div>${L.map(c=>{const r=resp(c);return`<div class="ln"><div class="x"><b>${esc(c.container)}</b> <span class="tag">${esc(c.protocolo||"sem protocolo")}</span><small>${esc(cliName(c))} · solicitado ${r.solicitado?fS(r.solicitado.at)+" por "+esc(r.solicitado.by):""} · ETA ${fS(c.eta)}</small></div>${cdChip(c)}${baixaBtn(c,"Dar baixa")}</div>`}).join("")}</section>`).join("")||`<div class="card empty">Nada aguardando confirmação.</div>`}
+   ${groupBy(sol,"armazem").map(([a,L])=>`<section class="card grp"><div class="grp-h"><span class="n">${L.length}</span><h3>→ ${esc(a)}</h3><span class="sp warn">aguardando confirmação</span></div>${L.map(c=>{const r=resp(c);return`<div class="ln"><div class="x"><b>${aplT(c)}${esc(c.container)}</b> <span class="tag">${esc(c.protocolo||"sem protocolo")}</span><small>${esc(cliName(c))} · solicitado ${r.solicitado?fS(r.solicitado.at)+" por "+esc(r.solicitado.by):""} · ETA ${fS(c.eta)}</small></div>${cdChip(c)}${baixaBtn(c,"Dar baixa")}</div>`}).join("")}</section>`).join("")||`<div class="card empty">Nada aguardando confirmação.</div>`}
    <div class="note" style="margin-top:14px"><b>Fase 2 — robô de solicitação:</b> depois do seu OK, o sistema entra no portal de cada armazém (Ecoporto, Marimex, Santos Brasil…) e lança o puxe sozinho. Hoje ele prepara a lista; o lançamento ainda é manual.</div>
   </div></div>`}
 
@@ -1158,7 +1176,7 @@ function vCaptacao(){
   <section class="card p"><h3 style="margin:0 0 6px">Regra DLT (master)</h3><p class="muted" style="font-size:13px;line-height:1.6;margin:0">Quando o CNPJ da carga é o da própria comissária (${esc(fmtCNPJ(S.org.cnpj_proprio)||"configure em Configurações")}), ela entra como <b>“cliente final pendente”</b> e continua alarmando normalmente até os houses serem informados.</p></section>
   </div>`}
 function impPrevHTML(R){return R?`${(()=>{const nv=[...new Set(R.filter(x=>x.novo).map(x=>x.novo))];return nv.length&&pode()?`<div class="qc" style="margin-top:12px"><b style="font-size:14px">${nv.length} CNPJ${nv.length>1?"s":""} ainda não cadastrado${nv.length>1?"s":""} — confira o nome para cadastrar agora:</b>${nv.map(c=>`<div class="ln"><div class="x" style="flex:0 0 auto"><b>${esc(fmtCNPJ(c))}</b>${cnpjOk(c)?"":`<small class="bad-t">dígito não confere</small>`}</div><input class="inp" style="flex:1;min-width:140px" placeholder="Nome do cliente" data-novocnpj="${esc(c)}" value="${esc((R.find(x=>x.novo===c)||{}).nomeNovo||"")}"></div>`).join("")}<button class="btn sm" data-act="impCli" style="align-self:flex-start">Cadastrar e revalidar</button></div>`:""})()}<div class="hint" style="margin-top:10px"><b>${R.filter(x=>x.ok&&!x.upd).length}</b> nova${R.filter(x=>x.ok&&!x.upd).length!==1?"s":""} · <b>${R.filter(x=>x.upd).length}</b> com ETA atualizado · ${R.filter(x=>!x.ok).length} ignorada${R.filter(x=>!x.ok).length!==1?"s":""}${S.importSrc&&S.importSrc.arquivo?" · arquivo "+esc(S.importSrc.arquivo):""}</div>
-    <div class="prev"><table><tr><th></th><th>Container</th><th>CE</th><th>Cliente</th><th>Navio</th><th>Porto · terminal</th><th>ETA</th><th>Prazo</th><th>Armazém</th></tr>${R.map(x=>`<tr><td class="${x.ok?"ok-t":"bad-t"}">${x.ok?"✓":"✕"} ${esc(x.msg)}</td><td>${esc(x.container)}${x.nCe>1?` <small class="muted">(${x.nCe} no CE)</small>`:""}</td><td>${esc(x.ce||"")}</td><td>${esc(x.cliente)}</td><td>${esc(x.navio)}</td><td>${esc((x.porto||"Santos")+(x.terminal?" · "+x.terminal:""))}</td><td>${x.eta?fDT(x.eta):"—"}</td><td>${x.prazo?fDT(x.prazo):"—"}</td><td>${esc(x.armazem)}</td></tr>`).join("")}</table></div>`:""}
+    <div class="prev"><table><thead><tr><th>Situação</th><th>Container</th><th>CE</th><th>Cliente</th><th>Navio</th><th>Porto · terminal</th><th>ETA</th><th>Prazo</th><th>Armazém</th></tr></thead><tbody>${R.map(x=>`<tr><td class="${x.ok?"ok-t":"bad-t"}">${x.ok?"✓":"✕"} ${esc(x.msg)}</td><td>${esc(x.container)}${x.nCe>1?` <small class="muted">(${x.nCe} no CE)</small>`:""}</td><td>${esc(x.ce||"")}</td><td>${esc(x.cliente)}</td><td>${esc(x.navio)}</td><td>${esc((x.porto||"Santos")+(x.terminal?" · "+x.terminal:""))}</td><td>${x.eta?fDT(x.eta):"—"}</td><td>${x.prazo?fDT(x.prazo):"—"}</td><td>${esc(x.armazem)}</td></tr>`).join("")}</tbody></table></div>`:""}
 /* ================= EXCEL (ler e gerar .xlsx) ================= */
 let _xlP=null;
 function loadExcel(){if(window.ExcelJS)return Promise.resolve(window.ExcelJS);if(_xlP)return _xlP;
@@ -1221,8 +1239,8 @@ async function exportarExcel(modo){toast("Gerando a planilha…");const soPend=m
   const wb=new X.Workbook();wb.creator="PUXE";wb.created=now;
   const grupos=new Map();C.forEach(c=>{const p=c.porto||"Santos";if(!grupos.has(p))grupos.set(p,new Map());const g=grupos.get(p),k=c.ce||("ctr:"+c.container);if(!g.has(k))g.set(k,[]);g.get(k).push(c)});
   const portos=[...grupos.keys()].sort((a,b)=>(a==="Santos"?-1:b==="Santos"?1:a.localeCompare(b)));
-  const H=["Chegada","Navio","Terminal de descarga","Cliente","CNPJ","CE Mercante","BL","Tipo","Qtd cont.","Container(s)","Tipo cont.","Peso bruto (kg)","Desconsolidador","Status redestinação","Prazo do puxe","Armazém destino","Operador","Confirmação (quando · quem · protocolo)","Alertas enviados"];
-  const W=[11,24,22,22,20,18,18,13,9,30,12,14,28,30,16,16,14,36,26];
+  const H=["Chegada","Navio","Terminal de descarga","Cliente","CNPJ","CE Mercante","BL","Tipo","Qtd cont.","ID PUXE","Container(s)","Tipo cont.","Peso bruto (kg)","Desconsolidador","Status redestinação","Prazo do puxe","Armazém destino","Operador","Confirmação (quando · quem · protocolo)","Alertas enviados"];
+  const W=[11,24,22,22,20,18,18,13,9,16,30,12,14,28,30,16,16,14,36,26];
   const carimbo=`${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()} ${fT(now)}`;
   const head=(ws,ncol,titulo)=>{ws.mergeCells(1,1,1,ncol);const t=ws.getCell(1,1);t.value=titulo;t.font={bold:true,size:13,color:{argb:"FF12324A"}};ws.getRow(1).height=22;
     const hr=ws.getRow(2);hr.height=30;hr.eachCell(c=>{c.font={bold:true,color:{argb:"FFFFFFFF"}};c.fill={type:"pattern",pattern:"solid",fgColor:{argb:"FF12324A"}};c.alignment={vertical:"middle",wrapText:true}});ws.views=[{state:"frozen",ySplit:2}]};
@@ -1236,17 +1254,17 @@ async function exportarExcel(modo){toast("Gerando a planilha…");const soPend=m
       const sol=R.filter(z=>!z.r.confirmado&&z.r.solicitado).map(z=>`pedido ${fS(z.r.solicitado.at)} · ${z.r.solicitado.by}${z.c.protocolo?" · prot. "+z.c.protocolo:""}`);
       const al=R.flatMap(z=>z.r.alarmes.filter(a=>a.canal==="email"));const ult=al.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];
       const tipos=[...new Set(L.map(x=>x.tipo_container).filter(Boolean))].join(", ");const pz=L.map(x=>x.prazo_limite).filter(Boolean).sort()[0];
-      const row=ws.addRow([xD(c.eta),c.navio||"",c.terminal||"",cliName(c),fmtCNPJ(c.cnpj)||"",c.ce||"",c.bl||"",TBL[c.tipo_bl]||c.tipo_bl||"",solta?0:conts.length,solta?"Carga solta":conts.join(", "),solta?"—":(tipos||"—"),c.peso_kg==null||c.peso_kg===""?null:+c.peso_kg,c.desconsolidador||"—",st,
+      const row=ws.addRow([xD(c.eta),c.navio||"",c.terminal||"",cliName(c),fmtCNPJ(c.cnpj)||"",c.ce||"",c.bl||"",TBL[c.tipo_bl]||c.tipo_bl||"",solta?0:conts.length,[...new Set(L.map(x=>x.apelido).filter(Boolean))].join(", ")||"—",solta?"Carga solta":conts.join(", "),solta?"—":(tipos||"—"),c.peso_kg==null||c.peso_kg===""?null:+c.peso_kg,c.desconsolidador||"—",st,
         xD(pz,true),[...new Set(L.map(x=>x.armazem).filter(Boolean))].join(", ")||"a definir",cli.operador||"",conf.concat(sol).join(" | ")||"—",al.length?`${al.length} e-mail${al.length>1?"s":""} · último ${ult.nivel||""} ${fS(ult.created_at)}`:"—"]);
-      row.getCell(1).numFmt="dd/mm/yyyy";row.getCell(15).numFmt="dd/mm/yyyy hh:mm";row.getCell(12).numFmt="#,##0.##";row.getCell(9).alignment={horizontal:"center"};
-      [10,18,19].forEach(k=>row.getCell(k).alignment={wrapText:true,vertical:"top"});
-      const sc=row.getCell(14);sc.fill={type:"pattern",pattern:"solid",fgColor:{argb:XST[cor][0]}};sc.font={bold:true,color:{argb:XST[cor][1]}};nCE++});
+      row.getCell(1).numFmt="dd/mm/yyyy";row.getCell(16).numFmt="dd/mm/yyyy hh:mm";row.getCell(13).numFmt="#,##0.##";row.getCell(9).alignment={horizontal:"center"};
+      [10,11,19,20].forEach(k=>row.getCell(k).alignment={wrapText:true,vertical:"top"});row.getCell(10).font={bold:true};
+      const sc=row.getCell(15);sc.fill={type:"pattern",pattern:"solid",fgColor:{argb:XST[cor][0]}};sc.font={bold:true,color:{argb:XST[cor][1]}};nCE++});
     const nC=G.reduce((a,L)=>a+L.filter(x=>x.container!==SOLTA).length,0),nS=G.filter(L=>L.every(x=>x.container===SOLTA)).length;
     head(ws,H.length,`Alerta de Redestinação${soPend?" (pendentes)":""} – ${p} – ${S.org.nome||"PUXE"} – ${carimbo} – ${G.length} CEs${nC?` · ${nC} container${nC>1?"s":""}`:""}${nS?` · ${nS} carga${nS>1?"s":""} solta${nS>1?"s":""}`:""}`);ws.autoFilter={from:{row:2,column:1},to:{row:2,column:H.length}}});
-  const H2=["Container","Qtd no CE","CE Mercante","Cliente","Navio","Chegada","Porto","Terminal","Status","Prazo do puxe","Armazém destino","Protocolo"];
-  const ws2=wb.addWorksheet("Por container");ws2.addRow([]);ws2.addRow(H2);[16,9,18,22,22,11,14,16,26,16,16,14].forEach((w,i)=>ws2.getColumn(i+1).width=w);
-  C.slice().sort((a,b)=>new Date(a.eta||0)-new Date(b.eta||0)||a.container.localeCompare(b.container)).forEach(c=>{const L=ceConts(c.ce);const r=ws2.addRow([c.container===SOLTA?"Carga solta":c.container,c.ce?L.length:1,c.ce||"",cliName(c),c.navio||"",xD(c.eta),c.porto||"Santos",c.terminal||"",stCE([c])[0],xD(c.prazo_limite,true),c.armazem||"a definir",c.protocolo||""]);r.getCell(6).numFmt="dd/mm/yyyy";r.getCell(10).numFmt="dd/mm/yyyy hh:mm";
-    const sc=r.getCell(9),cor=stCE([c])[1];sc.fill={type:"pattern",pattern:"solid",fgColor:{argb:XST[cor][0]}};sc.font={bold:true,color:{argb:XST[cor][1]}}});
+  const H2=["ID PUXE","Container","Qtd no CE","CE Mercante","Cliente","Navio","Chegada","Porto","Terminal","Status","Prazo do puxe","Armazém destino","Protocolo"];
+  const ws2=wb.addWorksheet("Por container");ws2.addRow([]);ws2.addRow(H2);[10,16,9,18,22,22,11,14,16,26,16,16,14].forEach((w,i)=>ws2.getColumn(i+1).width=w);
+  C.slice().sort((a,b)=>new Date(a.eta||0)-new Date(b.eta||0)||a.container.localeCompare(b.container)).forEach(c=>{const L=ceConts(c.ce);const r=ws2.addRow([c.apelido||"",c.container===SOLTA?"Carga solta":c.container,c.ce?L.length:1,c.ce||"",cliName(c),c.navio||"",xD(c.eta),c.porto||"Santos",c.terminal||"",stCE([c])[0],xD(c.prazo_limite,true),c.armazem||"a definir",c.protocolo||""]);r.getCell(7).numFmt="dd/mm/yyyy";r.getCell(11).numFmt="dd/mm/yyyy hh:mm";r.getCell(1).font={bold:true};
+    const sc=r.getCell(10),cor=stCE([c])[1];sc.fill={type:"pattern",pattern:"solid",fgColor:{argb:XST[cor][0]}};sc.font={bold:true,color:{argb:XST[cor][1]}}});
   head(ws2,H2.length,`Por container – ${S.org.nome||"PUXE"} – ${carimbo} – ${C.length} linhas`);ws2.autoFilter={from:{row:2,column:1},to:{row:2,column:H2.length}};
   const buf=await wb.xlsx.writeBuffer();const nome=`Redestinacao${soPend?"_pendentes":""}_${pad(now.getDate())}-${pad(now.getMonth()+1)}-${now.getFullYear()}_${pad(now.getHours())}${pad(now.getMinutes())}.xlsx`;
   window._ultimoXlsx={nome,buf};
@@ -1296,9 +1314,9 @@ function vConfig(){const o=S.org,adm=isAdmin();const dis=adm?"":"disabled";
   <div class="col" style="gap:18px">
   <section class="card p"><h3 style="margin:0 0 6px">Alarme</h3><p class="muted" style="font-size:13px;line-height:1.6;margin:0 0 12px">O alarme toca com o app aberto e repete a cada minuto enquanto houver container vencido ou a menos de ${Math.min(...(o.alerta_horas||[24]))}h do prazo sem puxe. Avisos com o app fechado (WhatsApp/push) entram na fase 2.</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn acc sm" data-act="testAlarm">Testar alarme</button><button class="btn ghost sm" data-act="notif">Ativar notificações</button></div></section>
-  <section class="card p"><h3 style="margin:0 0 10px">Regras de alarme e avisos</h3><div class="form" id="frg">
-    <label>Custo médio de um container que fica no terminal (R$)<input name="custo" type="number" min="0" step="100" value="${CUSTO()}" ${dis}></label>
-    <label>Escalar para gerentes se ninguém reagir em (minutos)<input name="escala" type="number" min="5" step="5" value="${REG().escala_min}" ${dis}></label>
+  <section class="card p"><h3 style="margin:0 0 10px">Regras de alarme e avisos</h3><div class="form" id="frg" data-1c="on">
+    <label>Custo médio de um container que fica no terminal (R$)<input name="custo" data-fav="1000,1500,2000" data-fav-un="R$" type="number" min="0" step="100" value="${CUSTO()}" ${dis}></label>
+    <label>Escalar para gerentes se ninguém reagir em (minutos)<input name="escala" data-fav="15,30,60" type="number" min="5" step="5" value="${REG().escala_min}" ${dis}></label>
     <label>Aviso automático ao cliente<select name="avc" ${dis}>${Object.entries(AVC).map(([k,v])=>`<option value="${k}" ${REG().aviso_cliente===k?"selected":""}>${v}</option>`).join("")}</select></label>
     <div class="lbl">Canais para a equipe (fase 2)</div>
     ${["email","sms","whatsapp"].map(k=>`<label class="chk"><input type="checkbox" name="cn_${k}" ${REG().canais[k]?"checked":""} ${dis}> ${{email:"E-mail",sms:"SMS",whatsapp:"WhatsApp"}[k]}</label>`).join("")}
@@ -1324,7 +1342,7 @@ function detalhe(c){S.drawerId=c.id;const ed=pode(),st=c.status;const h=S.evento
    A.push(`<button class="btn ghost" data-act="editCarga">Editar dados</button>`);
    if(st!=="cancelado")A.push(`<button class="btn bad" data-act="cancel2">Cancelar</button>`)}
   return`<div class="dhead"><span class="st ${st}">${STL[st]}</span><span style="margin-right:auto"></span><button data-act="closeAll" class="icb">${ic("x")}</button></div>
-  <div style="display:flex;gap:14px;align-items:center">${ctype(c)}<div style="min-width:0"><div class="big-c">${esc(c.container)}</div><div class="muted">${esc(cliName(c))}</div></div></div>
+  <div style="display:flex;gap:14px;align-items:center">${ctype(c)}<div style="min-width:0">${c.apelido?`<div style="margin-bottom:2px">${aplT(c,1)}</div>`:""}<div class="big-c">${esc(c.container)}</div><div class="muted">${esc(cliName(c))}</div></div></div>
   <div style="margin:18px 0 6px">${stepper(c)}</div>
   <div style="margin-top:10px">${cdChip(c)}${c.container!==SOLTA&&!contOk(c.container)?` <span class="cd atencao"><i></i>dígito do container não confere</span>`:""}</div>
   <div class="kv"><div><small>Prazo limite</small><b>${fDT(c.prazo_limite)}</b></div><div><small>ETA (atracação)</small><b>${fDT(c.eta)}</b></div>
@@ -1372,13 +1390,13 @@ function formCarga(c){const o=S.org,isNew=!c;c=c||{tipo_container:"40HC",tipo_bl
   const ymd=`${eta.getFullYear()}-${pad(eta.getMonth()+1)}-${pad(eta.getDate())}`;
   return`<div class="dhead"><h3>${isNew?"Nova carga":"Editar carga"}</h3><button data-act="closeAll" class="icb">${ic("x")}</button></div>
   <div class="form" id="fc" data-id="${c.id||""}">
-   <label>Cliente<select name="cliente_id">${cliOpts(c.cliente_pendente&&!c.cliente_id?"__master":c.cliente_id)}</select></label>
+   <label>Cliente<select name="cliente_id" data-1c="lista">${cliOpts(c.cliente_pendente&&!c.cliente_id?"__master":c.cliente_id)}</select></label>
    <div class="qc" id="qc" hidden><b style="font-size:14px">Novo cliente</b><div class="row"><label>Nome / razão social<input id="qcNome" autocomplete="off"></label><label>CNPJ<input id="qcCnpj" placeholder="00.000.000/0000-00" inputmode="numeric"></label></div><span class="hint" id="qcMsg"></span><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn sm" data-act="qcSave">Salvar e usar nesta carga</button><button type="button" class="btn ghost sm" data-act="qcCancel">Cancelar</button></div></div>
    <label><span>CNPJ <span style="font-weight:500">· escolhe o cliente sozinho</span></span><input name="cnpj" value="${esc(fmtCNPJ(c.cnpj||""))}" placeholder="00.000.000/0000-00" inputmode="numeric"></label><span class="hint" id="cnpjHint"></span>
    <label>${isNew?"Container(s) — vários? um por linha":"Container"}<textarea name="container" rows="${isNew?2:1}" placeholder="MSCU1234565 · sem container? escreva CARGA SOLTA">${esc(c.container||"")}</textarea><span class="hint" id="contMsg"></span></label>
    <div class="lbl">Tipo</div>${seg("tipo_container",["20DC","40DC","40HC","Reefer","Solta"],c.tipo_container)}
    <div class="row"><label>BL<input name="bl" value="${esc(c.bl||"")}"></label><label>CE-Mercante<input name="ce" inputmode="numeric" value="${esc(c.ce||"")}"></label></div>
-   <div class="row"><label>Peso bruto (kg)<input name="peso_kg" type="number" min="0" step="0.01" value="${c.peso_kg==null?"":esc(c.peso_kg)}"></label><label>Desconsolidador<input name="desconsolidador" value="${esc(c.desconsolidador||"")}" list="descL"><datalist id="descL">${[...new Set(S.cargas.map(x=>x.desconsolidador).filter(Boolean))].sort().map(x=>`<option>${esc(x)}</option>`).join("")}</datalist></label></div>
+   <div class="row"><label>Peso bruto (kg)<input name="peso_kg" data-1c="off" type="number" min="0" step="0.01" value="${c.peso_kg==null?"":esc(c.peso_kg)}"></label><label>Desconsolidador<input name="desconsolidador" value="${esc(c.desconsolidador||"")}" list="descL"><datalist id="descL">${[...new Set(S.cargas.map(x=>x.desconsolidador).filter(Boolean))].sort().map(x=>`<option>${esc(x)}</option>`).join("")}</datalist></label></div>
    <div class="lbl">Tipo de BL</div>${seg("tipo_bl",["Direto","Master","House"],c.tipo_bl,{Direto:"Comum (BL)",Master:"Master (MBL)",House:"Filhote (HBL)"})}
    <div class="row"><label>Navio<input name="navio" value="${esc(c.navio||"")}" list="navL" autocomplete="off"><datalist id="navL">${navios().map(n=>`<option>${esc(n)}</option>`).join("")}</datalist></label><label>Viagem<input name="viagem" value="${esc(c.viagem||"")}"></label></div>
    <span class="hint" id="navHint"></span>
@@ -1386,7 +1404,7 @@ function formCarga(c){const o=S.org,isNew=!c;c=c||{tipo_container:"40HC",tipo_bl
    <label>Porto de descarga<input name="porto" value="${esc(c.porto||"Santos")}" list="portoL"><datalist id="portoL">${["Santos","Itajaí","Navegantes","Itapoá","Paranaguá","Rio de Janeiro","Itaguaí","Vitória","Salvador","Suape","Pecém","Manaus","Rio Grande"].map(x=>`<option>${x}</option>`).join("")}</datalist></label>
    <div class="lbl">Terminal de atracação</div>${seg("terminal",[...new Set([...o.terminais,c.terminal].filter(Boolean))],c.terminal)}
    <div class="row3"><label>ETA — data<input type="date" name="eta_d" value="${ymd}"></label><label>Hora<select name="eta_h">${Array.from({length:24},(_,i)=>`<option ${i===eta.getHours()?"selected":""}>${pad(i)}</option>`).join("")}</select></label><label>Min<select name="eta_m">${["00","15","30","45"].map(x=>`<option ${+x===Math.floor(eta.getMinutes()/15)*15?"selected":""}>${x}</option>`).join("")}</select></label></div>
-   <label>Pedir o puxe até quantas horas antes da atracação?<input name="ph" type="number" min="0" value="${ph}"></label>
+   <label>Pedir o puxe até quantas horas antes da atracação?<input name="ph" type="number" min="0" value="${ph}" data-fav="24,48" data-fav-un="h"></label>
    <div class="hint" id="etaLine"></div>
    <div class="lbl">Armazém de destino</div>${seg("armazem",[...new Set([...o.armazens,c.armazem].filter(Boolean))],c.armazem)}
    <div class="lbl">Como soubemos (fonte)</div>${seg("fonte",["siscarga","planilha","email","manual"],c.fonte,FONTE)}
@@ -1426,14 +1444,14 @@ function logAck(txt){const L=S.alarmL||[];if(!L.length)return;DB.logEventos(L.ma
 function openAlarm(L,teste){const ed=pode();S.alarmL=teste?[]:L;if(!teste)logAlarmes(L);
   $("#alarm").innerHTML=`<div class="box"><div class="ring">${ic("bell",34)}</div><h2>${teste?"Teste de alarme":"Prazo de redestinação!"}</h2>
   <p class="muted" style="text-align:center;margin:0">${teste?"É assim que o alarme toca.":`${L.length} container${L.length>1?"s":""} em D-1 ou além, ainda sem redestinação confirmada.`}</p>
-  <div class="lst">${L.map(c=>`<div class="ln"><div class="x"><b>${esc(c.container)}</b><small>${esc(cliName(c))} → ${esc(c.armazem||"")} · ${STL[c.status]} · ETA ${fDT(c.eta)}</small></div>${cdChip(c)}</div>`).join("")}</div>
+  <div class="lst">${L.map(c=>`<div class="ln"><div class="x"><b>${aplT(c)}${esc(c.container)}</b><small>${esc(cliName(c))} → ${esc(c.armazem||"")} · ${STL[c.status]} · ETA ${fDT(c.eta)}</small></div>${cdChip(c)}</div>`).join("")}</div>
   <div style="display:flex;flex-direction:column;gap:8px">${ed?`<button class="btn acc" data-act="alarmGo">Abrir fila de puxe</button>`:`<button class="btn acc" data-act="alarmWA">Avisar operador (copiar)</button>`}<button class="btn ghost" data-act="snooze">Soneca 30 min</button></div>
   <p class="muted" style="font-size:12px;text-align:center;margin:12px 0 0">Os alertas só param quando a redestinação estiver <b>confirmada</b> — solicitar não basta.</p></div>`;
   $("#alarm").hidden=false;beep();clearInterval(ringT);ringT=setInterval(beep,2200)}
 function stopAlarm(){clearInterval(ringT);$("#alarm").hidden=true;if(navigator.vibrate)navigator.vibrate(0)}
 function resumoTxt(){const pend=S.cargas.filter(c=>PEND.includes(c.status)).sort(byPrazo);const t=new Date();const L=pend.filter(c=>hLeft(c)<=72);
   return`*PUXE · ${S.org.nome} · ${fD(t)}*\n⛔ Vencidos: ${pend.filter(c=>hLeft(c)<0).length}\n🔴 Vencem em 24h: ${pend.filter(c=>hLeft(c)>=0&&hLeft(c)<=24).length}\n🟠 Vencem em 48h: ${pend.filter(c=>hLeft(c)>24&&hLeft(c)<=48).length}\n📋 Na fila de puxe: ${S.cargas.filter(c=>c.status==="aprovado").length}\n\n`+
-    L.map(c=>`• ${c.container} · ${cliName(c)} → ${c.armazem} · ${leftTxt(hLeft(c))}`).join("\n")}
+    L.map(c=>`• ${aplS(c)?aplS(c)+" · ":""}${c.container} · ${cliName(c)} → ${c.armazem} · ${leftTxt(hLeft(c))}`).join("\n")}
 
 /* ================= BAIXA (redestinação feita) ================= */
 const VIAS=["Consulta no Siscarga","E-mail do armazém","Portal do armazém","Telefone"];
@@ -1441,11 +1459,11 @@ function baixaHTML(ids){const L=ids.map(id=>S.cargas.find(c=>c.id===id)).filter(
   if(!L.length)return`<div class="dhead"><h3>Dar baixa</h3><button data-act="closeAll" class="icb">${ic("x")}</button></div><div class="empty">Nada pendente para dar baixa.</div>`;
   const ces=[...new Set(L.map(c=>c.ce).filter(Boolean))];const extra=ces.flatMap(ceConts).filter(c=>!S.baixaIds.includes(c.id)&&ALERT_ST.includes(c.status));S.baixaExtra=extra.map(c=>c.id);
   const arms=[...new Set([...(S.org.armazens||[]),...L.map(c=>c.armazem)].filter(Boolean))];const arm1=(L.find(c=>c.armazem)||{}).armazem||"";
-  const lst=L.slice(0,10).map(c=>`<div class="ln"><div class="x"><b>${esc(c.container)}</b><small>${esc(cliName(c))} · CE ${esc(c.ce||"—")} · ${esc(c.navio||"")} · chegada ${c.eta?fD(c.eta):"—"}</small></div><span class="st ${c.status}">${STL[c.status]}</span></div>`).join("")+(L.length>10?`<div class="hint">+ ${L.length-10} outros</div>`:"");
+  const lst=L.slice(0,10).map(c=>`<div class="ln"><div class="x"><b>${aplT(c)}${esc(c.container)}</b><small>${esc(cliName(c))} · CE ${esc(c.ce||"—")} · ${esc(c.navio||"")} · chegada ${c.eta?fD(c.eta):"—"}</small></div><span class="st ${c.status}">${STL[c.status]}</span></div>`).join("")+(L.length>10?`<div class="hint">+ ${L.length-10} outros</div>`:"");
   return`<div class="dhead"><h3>Dar baixa · redestinação feita</h3><button data-act="closeAll" class="icb">${ic("x")}</button></div>
   <div class="form" id="fbx"><p class="muted" style="margin:0;font-size:12px;line-height:1.6">Marca como <b>Redestinação confirmada</b>: sai da fila, <b>param os alertas</b> (app e e-mail) e o CE não aparece mais no Excel “só pendentes”, mesmo que o Siscarga ainda mostre “manifestado”. Fica registrado quem deu baixa, quando e como.</p>
   <div>${lst}</div>
-  ${extra.length?`<label class="chk"><input type="checkbox" id="bxCe" checked> Incluir também ${extra.length===1?"o outro container":`os outros ${extra.length} containers`} do mesmo CE <small class="muted">(${extra.slice(0,6).map(c=>esc(c.container)).join(", ")}${extra.length>6?"…":""})</small></label>`:""}
+  ${extra.length?`<label class="chk"><input type="checkbox" id="bxCe" checked> Incluir também ${extra.length===1?"o outro container":`os outros ${extra.length} containers`} do mesmo CE <small class="muted">(${extra.slice(0,6).map(c=>(aplS(c)?aplS(c)+" ":"")+esc(c.container)).join(", ")}${extra.length>6?"…":""})</small></label>`:""}
   <div class="lbl">Como foi confirmado</div>${seg("bxVia",VIAS,VIAS[0])}<input class="inp" id="bxViaOutro" placeholder="Outro jeito (escreva)">
   <div class="lbl">Armazém de destino</div>${seg("bxArm",arms,arm1)}<input class="inp" id="bxArmOutro" placeholder="Outro armazém (escreva)">
   <div class="row"><label>Protocolo (opcional)<input id="bxProt" value="${L.length===1?esc(L[0].protocolo||""):""}"></label><label>Observação (opcional)<input id="bxObs" placeholder="ex.: confirmado pela Ana da Ecoporto"></label></div>
@@ -1453,8 +1471,12 @@ function baixaHTML(ids){const L=ids.map(id=>S.cargas.find(c=>c.id===id)).filter(
 function baixaBtn(c,txt){return pode()&&ALERT_ST.includes(c.status)?`<button class="btn ghost sm" data-act="baixa" data-id="${c.id}" title="Já redestinado: dar baixa">${ic("check",14)} ${txt||"Baixa"}</button>`:""}
 
 /* ================= VERSÃO (regras 3 e 4) ================= */
-const APP_VERSAO=6;
+const APP_VERSAO=7;
 const NOVIDADES=[
+ [7,"29/10/2026",["ID curto para cada container: A0001, A0002… (depois do A9999 vem B0001). No dia a dia, fale só os 4 números: “7782”",
+   "O mesmo container no mesmo navio e na mesma chegada tem um ID só, mesmo aparecendo em vários CEs. Se ele voltar em outra viagem, ganha um ID novo",
+   "Busque pelo ID na barra de busca; dê baixa em lote colando os IDs; o ID aparece no Excel, no CSV, no alarme e no resumo do WhatsApp",
+   "Toda tabela com cabeçalho que fica visível ao rolar (regra 6)","Um clique: listas curtas viram botões e campos de número ganham favoritos que você cria na hora (regra 7)"]],
  [6,"29/10/2026",["Dar baixa: botão “✓ Baixa” em cada container (Fila de Puxe, Cargas e na ficha da carga) para registrar que a redestinação já foi feita, mesmo com o Siscarga ainda mostrando “manifestado”",
    "A baixa pode valer para todos os containers do mesmo CE de uma vez e registra como foi confirmado, armazém, protocolo, quem e quando",
    "Dar baixa em lote: cole uma lista de CEs ou containers (ou o e-mail do armazém) e confirme todos juntos",
@@ -1550,8 +1572,8 @@ const ACT={
     if(await run(async()=>{for(const c of cs){const off=new Date(c.eta)-new Date(c.prazo_limite);await DB.updCarga(c.id,{eta:ne.toISOString(),prazo_limite:new Date(ne-off).toISOString()})}
       if(mot&&S.mode!=="demo")await DB.logEventos(cs.map(c=>({carga_id:c.id,container:c.container,tipo:"nota",detalhe:"ETA: "+mot}))).catch(()=>{});if(mot&&S.mode==="demo")cs.forEach(c=>demoLog(c,"nota","ETA: "+mot))},`ETA atualizado em ${cs.length} container${cs.length>1?"s":""} ✓`)){closeAll();renderAll();checkAlarm()}},
   confEmail(){openDrawer(`<div class="dhead"><h3>Dar baixa em lote</h3><button data-act="closeAll" class="icb">${ic("x")}</button></div>
-    <div class="form"><p class="muted" style="margin:0;font-size:12px;line-height:1.6">Cole aqui uma <b>lista de CEs ou de containers</b> (pode copiar a coluna do Excel) ou o <b>e-mail de confirmação</b> do armazém. O sistema encontra os containers (pelo CE, entram todos do CE) e marca como <b>Redestinação confirmada</b>: param os alertas e saem da lista de pendentes. O texto colado fica guardado como prova.</p>
-    <label>CEs, containers ou e-mail<textarea id="cfTxt" rows="9" placeholder="152605349202808&#10;152605351924750&#10;MSCU1234565&#10;&#10;ou o e-mail: Assunto: Confirmação de redestinação – Protocolo 123456…"></textarea></label>
+    <div class="form"><p class="muted" style="margin:0;font-size:12px;line-height:1.6">Cole aqui uma <b>lista de IDs (ex.: 7782 ou A7782), CEs ou containers</b> (pode copiar a coluna do Excel) ou o <b>e-mail de confirmação</b> do armazém. O sistema encontra os containers (pelo CE, entram todos do CE) e marca como <b>Redestinação confirmada</b>: param os alertas e saem da lista de pendentes. O texto colado fica guardado como prova.</p>
+    <label>CEs, containers ou e-mail<textarea id="cfTxt" rows="9" placeholder="7782&#10;9123&#10;152605349202808&#10;MSCU1234565&#10;&#10;ou o e-mail: Assunto: Confirmação de redestinação – Protocolo 123456…"></textarea></label>
     <div id="cfRes" class="hint">Cole o e-mail acima.</div><button class="btn" data-act="confGo" id="cfBtn" disabled>Confirmar</button></div>`);setTimeout(()=>$("#cfTxt").focus(),50)},
   async confGo(){const t=$("#cfTxt").value,ids=[...document.querySelectorAll("#cfRes input:checked")].map(i=>i.dataset.id);if(!ids.length)return;
     const de=(t.match(/^\s*(de|from)\s*:\s*(.+)$/im)||[])[2]||"",as=(t.match(/^\s*(assunto|subject)\s*:\s*(.+)$/im)||[])[2]||"",trecho=(as||t.replace(/\s+/g," ").slice(0,140)).trim();
@@ -1644,8 +1666,8 @@ const ACT={
     const a=arr(g("alerta_horas")).map(Number).filter(n=>n>0);
     await run(()=>DB.updOrg({nome:g("nome").trim(),cnpj_proprio:normC(g("cnpj_proprio")),prazo_horas:Math.max(1,+g("prazo_horas")||48),alerta_horas:a.length>=3?a.slice(0,3):[120,48,24],armazens:arr(g("armazens")),terminais:arr(g("terminais"))}),"Regras salvas ✓");renderAll()},
   csv(){const q=v=>{v=v==null?"":String(v);return/[;"\n]/.test(v)?`"${v.replace(/"/g,'""')}"`:v};
-    const H=["container","ce","bl","peso_kg","desconsolidador","tipo","armador","cliente","cnpj","porto","terminal","navio","viagem","eta","prazo_puxe","armazem","status","captado_em","captado_por","fonte","detalhe_captacao","qtd_alarmes","primeiro_alarme","ultimo_alarme","alarme_para","quem_viu","avisos","aprovado_em","aprovado_por","solicitado_em","solicitado_por","protocolo","confirmado_em","armazenado_em"];
-    const rows=S.cargas.slice().sort(byPrazo).map(c=>{const r=resp(c),a=r.alarmes;return[c.container,c.ce,c.bl,c.peso_kg,c.desconsolidador,c.tipo_container,c.armador,cliName(c),fmtCNPJ(c.cnpj),c.porto||"Santos",c.terminal,c.navio,c.viagem,fS(c.eta),fS(c.prazo_limite),c.armazem,STL[c.status],fS(r.captado.at),r.captado.by,r.captado.como,r.captado.det,a.length,a[0]?fS(a[0].created_at):"",a.length?fS(a[a.length-1].created_at):"",[...new Set(a.map(x=>x.destinatario||x.user_nome))].join(", "),r.acks.map(x=>x.user_nome+" ("+x.detalhe+")").join(", "),r.avisos.map(x=>`${CANAL[x.canal]||x.canal} → ${x.destinatario} por ${x.user_nome} em ${fS(x.created_at)}`).join(" | "),r.aprovado?fS(r.aprovado.at):"",r.aprovado?r.aprovado.by:"",r.solicitado?fS(r.solicitado.at):"",r.solicitado?r.solicitado.by:"",c.protocolo,r.confirmado?fS(r.confirmado.at):"",r.armazenado?fS(r.armazenado.at):""].map(q).join(";")});
+    const H=["id_puxe","container","ce","bl","peso_kg","desconsolidador","tipo","armador","cliente","cnpj","porto","terminal","navio","viagem","eta","prazo_puxe","armazem","status","captado_em","captado_por","fonte","detalhe_captacao","qtd_alarmes","primeiro_alarme","ultimo_alarme","alarme_para","quem_viu","avisos","aprovado_em","aprovado_por","solicitado_em","solicitado_por","protocolo","confirmado_em","armazenado_em"];
+    const rows=S.cargas.slice().sort(byPrazo).map(c=>{const r=resp(c),a=r.alarmes;return[c.apelido,c.container,c.ce,c.bl,c.peso_kg,c.desconsolidador,c.tipo_container,c.armador,cliName(c),fmtCNPJ(c.cnpj),c.porto||"Santos",c.terminal,c.navio,c.viagem,fS(c.eta),fS(c.prazo_limite),c.armazem,STL[c.status],fS(r.captado.at),r.captado.by,r.captado.como,r.captado.det,a.length,a[0]?fS(a[0].created_at):"",a.length?fS(a[a.length-1].created_at):"",[...new Set(a.map(x=>x.destinatario||x.user_nome))].join(", "),r.acks.map(x=>x.user_nome+" ("+x.detalhe+")").join(", "),r.avisos.map(x=>`${CANAL[x.canal]||x.canal} → ${x.destinatario} por ${x.user_nome} em ${fS(x.created_at)}`).join(" | "),r.aprovado?fS(r.aprovado.at):"",r.aprovado?r.aprovado.by:"",r.solicitado?fS(r.solicitado.at):"",r.solicitado?r.solicitado.by:"",c.protocolo,r.confirmado?fS(r.confirmado.at):"",r.armazenado?fS(r.armazenado.at):""].map(q).join(";")});
     const txt="\ufeff"+[H.join(";")].concat(rows).join("\n");
     if(window.PUXE_PREVIEW)return copy(txt.slice(1));
     try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type:"text/csv;charset=utf-8"}));a.download=`puxe-rastreio-${new Date().toISOString().slice(0,10)}.csv`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);toast("Planilha baixada ✓")}catch(e){copy(txt.slice(1))}},
@@ -1671,8 +1693,12 @@ document.addEventListener("click",e=>{const t=e.target.closest("[data-act]");if(
 document.addEventListener("input",e=>{const t=e.target;
   if(t.id==="q"||t.dataset.in==="busca"){S.busca=t.value;const pos=t.selectionStart,isQ=t.id==="q";if(isQ&&!["painel","cargas","clientes"].includes(S.view))S.view="cargas";renderAll();const n=isQ?$("#q"):document.querySelector('[data-in="busca"]');if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(_){}}return}
   if(t.id==="cfTxt"){const cs=[...new Set((t.value.toUpperCase().match(/[A-Z]{4}\s?-?\d{6}\s?-?\d/g)||[]).map(normC))];const m=cs.map(x=>({x,c:S.cargas.find(c=>c.container===x&&c.status!=="cancelado")}));
+    const ids=[...new Set([...(t.value.toUpperCase().match(/\b[A-Z]\d{4}\b/g)||[]),...t.value.split(/\r?\n/).map(l=>l.trim()).filter(l=>/^\d{4}$/.test(l))])];
+    ids.forEach(id=>{const L=S.cargas.filter(c=>c.apelido&&(id.length===5?c.apelido===id:c.apelido.slice(1)===id)&&c.status!=="cancelado").sort((a,b)=>(ALERT_ST.includes(b.status)-ALERT_ST.includes(a.status))||String(b.apelido).localeCompare(String(a.apelido)));
+      const c=L[0];if(!c){m.push({x:"ID "+id,c:null});return}if(!m.some(z=>z.c&&z.c.id===c.id))m.push({x:`${c.apelido} · ${c.container}`,c});
+      S.cargas.filter(x=>x!==c&&x.apelido===c.apelido).forEach(x=>{if(!m.some(z=>z.c&&z.c.id===x.id))m.push({x:`${x.apelido} · ${x.container} · CE ${x.ce||"—"}`,c:x})})});
     [...new Set(t.value.match(/\b\d{15}\b/g)||[])].forEach(ce=>{const L=ceConts(ce);if(!L.length)m.push({x:"CE "+ce,c:null});L.forEach(c=>{if(!m.some(z=>z.c&&z.c.id===c.id))m.push({x:c.container===SOLTA?"CE "+ce+" · carga solta":c.container+" · CE "+ce,c})})});
-    $("#cfRes").innerHTML=m.length?m.map(({x,c})=>c?`<label class="chk"><input type="checkbox" data-id="${c.id}" ${["solicitado","aprovado","detectado"].includes(c.status)?"checked":""}><span style="flex:1;min-width:0"><b>${x}</b> <small style="display:block;color:var(--muted)">${esc(cliName(c))} · ${esc(c.armazem||"")}</small></span><span class="st ${c.status}">${STL[c.status]}</span></label>`:`<div class="hint w">${x} · não está no sistema</div>`).join(""):"Nenhum CE (15 dígitos) ou container encontrado no texto.";
+    $("#cfRes").innerHTML=m.length?m.map(({x,c})=>c?`<label class="chk"><input type="checkbox" data-id="${c.id}" ${["solicitado","aprovado","detectado"].includes(c.status)?"checked":""}><span style="flex:1;min-width:0"><b>${x}</b> <small style="display:block;color:var(--muted)">${esc(cliName(c))} · ${esc(c.armazem||"")}</small></span><span class="st ${c.status}">${STL[c.status]}</span></label>`:`<div class="hint w">${x} · não está no sistema</div>`).join(""):"Nenhum ID, CE ou container encontrado no texto.";
     const n=m.filter(z=>z.c).length;$("#cfBtn").disabled=!n;$("#cfBtn").textContent=n?`Confirmar ${n} container${n>1?"s":""}`:"Confirmar";return}
   if(t.id==="lote"){const r=parseLoteCli(t.value);$("#loteMsg").className="hint"+(r.bad.length?" w":"");$("#loteMsg").innerHTML=`<b>${r.ok.length}</b> pronto${r.ok.length!==1?"s":""} para cadastrar`+(r.dup.length?` · ${r.dup.length} já cadastrado${r.dup.length>1?"s":""}`:"")+(r.bad.length?`<br>${r.bad.slice(0,5).map(esc).join("<br>")}`:"");$("#loteBtn").disabled=!r.ok.length;$("#loteBtn").textContent=r.ok.length?`Cadastrar ${r.ok.length}`:"Cadastrar";return}
   if(t.closest&&t.closest("#fc")){const f=$("#fc");
@@ -1707,6 +1733,127 @@ document.addEventListener("change",async e=>{const t=e.target;
   if(t.dataset.perfil){await run(()=>DB.updPerfil(t.dataset.perfil,{papel:t.value,org_id:S.org.id}),"Acesso atualizado ✓");renderAll()}});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeAll()}if(e.key==="Enter"&&(e.target.id==="lgPass"||e.target.id==="lgEmail"))ACT.login()});
 boot();
+</script>
+<script>
+/* ===== Regra 7 · Um clique: opções favoritas + campo livre (Tae · 29/10/2026) =====
+   Módulo genérico, sem dependências. Cole antes de </body> (ou dentro do script principal).
+   O que faz, sozinho, em qualquer tela (MutationObserver):
+   1) <select> com até 6 opções curtas  → vira botões lado a lado (1 clique). O select continua no formulário, escondido.
+   2) <select> maior                      → ganha os favoritos dele em botões acima da lista.
+   3) <input type=number> com rótulo      → ganha a linha de favoritos: [12%] [15%] [20%] [+ favorito] [✎]
+      e campos de texto marcados com data-fav também.
+   Favoritos: "+ favorito" guarda o valor que está no campo; "✎" mostra o × para tirar. Valem por pessoa e por aparelho.
+   Padrões por campo: data-fav="10,15,20" (sugestões iniciais). Unidade nos botões: data-fav-un="%" ou "R$" (ou detecta pelo rótulo).
+   Desligar num campo ou num bloco: data-1c="off". Chave própria: data-fav-key="desconto-valor".
+   Botões do select: data-1c="botoes" força botões; data-1c="lista" força lista. */
+(function () {
+  if (window.__umclique) return; window.__umclique = true;
+  const APP = (document.querySelector('meta[name="app-id"]') || {}).content || location.pathname.replace(/index\.html$/, '');
+  const K = k => 'umclique:' + APP + ':' + k;
+  const ler = k => { try { return JSON.parse(localStorage.getItem(K(k)) || 'null'); } catch (_) { return null; } };
+  const gravar = (k, v) => { try { localStorage.setItem(K(k), JSON.stringify(v)); } catch (_) {} };
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const off = el => !!el.closest('[data-1c="off"]') && el.dataset['1c'] !== 'botoes';
+
+  const css = document.createElement('style');
+  css.textContent =
+    '.uc-hid{position:absolute!important;opacity:0!important;pointer-events:none!important;width:1px!important;height:1px!important;overflow:hidden!important}' +
+    '.uc-seg{display:flex;flex-wrap:wrap;gap:6px}' +
+    '.uc-seg button,.uc-fav button{font:inherit;font-size:13px;line-height:1.2;border:1px solid var(--line,#E6D9DF);background:var(--surface,#fff);color:inherit;border-radius:999px;padding:7px 12px;min-height:34px;cursor:pointer}' +
+    '.uc-seg button[aria-pressed="true"]{background:var(--accent,var(--pri,#B83D66));border-color:var(--accent,var(--pri,#B83D66));color:var(--on-accent,var(--on-pri,#fff));font-weight:600}' +
+    '.uc-seg button:disabled,.uc-fav button:disabled{opacity:.5;cursor:default}' +
+    '.uc-fav{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;align-items:center}' +
+    '.uc-fav .uc-v[aria-pressed="true"]{border-color:var(--accent,var(--pri,#B83D66));color:var(--accent,var(--pri,#B83D66));font-weight:600}' +
+    '.uc-fav .uc-add,.uc-fav .uc-ed{border-style:dashed;color:var(--muted,var(--mute,#8a7480))}' +
+    '.uc-fav .uc-x{margin-left:6px;font-weight:700;opacity:.7}' +
+    '.uc-fav.uc-vazio{display:none}' +
+    ':focus-within>.uc-fav.uc-vazio,.uc-fav.uc-vazio:focus-within{display:flex}';
+  document.head.appendChild(css);
+
+  const setVal = (el, v) => {
+    const d = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), 'value');
+    d && d.set ? d.set.call(el, v) : (el.value = v);
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+    el.dispatchEvent(new Event('change', { bubbles: true }));
+  };
+  const rotulo = el => {
+    const l = (el.id && document.querySelector('label[for="' + CSS.escape(el.id) + '"]')) || el.closest('label');
+    return l ? l.textContent.trim() : (el.getAttribute('aria-label') || '');
+  };
+  const chave = el => el.dataset.favKey || el.name || el.id || rotulo(el).toLowerCase().slice(0, 40);
+  const unidade = el => el.dataset.favUn || (/%/.test(rotulo(el)) ? '%' : /R\$/.test(rotulo(el)) ? 'R$' : '');
+  const mostra = (v, un) => un === 'R$' ? 'R$ ' + String(v).replace('.', ',') : un === '%' ? String(v).replace('.', ',') + '%' : String(v);
+
+  // ---------- select → botões ----------
+  function botoes(sel) {
+    const ops = [...sel.options].filter(o => o.value !== '' && !/^outr[ao]…?$/i.test(o.text.trim()) && o.value !== '__outra');
+    const forca = sel.dataset['1c'];
+    if (forca === 'lista') return false;
+    if (forca !== 'botoes' && (ops.length < 2 || ops.length > 6 || ops.some(o => o.text.trim().length > 40) || sel.multiple)) return false;
+    const temOutra = [...sel.options].some(o => o.value === '__outra');
+    const box = document.createElement('div'); box.className = 'uc-seg'; box.setAttribute('role', 'group');
+    const nome = rotulo(sel); if (nome) box.setAttribute('aria-label', nome);
+    const desenha = () => {
+      box.innerHTML = ops.map(o => '<button type="button" data-v="' + esc(o.value) + '" aria-pressed="' + (sel.value === o.value) + '"' + (sel.disabled ? ' disabled' : '') + '>' + esc(o.text.trim()) + '</button>').join('') +
+        (temOutra ? '<button type="button" data-v="__outra" aria-pressed="' + (sel.value === '__outra') + '"' + (sel.disabled ? ' disabled' : '') + '>Outra…</button>' : '');
+    };
+    desenha();
+    box.addEventListener('click', e => { const b = e.target.closest('button'); if (!b || b.disabled) return; setVal(sel, b.dataset.v); desenha(); if (b.dataset.v === '__outra') { const o = sel.parentNode.querySelector('input[type="text"]'); o && o.focus(); } });
+    sel.addEventListener('change', desenha);
+    sel.classList.add('uc-hid'); sel.tabIndex = -1; sel.setAttribute('aria-hidden', 'true');
+    sel.insertAdjacentElement('afterend', box);
+    return true;
+  }
+
+  // ---------- favoritos (select grande, número, texto com data-fav) ----------
+  function favoritos(el) {
+    const k = chave(el); if (!k) return;
+    const un = el.tagName === 'SELECT' ? '' : unidade(el);
+    const padrao = (el.dataset.fav || '').split(',').map(s => s.trim()).filter(Boolean);
+    let editando = false;
+    const box = document.createElement('div'); box.className = 'uc-fav';
+    const lista = () => { const s = ler(k); return Array.isArray(s) ? s : padrao; };
+    const texto = v => el.tagName === 'SELECT' ? ((([...el.options].find(o => o.value === v) || {}).text) || v) : mostra(v, un);
+    const desenha = () => {
+      const L = lista(), cur = String(el.value ?? '');
+      box.classList.toggle('uc-vazio', !L.length && !editando);
+      box.innerHTML = L.map(v => '<button type="button" class="uc-v" data-v="' + esc(v) + '" aria-pressed="' + (cur !== '' && String(v) === cur) + '"' + (el.disabled || el.readOnly ? ' disabled' : '') + '>' + esc(texto(v)) + (editando ? '<span class="uc-x" aria-label="tirar">×</span>' : '') + '</button>').join('') +
+        (el.disabled || el.readOnly ? '' : '<button type="button" class="uc-add" title="Guarda o valor que está no campo como botão">+ favorito</button>' + (L.length ? '<button type="button" class="uc-ed" aria-pressed="' + editando + '" title="Tirar favoritos">' + (editando ? 'Pronto' : '✎') + '</button>' : ''));
+    };
+    box.addEventListener('mousedown', e => e.preventDefault()); // não tira o foco do campo
+    box.addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b || b.disabled) return;
+      if (b.classList.contains('uc-add')) {
+        const v = String(el.value ?? '').trim();
+        if (!v || v === '__outra') { el.focus(); el.setAttribute('placeholder', 'Digite ou escolha e toque em + favorito'); return; }
+        const L = lista().filter(x => String(x) !== v); L.push(v);
+        if (el.type === 'number') L.sort((a, b) => Number(a) - Number(b));
+        gravar(k, L.slice(-12)); desenha(); return;
+      }
+      if (b.classList.contains('uc-ed')) { editando = !editando; desenha(); return; }
+      if (editando && e.target.closest('.uc-x')) { gravar(k, lista().filter(x => String(x) !== b.dataset.v)); desenha(); return; }
+      setVal(el, b.dataset.v); desenha();
+    });
+    el.addEventListener('input', desenha); el.addEventListener('change', desenha);
+    el.insertAdjacentElement('afterend', box);
+    desenha();
+  }
+
+  function aplica(raiz) {
+    const Q = 'select:not([data-uc]),input:not([data-uc])';
+    [...(raiz.matches && raiz.matches(Q) ? [raiz] : []), ...raiz.querySelectorAll(Q)].forEach(el => {
+      el.dataset.uc = '1';
+      if (off(el) || el.type === 'hidden' || el.closest('.uc-seg,.uc-fav')) return;
+      // só em formulários e quadros (filtros de barra ficam como estão, a não ser com data-1c="botoes")
+      if (!el.closest('form,[role="dialog"],.modal,[data-1c="on"]') && el.dataset['1c'] !== 'botoes' && el.dataset.fav === undefined) return;
+      if (el.tagName === 'SELECT') { if (!botoes(el) && el.dataset.fav !== undefined) favoritos(el); return; }
+      const temRotulo = !!rotulo(el) && !!((el.id && document.querySelector('label[for="' + CSS.escape(el.id) + '"]')) || el.closest('label'));
+      if ((el.type === 'number' && temRotulo) || el.dataset.fav !== undefined) favoritos(el);
+    });
+  }
+  const go = () => { aplica(document); new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(n => { if (n.nodeType === 1) aplica(n); }))).observe(document.body, { childList: true, subtree: true }); };
+  document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', go) : go();
+})();
 </script>
 </body>
 </html>
